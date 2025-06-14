@@ -36,4 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 !/.idea/
-/resources/application.yml
+resources/application.yml
