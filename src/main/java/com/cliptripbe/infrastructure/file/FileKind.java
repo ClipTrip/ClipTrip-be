@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.file.reader;
+package com.cliptripbe.infrastructure.file;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

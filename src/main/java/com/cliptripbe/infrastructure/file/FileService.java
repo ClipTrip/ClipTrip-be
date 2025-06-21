@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.file;
 
-import static com.cliptripbe.infrastructure.file.reader.FileKind.BF_CULTURE_TOURISM;
+import static com.cliptripbe.infrastructure.file.FileKind.BF_CULTURE_TOURISM;
 
 import com.cliptripbe.infrastructure.s3.S3FileReader;
 import java.io.BufferedReader;
