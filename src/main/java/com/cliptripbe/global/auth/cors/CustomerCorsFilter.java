@@ -1,4 +1,4 @@
-package com.cliptripbe.global.auth;
+package com.cliptripbe.global.auth.cors;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
