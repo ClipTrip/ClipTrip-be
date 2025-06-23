@@ -1,0 +1,22 @@
+package com.cliptripbe.global.auth.security;
+
+import com.cliptripbe.feature.user.application.UserLoader;
+import com.cliptripbe.feature.user.domain.User;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@RequiredArgsConstructor
+@Service
+public class CustomerDetailsService implements UserDetailsService {
+
+    private final UserLoader userLoader;
+
+    @Override
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
+        User user = userLoader.findByUserId(userId);
+        return new CustomerDetails(user);
+    }
+}
