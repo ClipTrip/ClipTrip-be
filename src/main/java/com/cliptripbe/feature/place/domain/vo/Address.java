@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain;
+package com.cliptripbe.feature.place.domain.vo;
 
 import jakarta.persistence.Embeddable;
 import lombok.Builder;

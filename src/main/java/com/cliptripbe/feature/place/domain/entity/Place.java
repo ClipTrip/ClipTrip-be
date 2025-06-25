@@ -1,5 +1,8 @@
-package com.cliptripbe.feature.place.domain;
+package com.cliptripbe.feature.place.domain.entity;
 
+import com.cliptripbe.feature.place.domain.AccessibilityFeatureConverter;
+import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import com.cliptripbe.feature.place.domain.vo.Address;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;

@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.place.domain;
 
+import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Arrays;

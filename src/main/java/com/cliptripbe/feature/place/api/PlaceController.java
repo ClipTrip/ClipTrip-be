@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/places")
-public class PlaceController {
+public class PlaceController implements PlaceControllerDocs {
 
     final PlaceService placeService;
 
     @GetMapping("/{name}")
-    PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
+    public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         @PathVariable(value = "name") String placeName
     ) {
         PlaceAccessibilityInfoResponse accessibilityInfoResponses = placeService.getPlaceAccessibilityInfo(

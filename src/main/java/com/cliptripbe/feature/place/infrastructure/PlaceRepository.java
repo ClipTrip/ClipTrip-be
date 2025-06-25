@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.place.infrastructure;
 
-import com.cliptripbe.feature.place.domain.Place;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 

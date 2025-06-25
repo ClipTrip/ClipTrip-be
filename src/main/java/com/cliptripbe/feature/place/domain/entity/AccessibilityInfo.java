@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain;
+package com.cliptripbe.feature.place.domain.entity;
 
 //@Entity
 //public class AccessibilityInfo {

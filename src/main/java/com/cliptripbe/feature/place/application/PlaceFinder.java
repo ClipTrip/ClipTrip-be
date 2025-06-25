@@ -1,8 +1,7 @@
 package com.cliptripbe.feature.place.application;
 
-import com.cliptripbe.feature.place.domain.Place;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
-import jakarta.persistence.EntityNotFoundException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,10 +11,10 @@ import org.springframework.stereotype.Component;
 public class PlaceFinder {
 
     final PlaceRepository placeRepository;
+    final PlaceRegister placeRegister;
 
     public Place getPlaceByName(String placeName) {
-        return placeRepository.findByName(placeName).orElseThrow(
-            () -> new EntityNotFoundException("없습니다.")
-        );
+        Optional<Place> optionalPlace = placeRepository.findByName(placeName);
+        return optionalPlace.orElseGet(() -> placeRegister.registerPlace(placeName));
     }
 }

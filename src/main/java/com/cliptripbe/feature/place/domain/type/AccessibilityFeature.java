@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain;
+package com.cliptripbe.feature.place.domain.type;
 
 import lombok.Getter;
 
@@ -14,6 +14,9 @@ public enum AccessibilityFeature {
     GUIDE_DOG_ALLOWED("시각장애인 안내견 동반 가능"),
     BRAILLE_GUIDE("점자 가이드 제공"),
     AUDIO_GUIDE_KR("오디오 가이드(한국어)");
+
+    //휠체어, 승강기..까지 고려!
+
 
     private final String description;
 
