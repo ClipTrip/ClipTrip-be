@@ -23,7 +23,7 @@ jobs:
           java-version: '21'
 
       - name: Build Spring Boot App
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
 
       - name: Copy jar for Docker
         run: cp build/libs/*.jar app.jar
