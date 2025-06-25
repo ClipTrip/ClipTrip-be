@@ -22,8 +22,24 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: make application-prod.yml
+        run: |
+          cd ./src/main/resources
+          touch ./application-dev.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
+        shell: bash
+
+      - name: Gradle Caching
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Build Spring Boot App
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean bootJar -x test
 
       - name: Copy jar for Docker
         run: cp build/libs/*.jar app.jar
