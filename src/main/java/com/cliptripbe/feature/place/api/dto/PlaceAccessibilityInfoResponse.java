@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.place.api.dto;
 
-import com.cliptripbe.feature.place.domain.AccessibilityFeature;
-import com.cliptripbe.feature.place.domain.Place;
+import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import java.util.List;
 import lombok.Builder;
 

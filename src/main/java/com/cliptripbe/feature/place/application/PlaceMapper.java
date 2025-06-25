@@ -1,8 +1,8 @@
 package com.cliptripbe.feature.place.application;
 
-import com.cliptripbe.feature.place.domain.AccessibilityFeature;
-import com.cliptripbe.feature.place.domain.Address;
-import com.cliptripbe.feature.place.domain.Place;
+import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import com.cliptripbe.feature.place.domain.vo.Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
