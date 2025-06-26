@@ -1,4 +1,4 @@
-package com.cliptripbe.global.youtube;
+package com.cliptripbe.infrastructure.youtube;
 
 import java.util.List;
 import java.util.regex.Matcher;

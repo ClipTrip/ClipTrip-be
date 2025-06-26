@@ -1,4 +1,4 @@
-package com.cliptripbe.global.openai.dto;
+package com.cliptripbe.infrastructure.openai.dto;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

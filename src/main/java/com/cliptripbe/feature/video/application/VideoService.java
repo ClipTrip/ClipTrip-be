@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.video.application;
 
-import com.cliptripbe.global.youtube.YoutubeService;
+import com.cliptripbe.infrastructure.youtube.YoutubeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.cliptripbe.global.youtube.dto;
+package com.cliptripbe.infrastructure.youtube.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

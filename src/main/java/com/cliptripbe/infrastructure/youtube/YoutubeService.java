@@ -1,14 +1,9 @@
-package com.cliptripbe.global.youtube;
+package com.cliptripbe.infrastructure.youtube;
 
-import com.cliptripbe.global.youtube.dto.CaptionDto;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import lombok.RequiredArgsConstructor;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

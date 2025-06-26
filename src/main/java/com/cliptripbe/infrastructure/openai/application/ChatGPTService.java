@@ -1,8 +1,8 @@
-package com.cliptripbe.global.openai.application;
+package com.cliptripbe.infrastructure.openai.application;
 
-import com.cliptripbe.global.openai.dto.ChatGPTRequest;
-import com.cliptripbe.global.openai.dto.ChatGPTResponse;
-import com.cliptripbe.global.openai.dto.Message;
+import com.cliptripbe.infrastructure.openai.dto.ChatGPTRequest;
+import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
+import com.cliptripbe.infrastructure.openai.dto.Message;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
