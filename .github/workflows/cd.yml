@@ -10,11 +10,12 @@ jobs:
     env:
       AWS_REGION: ap-northeast-2
       APPLICATION_NAME: clip-trip
-      ENVIRONMENT_NAME: clip-trip-env
+      ENVIRONMENT_NAME: Clip-trip-server-env
       DEPLOY_LABEL: github-actions-${{ github.run_number }}
       DOCKER_IMAGE_URI: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip-server:latest
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
       S3_KEY: deploy/docker-run-${{ github.run_number }}.zip
+
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
