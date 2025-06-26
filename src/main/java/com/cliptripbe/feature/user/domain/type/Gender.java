@@ -1,4 +1,5 @@
 package com.cliptripbe.feature.user.domain.type;
 
-public enum Age {
+public enum Gender {
+    MALE, FEMALE
 }

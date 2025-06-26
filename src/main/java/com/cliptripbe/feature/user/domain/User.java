@@ -1,5 +1,8 @@
 package com.cliptripbe.feature.user.domain;
 
+import com.cliptripbe.feature.user.domain.type.AgeGroup;
+import com.cliptripbe.feature.user.domain.type.Gender;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.user.domain.type.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,11 +26,16 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
-    private String userId;
+    private String email;
     private String password;
-    protected String nickName;
-    //    private Language language;
-//    private Age age;
+
+    @Enumerated(value = EnumType.STRING)
+    private Language language;
+    @Enumerated(value = EnumType.STRING)
+    private AgeGroup ageGroup;
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
@@ -36,12 +44,13 @@ public class User {
     }
 
     @Builder
-    public User(String userId, String password, String nickName) {
-        this.userId = userId;
+    public User(String email, String password, Language language, AgeGroup ageGroup,
+        Gender gender) {
+        this.email = email;
         this.password = password;
-        this.nickName = nickName;
-//        this.language = language;
-//        this.age = age;
+        this.language = language;
+        this.ageGroup = ageGroup;
+        this.gender = gender;
         this.role = Role.USER;
     }
 }

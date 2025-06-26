@@ -12,7 +12,7 @@ public record UserInfoResponse(
     public static UserInfoResponse from(User user) {
         return UserInfoResponse.builder()
             .id(user.getId())
-            .userId(user.getUserId())
+            .userId(user.getEmail())
             .build();
     }
 }
