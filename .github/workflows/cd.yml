@@ -13,7 +13,8 @@ jobs:
       ENVIRONMENT_NAME: clip-trip-env
       DEPLOY_LABEL: github-actions-${{ github.run_number }}
       DOCKER_IMAGE_URI: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip-server:latest
-
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_KEY: deploy/docker-run-${{ github.run_number }}.zip
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -47,14 +48,14 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp deploy.zip s3://elasticbeanstalk-ap-northeast-2-118497224929/deploy.zip
+          aws s3 cp deploy.zip s3://$S3_BUCKET/$S3_KEY
 
       - name: Create Application Version
         run: |
           aws elasticbeanstalk create-application-version \
             --application-name $APPLICATION_NAME \
             --version-label $DEPLOY_LABEL \
-            --source-bundle S3Bucket=$APPLICATION_NAME-deployments,S3Key=deploy.zip \
+            --source-bundle S3Bucket=$S3_BUCKET,S3Key=$S3_KEY \
             --auto-create-application
 
       - name: Update Environment
