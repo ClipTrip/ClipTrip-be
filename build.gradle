@@ -58,6 +58,9 @@ dependencies {
 
     // jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
+
+    // youtube parsing
+    implementation 'org.jsoup:jsoup:1.15.3'
 }
 
 tasks.named('test') {
