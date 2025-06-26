@@ -26,7 +26,7 @@ jobs:
         run: |
           cd ./src/main/resources
           touch ./application-dev.yml
-          echo "${{ secrets.APPLICATION_PROD }}" > ./application-prod.yml
+          echo "${{ secrets.APPLICATION_PROD }}" > ./application.yml
         shell: bash
 
       - name: Gradle Caching
