@@ -1,0 +1,59 @@
+name: CD - Deploy to Elastic Beanstalk
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_REGION: ap-northeast-2
+      APPLICATION_NAME: clip-trip
+      ENVIRONMENT_NAME: clip-trip-env
+      DOCKER_IMAGE_URI: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip-server:latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Create Dockerrun.aws.json
+        run: |
+          cat > Dockerrun.aws.json <<EOF
+          {
+            "AWSEBDockerrunVersion": "1",
+            "Image": {
+              "Name": "${{ env.DOCKER_IMAGE_URI }}",
+              "Update": "true"
+            },
+            "Ports": [
+              {
+                "ContainerPort": 8080
+              }
+            ]
+          }
+          EOF
+
+      - name: Zip Dockerrun.aws.json
+        run: zip deploy.zip Dockerrun.aws.json
+
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name $APPLICATION_NAME \
+            --version-label github-actions-${{ github.run_number }} \
+            --source-bundle S3Bucket=$APPLICATION_NAME-deployments,S3Key=deploy.zip \
+            --auto-create-application
+
+          aws s3 cp deploy.zip s3://$APPLICATION_NAME-deployments/deploy.zip
+
+          aws elasticbeanstalk update-environment \
+            --environment-name $ENVIRONMENT_NAME \
+            --version-label github-actions-${{ github.run_number }}
