@@ -27,15 +27,15 @@ public class UserService {
 
     @Transactional
     public UserInfoResponse signUp(UserSignUpRequestDto signUpDto) {
-        userChecker.checkExistUserEmail(signUpDto.userId());
+        userChecker.checkExistUserEmail(signUpDto.email());
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
         userRepository.save(user);
         return UserInfoResponse.from(user);
     }
-    
+
     public JwtToken userSignIn(UserSignInRequestDto userSignInRequestDto) {
-        return authService.createAuthenticationToken(userSignInRequestDto.userId(),
+        return authService.createAuthenticationToken(userSignInRequestDto.email(),
             userSignInRequestDto.password());
     }
 

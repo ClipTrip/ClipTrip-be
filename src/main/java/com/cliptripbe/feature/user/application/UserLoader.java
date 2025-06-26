@@ -18,8 +18,8 @@ public class UserLoader {
         return userRepository.findAll();
     }
 
-    public User findByUserId(String userId) {
-        return userRepository.findByUserId(userId).orElseThrow(
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(
             () -> new EntityNotFoundException("없는 아이디입니다.")
         );
     }

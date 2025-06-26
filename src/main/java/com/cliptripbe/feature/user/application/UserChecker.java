@@ -12,8 +12,8 @@ public class UserChecker {
 
     final UserRepository userRepository;
 
-    public void checkExistUserEmail(String userId) {
-        if (userRepository.findByUserId(userId).isPresent()) {
+    public void checkExistUserEmail(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
             throw new CustomException(ErrorType.DUPLICATE_EMAIL_RESOURCE);
         }
     }

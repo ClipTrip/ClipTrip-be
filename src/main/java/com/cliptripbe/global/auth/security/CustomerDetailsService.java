@@ -15,8 +15,8 @@ public class CustomerDetailsService implements UserDetailsService {
     private final UserLoader userLoader;
 
     @Override
-    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-        User user = userLoader.findByUserId(userId);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userLoader.findByEmail(email);
         return new CustomerDetails(user);
     }
 }
