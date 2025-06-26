@@ -58,12 +58,26 @@ jobs:
             --version-label $DEPLOY_LABEL \
             --source-bundle S3Bucket=$S3_BUCKET,S3Key=$S3_KEY \
             --auto-create-application
-
-      - name: Wait for Application Version to be processed
+      
+      - name: Wait for application version to be processed
         run: |
-          aws elasticbeanstalk wait application-version-processed \
-            --application-name $APPLICATION_NAME \
-            --version-label $DEPLOY_LABEL
+          for i in {1..10}; do
+            STATUS=$(aws elasticbeanstalk describe-application-versions \
+              --application-name $APPLICATION_NAME \
+              --version-label $DEPLOY_LABEL \
+              --query "ApplicationVersions[0].Status" \
+              --output text)
+
+            echo "Current status: $STATUS"
+
+            if [ "$STATUS" = "PROCESSED" ]; then
+              echo "Application version processed."
+              break
+            fi
+
+            echo "Waiting for application version to be processed..."
+            sleep 5
+          done
       
       - name: Update Environment
         run: |
