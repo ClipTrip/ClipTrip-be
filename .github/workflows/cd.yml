@@ -14,7 +14,7 @@ jobs:
       DEPLOY_LABEL: github-actions-${{ github.run_number }}
       DOCKER_IMAGE_URI: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip-server:latest
       S3_BUCKET: ${{ secrets.S3_BUCKET }}
-      S3_KEY: deploy/docker-run-${{ github.run_number }}.zip
+      S3_KEY: docker-run-${{ github.run_number }}.zip
 
     steps:
       - name: Checkout source
@@ -45,11 +45,12 @@ jobs:
           EOF
 
       - name: Zip Dockerrun.aws.json
-        run: zip deploy.zip Dockerrun.aws.json
+        run: |
+          zip $S3_KEY Dockerrun.aws.json 
 
       - name: Upload to S3
         run: |
-          aws s3 cp deploy.zip s3://$S3_BUCKET/$S3_KEY
+          aws s3 cp $S3_KEY s3://$S3_BUCKET/$S3_KEY
 
       - name: Create Application Version
         run: |
@@ -58,16 +59,15 @@ jobs:
             --version-label $DEPLOY_LABEL \
             --source-bundle S3Bucket=$S3_BUCKET,S3Key=$S3_KEY \
             --auto-create-application
-      
+
       - name: Wait for application version to be processed
         run: |
-          for i in {1..10}; do
+          for i in {1..15}; do
             STATUS=$(aws elasticbeanstalk describe-application-versions \
               --application-name $APPLICATION_NAME \
               --version-label $DEPLOY_LABEL \
               --query "ApplicationVersions[0].Status" \
               --output text)
-
             echo "Current status: $STATUS"
 
             if [ "$STATUS" = "PROCESSED" ]; then
@@ -76,9 +76,9 @@ jobs:
             fi
 
             echo "Waiting for application version to be processed..."
-            sleep 5
+            sleep 6
           done
-      
+
       - name: Update Environment
         run: |
           aws elasticbeanstalk update-environment \
