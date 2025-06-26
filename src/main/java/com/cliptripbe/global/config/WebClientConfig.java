@@ -1,5 +1,6 @@
 package com.cliptripbe.global.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,6 +9,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 
+@Slf4j
 @Configuration
 public class WebClientConfig {
 
@@ -35,6 +37,14 @@ public class WebClientConfig {
     public WebClient youtubeWebClient(WebClient.Builder builder) {
         return builder
             .baseUrl(youtubeBaseUrl)
+            .filter((request, next) -> {
+                log.info("[WebClient] Request: {} {}", request.method(), request.url());
+                request.headers().forEach((k, v) -> log.debug("Header {}={}", k, v));
+                return next.exchange(request)
+                    .doOnNext(response ->
+                        log.info("[WebClient] Response: {} {}",
+                            response.statusCode().value(), response.headers().asHttpHeaders()));
+            })
             .build();
     }
 }
