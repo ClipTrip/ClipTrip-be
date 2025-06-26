@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload to S3
         run: |
-          aws s3 cp deploy.zip s3://$APPLICATION_NAME-deployments/deploy.zip
+          aws s3 cp deploy.zip s3://elasticbeanstalk-ap-northeast-2-118497224929/deploy.zip
 
       - name: Create Application Version
         run: |
