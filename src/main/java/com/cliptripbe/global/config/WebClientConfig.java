@@ -1,5 +1,6 @@
 package com.cliptripbe.global.config;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +21,11 @@ public class WebClientConfig {
     private String openaiBaseUrl;
 
     @Value("${openai.api.key}")
-    private String apiKey;
+    private String openAiApiKey;
+
+    @Getter
+    @Value("${youtube.api.key}")
+    private String youtubeApiKey;
 
     @Bean
     @Qualifier("openAIWebClient")
@@ -28,7 +33,7 @@ public class WebClientConfig {
         return builder
             .baseUrl(openaiBaseUrl)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + openAiApiKey)
             .build();
     }
 
@@ -37,9 +42,15 @@ public class WebClientConfig {
     public WebClient youtubeWebClient(WebClient.Builder builder) {
         return builder
             .baseUrl(youtubeBaseUrl)
+            .codecs(clientCodecConfigurer ->
+                clientCodecConfigurer
+                    .defaultCodecs()
+                    .maxInMemorySize(1024 * 1024) // 1MB (기본값은 256KB)
+            )
             .filter((request, next) -> {
                 log.info("[WebClient] Request: {} {}", request.method(), request.url());
                 request.headers().forEach((k, v) -> log.debug("Header {}={}", k, v));
+
                 return next.exchange(request)
                     .doOnNext(response ->
                         log.info("[WebClient] Response: {} {}",
