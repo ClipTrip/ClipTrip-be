@@ -18,10 +18,15 @@ public class ChatGPTService {
     private final WebClient openAIWebClient;
 
     public Mono<String> ask(String userMessage) {
-        ChatGPTRequest request = new ChatGPTRequest(
-            "gpt-4o-mini",
-            List.of(new Message("user", userMessage))
-        );
+        Message message = Message.builder()
+            .role("user")
+            .content(userMessage)
+            .build();
+
+        ChatGPTRequest request = ChatGPTRequest.builder()
+            .model("gpt-4o-mini")
+            .messages(List.of(message))
+            .build();
 
         return openAIWebClient.post()
             .uri("/chat/completions")
