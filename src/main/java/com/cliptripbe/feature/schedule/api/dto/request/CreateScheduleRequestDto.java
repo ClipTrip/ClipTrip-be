@@ -5,6 +5,7 @@ import java.util.List;
 
 public record CreateScheduleRequestDto(
     String scheduleName,
+    String description,
     List<PlaceVO> placeVOList
 ) {
 

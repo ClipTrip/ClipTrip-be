@@ -4,7 +4,7 @@ import com.cliptripbe.feature.place.application.PlaceFinder;
 import com.cliptripbe.feature.place.domain.vo.PlaceVO;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
@@ -28,6 +28,7 @@ public class ScheduleService {
         Schedule schedule = Schedule
             .builder()
             .user(user)
+            .description(createRentalRequest.description())
             .name(createRentalRequest.scheduleName())
             .build();
 
@@ -66,28 +67,40 @@ public class ScheduleService {
         }
     }
 
-    public void deleteSchedulePlace(Long scheduleId, List<Long> placeIdList, User user) {
+    public void deleteSchedulePlace(Long scheduleId, Long placeIdList, User user) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
-
-        for (Long placeId : placeIdList) {
-            schedule.getSchedulePlaceList().removeIf(sp ->
-                sp.getPlace().getId().equals(placeId)
-            );
-        }
+        schedule.getSchedulePlaceList().removeIf(sp ->
+            sp.getPlace().getId().equals(placeIdList)
+        );
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleInfoResponseDto> getUserSchedule(User user) {
+    public List<ScheduleListResponseDto> getUserSchedule(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
-
         return scheduleList
             .stream()
-            .map(SchedulePlaceMapper::map)
+            .map(SchedulePlaceMapper::mapScheduleListResponseDto)
             .toList();
+    }
+
+    public void addPlaceInSchedule(User user, Long scheduleId, String placeName) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+
+        if (!schedule.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
+
+        SchedulePlace newPlace = SchedulePlace.builder()
+            .place(placeFinder.getPlaceByName(placeName))
+            .schedule(schedule)
+            .build();
+        schedule.addSchedulePlace(newPlace);
+        scheduleRepository.save(schedule);
     }
 }
