@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.user.api;
 
+import static com.cliptripbe.global.config.Constant.API_VERSION;
+
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
 import com.cliptripbe.feature.user.api.dto.response.UserInfoResponse;
@@ -17,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/users")
+@RequestMapping(API_VERSION + "/users")
 public class UserController implements UserControllerDocs {
 
     private final UserService userService;

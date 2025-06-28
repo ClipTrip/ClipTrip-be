@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.video.api;
 
+import static com.cliptripbe.global.config.Constant.API_VERSION;
+
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
 import com.cliptripbe.feature.video.application.VideoService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
@@ -13,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/videos")
+@RequestMapping(API_VERSION + "/videos")
 @RequiredArgsConstructor
 public class VideoController implements VideoControllerDocs {
 
