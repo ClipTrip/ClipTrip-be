@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.s3;
+package com.cliptripbe.global.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

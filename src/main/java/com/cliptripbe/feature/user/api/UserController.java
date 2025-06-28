@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.user.api;
 
-import static com.cliptripbe.global.config.Constant.API_VERSION;
+import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
