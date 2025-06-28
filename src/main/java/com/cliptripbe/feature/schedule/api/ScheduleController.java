@@ -5,7 +5,7 @@ import static com.cliptripbe.global.config.Constant.API_VERSION;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
@@ -47,13 +47,29 @@ public class ScheduleController implements ScheduleControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
+    @PostMapping("/{scheduleId}/{placeName}")
+    public ApiResponse<?> addPlaceInSchedule(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable Long scheduleId,
+        @PathVariable String placeName
+    ) {
+        scheduleService.addPlaceInSchedule(
+            customerDetails.getUser(),
+            scheduleId,
+            placeName
+        );
+        return ApiResponse.success(SuccessType.SUCCESS);
+    }
+
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<?> deleteSchedulePlace(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long scheduleId,
         @RequestBody DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
     ) {
-        scheduleService.deleteSchedulePlace(scheduleId, deleteSchedulePlaceRequestDto.placeIdList(),
+        scheduleService.deleteSchedulePlace(
+            scheduleId,
+            deleteSchedulePlaceRequestDto.placeId(),
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS);
     }
@@ -62,7 +78,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     public ApiResponse<?> getUserSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<ScheduleInfoResponseDto> list = scheduleService.getUserSchedule(
+        List<ScheduleListResponseDto> list = scheduleService.getUserSchedule(
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, list);
     }
