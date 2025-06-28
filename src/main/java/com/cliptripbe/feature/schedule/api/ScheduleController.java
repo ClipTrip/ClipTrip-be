@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.schedule.api;
 
+import static com.cliptripbe.global.config.Constant.API_VERSION;
+
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
@@ -21,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping
+@RequestMapping(API_VERSION + "/schedules")
 @RequiredArgsConstructor
 public class ScheduleController implements ScheduleControllerDocs {
 
