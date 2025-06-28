@@ -19,6 +19,7 @@ public class SchedulePlaceMapper {
     public static ScheduleListResponseDto mapScheduleListResponseDto(Schedule schedule) {
         return ScheduleListResponseDto
             .builder()
+            .scheduleId(schedule.getId())
             .scheduleName(schedule.getName())
             .description(schedule.getDescription())
             .build();

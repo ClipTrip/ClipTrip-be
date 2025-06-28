@@ -2,6 +2,7 @@ package com.cliptripbe.feature.schedule.api;
 
 import static com.cliptripbe.global.config.Constant.API_VERSION;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
@@ -29,6 +30,7 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     private final ScheduleService scheduleService;
 
+    @Override
     @PostMapping()
     public ApiResponse<?> createSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
@@ -37,6 +39,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         return ApiResponse.success(SuccessType.CREATED);
     }
 
+    @Override
     @PutMapping("/{scheduleId}")
     public ApiResponse<?> updateSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
@@ -47,20 +50,22 @@ public class ScheduleController implements ScheduleControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
-    @PostMapping("/{scheduleId}/{placeName}")
+    @Override
+    @PostMapping("/{scheduleId}")
     public ApiResponse<?> addPlaceInSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long scheduleId,
-        @PathVariable String placeName
+        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
     ) {
         scheduleService.addPlaceInSchedule(
             customerDetails.getUser(),
             scheduleId,
-            placeName
+            placeInfoRequestDto
         );
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
+    @Override
     @DeleteMapping("/{scheduleId}")
     public ApiResponse<?> deleteSchedulePlace(
         @AuthenticationPrincipal CustomerDetails customerDetails,
@@ -74,6 +79,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
+    @Override
     @GetMapping()
     public ApiResponse<?> getUserSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails
@@ -82,6 +88,4 @@ public class ScheduleController implements ScheduleControllerDocs {
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, list);
     }
-
-
 }
