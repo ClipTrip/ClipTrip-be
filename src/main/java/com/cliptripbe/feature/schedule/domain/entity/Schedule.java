@@ -28,6 +28,9 @@ public class Schedule {
     @Column
     String name;
 
+    @Column
+    String description;
+
     @JoinColumn
     @ManyToOne
     User user;
@@ -36,9 +39,10 @@ public class Schedule {
     private List<SchedulePlace> schedulePlaceList = new ArrayList<>();
 
     @Builder
-    public Schedule(String name, User user) {
+    public Schedule(String name, User user, String description) {
         this.name = name;
         this.user = user;
+        this.description = description;
     }
 
     public void addSchedulePlace(SchedulePlace schedulePlace) {
