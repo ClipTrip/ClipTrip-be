@@ -34,4 +34,10 @@ public interface BookmarkControllerDocs {
         Long bookmarkId,
         DeletePlaceInBookmark deletePlaceInBookmark
     );
+
+    @Operation(summary = "북마크 삭제하기, \n로그인 필요")
+    ApiResponse<?> deleteBookmark(
+        CustomerDetails customerDetails,
+        Long bookmarkId
+    );
 }

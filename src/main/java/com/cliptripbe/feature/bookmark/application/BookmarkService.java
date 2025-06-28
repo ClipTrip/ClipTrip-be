@@ -86,4 +86,13 @@ public class BookmarkService {
             bp -> bp.getPlace().getId().equals(placeId)
         );
     }
+
+    @Transactional
+    public void deleteBookmark(User user, Long bookmarkId) {
+        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+        if (!bookmark.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
+        bookmarkRepository.delete(bookmark);
+    }
 }
