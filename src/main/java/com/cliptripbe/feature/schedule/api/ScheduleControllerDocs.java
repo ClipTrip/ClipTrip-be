@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.schedule.api;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
@@ -30,4 +31,11 @@ public interface ScheduleControllerDocs {
 
     @Operation(summary = "유저 일정 조회하기, \n로그인 필요")
     ApiResponse<?> getUserSchedule(CustomerDetails customerDetails);
+
+    @Operation(summary = "유저 일정안에 장소 추가하기, \n로그인 필요")
+    ApiResponse<?> addPlaceInSchedule(
+        CustomerDetails customerDetails,
+        Long scheduleId,
+        PlaceInfoRequestDto placeInfoRequestDto
+    );
 }

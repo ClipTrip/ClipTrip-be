@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.schedule.application;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.application.PlaceFinder;
 import com.cliptripbe.feature.place.domain.vo.PlaceVO;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
@@ -88,7 +89,8 @@ public class ScheduleService {
             .toList();
     }
 
-    public void addPlaceInSchedule(User user, Long scheduleId, String placeName) {
+    public void addPlaceInSchedule(User user, Long scheduleId,
+        PlaceInfoRequestDto placeInfoRequestDto) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
 
@@ -97,7 +99,7 @@ public class ScheduleService {
         }
 
         SchedulePlace newPlace = SchedulePlace.builder()
-            .place(placeFinder.getPlaceByName(placeName))
+            .place(placeFinder.getPlaceByName(placeInfoRequestDto.placeName()))
             .schedule(schedule)
             .build();
         schedule.addSchedulePlace(newPlace);
