@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.place.api;
 
-import com.cliptripbe.feature.place.api.dto.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

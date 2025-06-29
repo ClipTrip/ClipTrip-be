@@ -20,7 +20,7 @@ public class WebClientConfig {
     @Value("${openai.api.base-url:https://api.openai.com/v1}")
     private String openaiBaseUrl;
 
-    @Value("${kakao.api.base-url:https://dapi.kakao.com")
+    @Value("${kakao.api.base-url:https://dapi.kakao.com}")
     private String kakaoBaseUrl;
 
     @Value("${openai.api.key}")
@@ -66,6 +66,7 @@ public class WebClientConfig {
     }
 
     @Bean
+    @Qualifier("kakaoWebClient")
     public WebClient kakaoWebClient(WebClient.Builder builder) {
         return builder
             .baseUrl(kakaoBaseUrl)

@@ -3,9 +3,8 @@ package com.cliptripbe.infrastructure.openai.utils;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import reactor.core.publisher.Mono;
 
-public class ChatGptUtils {
+public class ChatGPTUtils {
 
     public static List<String> extractPlaces(String raw) {
         return Arrays.stream(raw.split("\\r?\\n"))
