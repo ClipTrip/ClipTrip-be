@@ -1,6 +1,8 @@
 package com.cliptripbe.feature.bookmark.api;
 
-import static com.cliptripbe.global.config.Constant.API_VERSION;
+
+
+import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.bookmark.api.dto.request.CreateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.api.dto.request.DeletePlaceInBookmark;
