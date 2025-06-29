@@ -1,4 +1,4 @@
-package com.cliptripbe.global.config;
+package com.cliptripbe.global.constant;
 
 public class Constant {
 

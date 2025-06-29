@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.place.application;
 
-import com.cliptripbe.feature.place.api.dto.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import lombok.RequiredArgsConstructor;

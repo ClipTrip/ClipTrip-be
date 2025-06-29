@@ -20,7 +20,13 @@ public enum ErrorType {
     NOT_VALID_TOKEN(401, "유효한 토큰이 아닙니다."),
     INVALID_REQUEST(400, "형식에 맞지 않는 요청입니다."),
     DUPLICATE_SEND(409, "인증 코드가 발송되어 있습니다."),
-    ACCESS_DENIED_EXCEPTION(401, "접근 권한이 없습니다.");
+    ACCESS_DENIED_EXCEPTION(401, "접근 권한이 없습니다."),
+
+    // video
+    CHATGPT_NO_RESPONSE(502, "ChatGPT로부터 응답을 받지 못했습니다."),
+    KAKAO_MAP_NO_RESPONSE(502, "kakaoMap으로부터 응답을 받지 못했습니다."),
+    ;
+
     private final int httpStatusCode;
     private final String message;
 }

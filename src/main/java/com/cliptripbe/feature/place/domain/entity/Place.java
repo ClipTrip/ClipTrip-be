@@ -29,6 +29,9 @@ public class Place {
     private String name;
 
     @Column
+    private String phoneNumber;
+
+    @Column
     @Embedded
     private Address address;
 
@@ -37,9 +40,14 @@ public class Place {
     private List<AccessibilityFeature> accessibilityFeatures;
 
     @Builder
-    public Place(String name, Address address,
-        List<AccessibilityFeature> accessibilityFeatures) {
+    public Place(
+        String name,
+        String phoneNumber,
+        Address address,
+        List<AccessibilityFeature> accessibilityFeatures
+    ) {
         this.name = name;
+        this.phoneNumber = phoneNumber;
         this.address = address;
         this.accessibilityFeatures = accessibilityFeatures;
     }

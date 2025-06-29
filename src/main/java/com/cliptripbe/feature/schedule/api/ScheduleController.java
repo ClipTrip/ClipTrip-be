@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.api;
 
-import static com.cliptripbe.global.config.Constant.API_VERSION;
+import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;

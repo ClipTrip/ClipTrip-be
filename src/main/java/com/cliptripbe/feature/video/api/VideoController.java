@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.video.api;
 
-import static com.cliptripbe.global.config.Constant.API_VERSION;
+import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
 import com.cliptripbe.feature.video.application.VideoService;

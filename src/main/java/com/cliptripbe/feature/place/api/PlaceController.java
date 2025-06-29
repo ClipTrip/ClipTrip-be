@@ -1,8 +1,8 @@
 package com.cliptripbe.feature.place.api;
 
-import static com.cliptripbe.global.config.Constant.API_VERSION;
+import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.place.api.dto.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.application.PlaceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -5,11 +5,13 @@ import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
 import com.cliptripbe.infrastructure.openai.dto.Message;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatGPTService {
@@ -28,6 +30,8 @@ public class ChatGPTService {
             .messages(List.of(message))
             .build();
 
+        long start = System.currentTimeMillis();
+
         return openAIWebClient.post()
             .uri("/chat/completions")
             .bodyValue(request)
@@ -35,6 +39,10 @@ public class ChatGPTService {
             .bodyToMono(ChatGPTResponse.class)
             .map(resp -> {
                 return resp.getChoices().get(0).getMessage().getContent();
+            })
+            .doOnSuccess(result -> {
+                long elapsed = System.currentTimeMillis() - start;
+                log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
             });
     }
 
