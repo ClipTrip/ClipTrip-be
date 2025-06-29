@@ -2,6 +2,7 @@ package com.cliptripbe.infrastructure.openai.utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ChatGPTUtils {
@@ -12,5 +13,12 @@ public class ChatGPTUtils {
             .filter(s -> !s.isEmpty())
             .map(s -> s.replaceAll("^\\d+\\.\\s*", ""))
             .collect(Collectors.toList());
+    }
+
+    public static String removeLiteralNewlines(String input) {
+        if (Objects.isNull(input)) {
+            return "";
+        }
+        return input.replace("\\n", "");
     }
 }

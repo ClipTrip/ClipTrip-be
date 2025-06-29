@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.api.dto;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.vo.Address;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import lombok.Builder;
 
@@ -22,6 +23,19 @@ public record PlaceDto(
             .phone(document.phone())
             .longitude(Double.parseDouble(document.x()))
             .latitude(Double.parseDouble(document.y()))
+            .build();
+    }
+
+    public Place toPlace() {
+        return Place.builder()
+            .name(placeName)
+            .phoneNumber(phone)
+            .address(Address.builder()
+                .latitude(latitude)
+                .longitude(longitude)
+                .roadAddress(roadAddress)
+                .build()
+            )
             .build();
     }
 }

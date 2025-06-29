@@ -32,7 +32,6 @@ public class PlaceMapper {
 
         // Address 생성 (도로명주소, 우편번호, 위도, 경도)
         String roadAddress = tokens[15];
-        String zipCode = tokens[14];
         double latitude = parseDouble(tokens[12]);
         double longitude = parseDouble(tokens[13]);
 
@@ -40,7 +39,6 @@ public class PlaceMapper {
             Address.builder()
                 .latitude(latitude)
                 .longitude(longitude)
-                .zipCode(zipCode)
                 .roadAddress(roadAddress)
                 .build();
         // AccessibilityFeature 추출
