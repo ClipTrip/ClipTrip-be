@@ -3,7 +3,6 @@ package com.cliptripbe.feature.schedule.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
@@ -30,14 +29,24 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     private final ScheduleService scheduleService;
 
+//    @Override
+//    @PostMapping()
+//    public ApiResponse<?> createScheduleByVideo(
+//        @AuthenticationPrincipal CustomerDetails customerDetails,
+//        @RequestBody CreateScheduleRequestDto createScheduleRequestDto) {
+//        scheduleService.create(customerDetails.getUser(), createScheduleRequestDto);
+//        return ApiResponse.success(SuccessType.CREATED);
+//    }
+
     @Override
     @PostMapping()
     public ApiResponse<?> createSchedule(
-        @AuthenticationPrincipal CustomerDetails customerDetails,
-        @RequestBody CreateScheduleRequestDto createScheduleRequestDto) {
-        scheduleService.create(customerDetails.getUser(), createScheduleRequestDto);
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        scheduleService.create(customerDetails.getUser());
         return ApiResponse.success(SuccessType.CREATED);
     }
+
 
     @Override
     @PutMapping("/{scheduleId}")
