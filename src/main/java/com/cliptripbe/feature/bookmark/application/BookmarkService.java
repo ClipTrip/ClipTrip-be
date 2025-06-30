@@ -8,7 +8,6 @@ import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.application.PlaceFinder;
-import com.cliptripbe.feature.place.domain.vo.PlaceVO;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
@@ -35,11 +34,11 @@ public class BookmarkService {
             .user(user)
             .build();
 
-        for (PlaceVO placeVo : request.placeVOList()) {
+        for (PlaceInfoRequestDto placeInfoRequestDto : request.placeInfoRequestDtos()) {
             BookmarkPlace bookmarkPlace = BookmarkPlace
                 .builder()
                 .bookmark(bookmark)
-                .place(placeFinder.getPlaceByName(placeVo.placeName()))
+                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
                 .build();
             bookmark.addBookmarkPlace(bookmarkPlace);
         }
@@ -58,7 +57,7 @@ public class BookmarkService {
         BookmarkPlace bookmarkPlace = BookmarkPlace
             .builder()
             .bookmark(bookmark)
-            .place(placeFinder.getPlaceByName(placeInfoRequestDto.placeName()))
+            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
             .build();
         bookmark.addBookmarkPlace(bookmarkPlace);
     }

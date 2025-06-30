@@ -1,7 +1,10 @@
 package com.cliptripbe.feature.place.application;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,8 +16,14 @@ public class PlaceFinder {
     final PlaceRepository placeRepository;
     final PlaceRegister placeRegister;
 
-    public Place getPlaceByName(String placeName) {
-        Optional<Place> optionalPlace = placeRepository.findByName(placeName);
-        return optionalPlace.orElseGet(() -> placeRegister.registerPlace(placeName));
+    public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+        Optional<Place> place = placeRepository.findPlaceByPlaceInfo(
+            placeInfoRequestDto.placeName(),
+            placeInfoRequestDto.roadAddress()
+        );
+        if (!place.isPresent()) {
+            throw new CustomException(ErrorType.ENTITY_NOT_FOUND);
+        }
+        return place.get();
     }
 }

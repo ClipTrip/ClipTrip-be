@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.place.application;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
@@ -16,8 +17,9 @@ public class PlaceService {
 
     @Transactional
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
-        String placeName) {
-        Place place = placeFinder.getPlaceByName(placeName);
+        PlaceInfoRequestDto placeInfoRequestDto
+    ) {
+        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
         return PlaceAccessibilityInfoResponse.from(place);
     }
 }
