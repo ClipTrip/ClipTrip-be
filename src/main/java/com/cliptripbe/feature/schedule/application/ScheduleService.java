@@ -2,7 +2,6 @@ package com.cliptripbe.feature.schedule.application;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.application.PlaceFinder;
-import com.cliptripbe.feature.place.domain.vo.PlaceVO;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
@@ -33,14 +32,19 @@ public class ScheduleService {
             .name(createRentalRequest.scheduleName())
             .build();
 
-        for (PlaceVO placeVo : createRentalRequest.placeVOList()) {
+        for (PlaceInfoRequestDto placeInfoRequestDto : createRentalRequest.placeInfoRequestDtos()) {
             SchedulePlace schedulePlace = SchedulePlace
                 .builder()
-                .place(placeFinder.getPlaceByName(placeVo.placeName()))
+                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
                 .schedule(schedule)
                 .build();
             schedule.addSchedulePlace(schedulePlace);
         }
+        scheduleRepository.save(schedule);
+    }
+
+    public void create(User user) {
+        Schedule schedule = Schedule.createDefault(user);
         scheduleRepository.save(schedule);
     }
 
@@ -59,9 +63,9 @@ public class ScheduleService {
         schedule.updateName(updateSchedule.scheduleName());
         schedule.getSchedulePlaceList().clear();
 
-        for (PlaceVO placeVo : updateSchedule.placeVOList()) {
+        for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
             SchedulePlace newPlace = SchedulePlace.builder()
-                .place(placeFinder.getPlaceByName(placeVo.placeName()))
+                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
                 .schedule(schedule)
                 .build();
             schedule.addSchedulePlace(newPlace);
@@ -99,10 +103,12 @@ public class ScheduleService {
         }
 
         SchedulePlace newPlace = SchedulePlace.builder()
-            .place(placeFinder.getPlaceByName(placeInfoRequestDto.placeName()))
+            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
             .schedule(schedule)
             .build();
         schedule.addSchedulePlace(newPlace);
         scheduleRepository.save(schedule);
     }
+
+
 }

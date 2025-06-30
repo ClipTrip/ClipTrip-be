@@ -21,6 +21,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Schedule {
 
+    private static final String DESCRIPTION = "Trip's description";
+    private static final String NAME = "Trip";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -43,6 +46,15 @@ public class Schedule {
         this.name = name;
         this.user = user;
         this.description = description;
+    }
+
+    public static Schedule createDefault(User user) {
+        return Schedule
+            .builder()
+            .user(user)
+            .description(DESCRIPTION)
+            .name(NAME)
+            .build();
     }
 
     public void addSchedulePlace(SchedulePlace schedulePlace) {

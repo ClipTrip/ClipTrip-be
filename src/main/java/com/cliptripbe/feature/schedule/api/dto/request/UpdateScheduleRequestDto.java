@@ -1,11 +1,11 @@
 package com.cliptripbe.feature.schedule.api.dto.request;
 
-import com.cliptripbe.feature.place.domain.vo.PlaceVO;
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import java.util.List;
 
 public record UpdateScheduleRequestDto(
     String scheduleName,
-    List<PlaceVO> placeVOList
+    List<PlaceInfoRequestDto> placeInfoRequestDtos
 ) {
 
 }
