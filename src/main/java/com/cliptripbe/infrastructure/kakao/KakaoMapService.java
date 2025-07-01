@@ -46,7 +46,7 @@ public class KakaoMapService {
 
     }
 
-    public List<PlaceDto> searchPlaces(PlaceSearchByKeywordRequestDto req) {
+    public Mono<List<PlaceDto>> searchPlaces(PlaceSearchByKeywordRequestDto req) {
         long start = System.currentTimeMillis();
         return kakaoWebClient.get()
             .uri(uriBuilder -> uriBuilder
@@ -66,8 +66,7 @@ public class KakaoMapService {
             .doOnSuccess(place -> {
                 long elapsed = System.currentTimeMillis() - start;
                 log.info("[{}] 개별 호출 레이턴시: {} ms", req.query(), elapsed);
-            })
-            .block();
+            });
     }
 
     public Mono<PlaceDto> searchFirstPlace(String keyword) {

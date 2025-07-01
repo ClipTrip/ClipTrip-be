@@ -21,7 +21,9 @@ public enum PlaceCategory {
     RESTAURANT("FD6", "음식점"),
     CAFE("CE7", "카페"),
     PARKING_LOT("PK6", "주차장"),
-    PUBLIC_INSTITUTION("PO3", "공공기관");
+    PUBLIC_INSTITUTION("PO3", "공공기관"),
+
+    ETC("ETC", "기타");
 
     private final String code;
     private final String description;
@@ -30,6 +32,6 @@ public enum PlaceCategory {
         return Arrays.stream(values())
             .filter(category -> Objects.equals(category.getCode(), code))
             .findFirst()
-            .orElseThrow(() -> new CustomException(ENUM_RESOURCE_NOT_FOUND));
+            .orElse(ETC);
     }
 }

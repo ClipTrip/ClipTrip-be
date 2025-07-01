@@ -32,6 +32,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
+            .category(PlaceCategory.findByCode(placeDto.categoryCode()).getDescription())
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();

@@ -49,7 +49,11 @@ public class PlaceService {
     }
 
     public List<PlaceListResponseDto> getPlacesByKeyword(PlaceSearchByKeywordRequestDto request) {
-        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request);
+        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request)
+            .subscribeOn(Schedulers.boundedElastic())
+            .blockOptional()
+            .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
+
         return keywordPlaces.stream()
             .map(PlaceListResponseDto::from)
             .toList();
