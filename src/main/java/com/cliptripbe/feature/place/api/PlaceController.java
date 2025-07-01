@@ -9,6 +9,7 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoRespo
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
+
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
 import java.util.List;

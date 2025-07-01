@@ -27,8 +27,9 @@ public class PlaceFinder {
     }
 
     public Place getPlaceById(Long placeId) {
-        return placeRepository.findById(placeId).orElseThrow(
-            () -> new CustomException(ErrorType.ENTITY_NOT_FOUND)
-        );
+        return placeRepository.findById(placeId)
+            .orElseThrow(
+                () -> new CustomException(ErrorType.ENTITY_NOT_FOUND)
+            );
     }
 }
