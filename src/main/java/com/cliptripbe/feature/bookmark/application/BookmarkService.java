@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.bookmark.application;
 
 import com.cliptripbe.feature.bookmark.api.dto.request.CreateBookmarkRequestDto;
+import com.cliptripbe.feature.bookmark.api.dto.request.UpdateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkInfoResponseDto;
 import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
@@ -33,8 +34,18 @@ public class BookmarkService {
             .description(request.description())
             .user(user)
             .build();
+        bookmarkRepository.save(bookmark);
+        return bookmark.getId();
+    }
 
-        for (PlaceInfoRequestDto placeInfoRequestDto : request.placeInfoRequestDtos()) {
+    @Transactional
+    public void updateBookmark(
+        Long bookmarkId,
+        UpdateBookmarkRequestDto updateBookmarkRequestDto
+    ) {
+        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+        bookmark.cleanBookmarkPlace();
+        for (PlaceInfoRequestDto placeInfoRequestDto : updateBookmarkRequestDto.placeInfoRequestDtos()) {
             BookmarkPlace bookmarkPlace = BookmarkPlace
                 .builder()
                 .bookmark(bookmark)
@@ -42,24 +53,6 @@ public class BookmarkService {
                 .build();
             bookmark.addBookmarkPlace(bookmarkPlace);
         }
-        bookmarkRepository.save(bookmark);
-        return bookmark.getId();
-    }
-
-    @Transactional
-    public void addBookmark(User user, Long bookmarkId, PlaceInfoRequestDto placeInfoRequestDto) {
-        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
-        }
-
-        BookmarkPlace bookmarkPlace = BookmarkPlace
-            .builder()
-            .bookmark(bookmark)
-            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
-            .build();
-        bookmark.addBookmarkPlace(bookmarkPlace);
     }
 
     public List<BookmarkListResponseDto> getUserBookmark(User user) {
@@ -73,17 +66,6 @@ public class BookmarkService {
     public BookmarkInfoResponseDto getBookmarkInfo(Long bookmarkId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
         return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
-    }
-
-    @Transactional
-    public void deletePlaceInBookmark(Long bookmarkId, Long placeId, User user) {
-        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
-        }
-        bookmark.getBookmarkPlaces().removeIf(
-            bp -> bp.getPlace().getId().equals(placeId)
-        );
     }
 
     @Transactional
