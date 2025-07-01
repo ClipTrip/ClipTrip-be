@@ -19,20 +19,24 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name = "users")
+@Table(name = "user_table")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false, unique = true)
     private String email;
+
     private String password;
 
     @Enumerated(value = EnumType.STRING)
     private Language language;
+
     @Enumerated(value = EnumType.STRING)
     private AgeGroup ageGroup;
+
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 

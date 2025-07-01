@@ -33,7 +33,7 @@ public class Bookmark {
 
     @ManyToOne
     User user;
-    
+
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookmarkPlace> bookmarkPlaces = new ArrayList<>();
 
@@ -52,5 +52,9 @@ public class Bookmark {
         return bookmarkPlaces.stream()
             .map(BookmarkPlace::getPlace)
             .collect(Collectors.toList());
+    }
+
+    public void cleanBookmarkPlace() {
+        this.bookmarkPlaces.clear();
     }
 }

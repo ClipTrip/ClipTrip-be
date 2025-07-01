@@ -1,8 +1,9 @@
 package com.cliptripbe.feature.place.application;
 
-import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 
+import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
@@ -14,6 +15,7 @@ import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.kakao.KakaoMapService;
 import java.util.List;
+import com.cliptripbe.feature.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +30,13 @@ public class PlaceService {
     private final PlaceFinder placeFinder;
     private final PlaceRepository placeRepository;
     private final KakaoMapService kakaoMapService;
-
+    private final BookmarkRepository bookmarkRepository;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
     ) {
         Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
+
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
@@ -57,5 +60,19 @@ public class PlaceService {
         return keywordPlaces.stream()
             .map(PlaceListResponseDto::from)
             .toList();
+      
+    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
+        User user) {
+        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
+        boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
+            place.getId());
+        return PlaceAccessibilityInfoResponse.of(place, bookmarked);
+    }
+
+    public PlaceAccessibilityInfoResponse getPlaceInfo(Long placeId, User user) {
+        Place place = placeFinder.getPlaceById(placeId);
+        boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
+            place.getId());
+        return PlaceAccessibilityInfoResponse.of(place, bookmarked);
     }
 }

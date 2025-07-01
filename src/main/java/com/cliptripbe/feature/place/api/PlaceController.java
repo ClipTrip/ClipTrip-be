@@ -11,9 +11,14 @@ import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
 import java.util.List;
+import com.cliptripbe.global.auth.security.CustomerDetails;
+import com.cliptripbe.global.response.ApiResponse;
+import com.cliptripbe.global.response.type.SuccessType;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,12 +30,33 @@ public class PlaceController implements PlaceControllerDocs {
     final PlaceService placeService;
 
     @GetMapping("/accessInfo")
-    public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
+    public ApiResponse<?> getPlaceAccessibilityInfo(
         @ModelAttribute PlaceInfoRequestDto placeInfoRequestDto
     ) {
-        PlaceAccessibilityInfoResponse accessibilityInfoResponses = placeService.getPlaceAccessibilityInfo(
+        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceAccessibilityInfo(
             placeInfoRequestDto);
-        return accessibilityInfoResponses;
+        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
+    }
+
+    @GetMapping
+    public ApiResponse<?> getPlaceInfo(
+        @ModelAttribute PlaceInfoRequestDto placeInfoRequestDto,
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(
+            placeInfoRequestDto, customerDetails.getUser());
+        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
+    }
+
+    @Override
+    @GetMapping("/{placeId}")
+    public ApiResponse<?> getPlaceInfo(
+        @PathVariable(value = "placeId") Long placeId,
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(placeId,
+            customerDetails.getUser());
+        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
     }
 
     @GetMapping("/category")
