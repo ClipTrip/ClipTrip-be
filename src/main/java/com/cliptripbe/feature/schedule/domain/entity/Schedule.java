@@ -61,7 +61,13 @@ public class Schedule {
         this.schedulePlaceList.add(schedulePlace);
     }
 
-    public void updateName(String name) {
 
+    public void update(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+
+    public void clear() {
+        this.schedulePlaceList.clear();
     }
 }

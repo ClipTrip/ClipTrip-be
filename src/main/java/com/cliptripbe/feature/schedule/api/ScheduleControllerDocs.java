@@ -1,7 +1,5 @@
 package com.cliptripbe.feature.schedule.api;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
@@ -16,8 +14,8 @@ public interface ScheduleControllerDocs {
 //    ApiResponse<?> createScheduleByVideo(CustomerDetails customerDetails,
 //        CreateScheduleRequestDto createScheduleRequestDto);
 
-    @Operation(summary = "새로운 일정 만들기")
-    public ApiResponse<?> createSchedule(
+    @Operation(summary = "새로운 일정 만들기, 빈 일정입니다.")
+    ApiResponse<?> createSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails
     );
 
@@ -25,22 +23,23 @@ public interface ScheduleControllerDocs {
     ApiResponse<?> updateSchedule(
         CustomerDetails customerDetails,
         Long scheduleId,
-        UpdateScheduleRequestDto updateSchedule);
-
-    @Operation(summary = "일정안에 있는 장소 삭제, 지울 장소는 리스트로 ")
-    ApiResponse<?> deleteSchedulePlace(
-        CustomerDetails customerDetails,
-        Long scheduleId,
-        DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
+        UpdateScheduleRequestDto updateSchedule
     );
+
+//    @Operation(summary = "일정안에 있는 장소 삭제, 지울 장소는 리스트로 ")
+//    ApiResponse<?> deleteSchedulePlace(
+//        CustomerDetails customerDetails,
+//        Long scheduleId,
+//        DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
+//    );
 
     @Operation(summary = "유저 일정 조회하기")
     ApiResponse<?> getUserSchedule(CustomerDetails customerDetails);
 
-    @Operation(summary = "유저 일정안에 장소 추가하기")
-    ApiResponse<?> addPlaceInSchedule(
-        CustomerDetails customerDetails,
-        Long scheduleId,
-        PlaceInfoRequestDto placeInfoRequestDto
-    );
+//    @Operation(summary = "유저 일정안에 장소 추가하기")
+//    ApiResponse<?> addPlaceInSchedule(
+//        CustomerDetails customerDetails,
+//        Long scheduleId,
+//        PlaceInfoRequestDto placeInfoRequestDto
+//    );
 }
