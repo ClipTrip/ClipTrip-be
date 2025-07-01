@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.api;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.global.response.ApiResponse;
@@ -20,9 +21,6 @@ public interface PlaceControllerDocs {
         summary = "카테고리 별 장소리스트 조회",
         description = "카테고리를 이용해 현재 장소 정보들을 조회합니다.")
     ApiResponse<List<PlaceListResponseDto>> getPlacesByCategory(
-        @RequestParam("categoryCode") String categoryCode,
-        @RequestParam String x,
-        @RequestParam String y,
-        @RequestParam Integer radius
+        PlaceSearchByCategoryRequestDto request
     );
 }

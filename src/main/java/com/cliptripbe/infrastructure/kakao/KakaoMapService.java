@@ -1,6 +1,7 @@
 package com.cliptripbe.infrastructure.kakao;
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,33 @@ public class KakaoMapService {
     @Qualifier("kakaoWebClient")
     private final WebClient kakaoWebClient;
 
+    public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequestDto req) {
+        long start = System.currentTimeMillis();
+        return kakaoWebClient.get()
+            .uri(uri -> uri
+                .path("/v2/local/search/category.json")
+                .queryParam("category_group_code", req.categoryCode())
+                .queryParam("x", req.x())
+                .queryParam("y", req.y())
+                .queryParam("radius", req.radius())
+                .build()
+            )
+            .retrieve()
+            .bodyToMono(KakaoMapResponse.class)
+            .map(resp -> resp.documents().stream()
+                .map(PlaceDto::from)
+                .toList()
+            )
+            .doOnSuccess(place -> {
+                long elapsed = System.currentTimeMillis() - start;
+                log.info("카테고리 호출 레이턴시: {} ms", elapsed);
+            })
+            .block();
+
+    }
+
     public Mono<List<PlaceDto>> searchPlaces(String keyword) {
+        long start = System.currentTimeMillis();
         return kakaoWebClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/v2/local/search/keyword.json")
@@ -31,7 +58,11 @@ public class KakaoMapService {
             .map(resp -> resp.documents().stream()
                 .map(PlaceDto::from)
                 .toList()
-            );
+            )
+            .doOnSuccess(place -> {
+                long elapsed = System.currentTimeMillis() - start;
+                log.info("[{}] 개별 호출 레이턴시: {} ms", keyword, elapsed);
+            });
     }
 
     public Mono<PlaceDto> searchFirstPlace(String keyword) {

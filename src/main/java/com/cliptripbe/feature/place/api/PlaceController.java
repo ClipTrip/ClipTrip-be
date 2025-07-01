@@ -3,6 +3,7 @@ package com.cliptripbe.feature.place.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
@@ -31,16 +32,11 @@ public class PlaceController implements PlaceControllerDocs {
         return accessibilityInfoResponses;
     }
 
-    @Override
+    @GetMapping("/category")
     public ApiResponse<List<PlaceListResponseDto>> getPlacesByCategory(
-        String categoryCode,
-        String x,
-        String y,
-        Integer radius
+        @ModelAttribute PlaceSearchByCategoryRequestDto request
     ) {
-        List<PlaceListResponseDto> places = placeService.getPlacesByCategory(categoryCode, x, y,
-            radius
-        );
+        List<PlaceListResponseDto> places = placeService.getPlacesByCategory(request);
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
 }
