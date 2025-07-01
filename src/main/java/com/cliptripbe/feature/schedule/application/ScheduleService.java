@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.application.PlaceFinder;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
@@ -53,8 +54,7 @@ public class ScheduleService {
         Long scheduleId,
         UpdateScheduleRequestDto updateSchedule
     ) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+        Schedule schedule = getSchedule(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
@@ -72,7 +72,7 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleListResponseDto> getUserSchedule(User user) {
+    public List<ScheduleListResponseDto> getUserScheduleList(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
         return scheduleList
             .stream()
@@ -81,8 +81,7 @@ public class ScheduleService {
     }
 
     public void deleteSchedule(User user, Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+        Schedule schedule = getSchedule(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
@@ -90,4 +89,15 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+
+    public ScheduleInfoResponseDto getScheduleById(Long scheduleId) {
+        Schedule schedule = getSchedule(scheduleId);
+        return SchedulePlaceMapper.mapScheduleInfoResponseDto(
+            schedule);
+    }
+
+    private Schedule getSchedule(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+    }
 }

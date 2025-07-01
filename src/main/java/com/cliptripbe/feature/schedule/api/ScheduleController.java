@@ -3,6 +3,7 @@ package com.cliptripbe.feature.schedule.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
@@ -37,15 +38,14 @@ public class ScheduleController implements ScheduleControllerDocs {
 //    }
 
     @Override
-    @PostMapping()
+    @PostMapping
     public ApiResponse<?> createSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         scheduleService.create(customerDetails.getUser());
         return ApiResponse.success(SuccessType.CREATED);
     }
-
-
+    
     @Override
     @PutMapping("/{scheduleId}")
     public ApiResponse<?> updateSchedule(
@@ -88,12 +88,22 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     @Override
     @GetMapping()
-    public ApiResponse<?> getUserSchedule(
+    public ApiResponse<?> getUserScheduleList(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<ScheduleListResponseDto> list = scheduleService.getUserSchedule(
+        List<ScheduleListResponseDto> list = scheduleService.getUserScheduleList(
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, list);
+    }
+
+    @Override
+    @GetMapping("/{scheduleId}")
+    public ApiResponse<?> getUserSchedule(
+        @PathVariable(value = "scheduleId") Long scheduleId
+    ) {
+        ScheduleInfoResponseDto scheduleInfoResponseDto = scheduleService.getScheduleById(
+            scheduleId);
+        return ApiResponse.success(SuccessType.SUCCESS, scheduleInfoResponseDto);
     }
 
     @Override
