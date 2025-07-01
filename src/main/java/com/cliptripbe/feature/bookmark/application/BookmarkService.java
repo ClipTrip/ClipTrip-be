@@ -55,6 +55,22 @@ public class BookmarkService {
         }
     }
 
+    @Transactional
+    public void addBookmark(User user, Long bookmarkId, PlaceInfoRequestDto placeInfoRequestDto) {
+        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+
+        if (!bookmark.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
+
+        BookmarkPlace bookmarkPlace = BookmarkPlace
+            .builder()
+            .bookmark(bookmark)
+            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
+            .build();
+        bookmark.addBookmarkPlace(bookmarkPlace);
+    }
+
     public List<BookmarkListResponseDto> getUserBookmark(User user) {
         List<Bookmark> bookmarks = bookmarkRepository.findAllByUser(user);
         return bookmarks
