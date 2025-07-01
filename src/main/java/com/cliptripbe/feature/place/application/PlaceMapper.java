@@ -2,9 +2,11 @@ package com.cliptripbe.feature.place.application;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +26,7 @@ public class PlaceMapper {
         AccessibilityFeature.AUDIO_GUIDE_KR
     };
 
-    public Place mapPlace(String placeInfo) {
+    public Place mapPlaceCulture(String placeInfo) {
         String[] tokens = placeInfo.split(",");
 
         // 기본 필드 추출
@@ -58,6 +60,7 @@ public class PlaceMapper {
             .name(name)
             .address(address)
             .accessibilityFeatures(features)
+            .placeType(PlaceType.CULTURAL_FACILITY)
             .build();
 
         return place;
@@ -69,5 +72,36 @@ public class PlaceMapper {
         } catch (NumberFormatException e) {
             return 0.0;
         }
+    }
+
+    public Place mapPlaceThng(String line) {
+        String[] tokens = line.split(",");
+
+        if (tokens.length < 17) {
+            throw new IllegalArgumentException("CSV 라인의 필드 수가 부족합니다.");
+        }
+
+        String facilityName = tokens[1];             // FCLTY_NM
+        String roadAddress = tokens[2];              // RDNMADR_NM
+        String telNumber = tokens[16];               // TEL_NO
+        Double longitude = parseDouble(tokens[13]);  // FCLTY_LO
+        Double latitude = parseDouble(tokens[14]);   // FCLTY_LA
+
+        Address address = Address.builder()
+            .roadAddress(roadAddress)
+            .longitude(longitude)
+            .latitude(latitude)
+            .build();
+
+        // 접근성 정보가 없다면 비워두되, 기본값으로 빈 리스트 사용
+        List<AccessibilityFeature> accessibilityFeatures = Collections.emptyList();
+
+        return Place.builder()
+            .name(facilityName)
+            .phoneNumber(telNumber)
+            .address(address)
+            .accessibilityFeatures(accessibilityFeatures)
+            .placeType(PlaceType.LUGGAGE_STORAGE)
+            .build();
     }
 }

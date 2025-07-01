@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.bookmark.api;
 
 
-
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.bookmark.api.dto.request.CreateBookmarkRequestDto;
@@ -26,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(API_VERSION + "/bookmark")
+@RequestMapping(API_VERSION + "/bookmarks")
 public class BookmarkController implements BookmarkControllerDocs {
 
     final BookmarkService bookmarkService;
@@ -98,5 +97,11 @@ public class BookmarkController implements BookmarkControllerDocs {
     ) {
         bookmarkService.deleteBookmark(customerDetails.getUser(), bookmarkId);
         return ApiResponse.success(SuccessType.SUCCESS);
+    }
+
+    @GetMapping("/default")
+    public ApiResponse<?> getDefaultBookmarkList() {
+        List<BookmarkListResponseDto> defaultBookmarkList = bookmarkService.getDefaultBookmarkList();
+        return ApiResponse.success(SuccessType.SUCCESS, defaultBookmarkList);
     }
 }

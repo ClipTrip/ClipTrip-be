@@ -94,4 +94,11 @@ public class BookmarkService {
         }
         bookmarkRepository.delete(bookmark);
     }
+
+    public List<BookmarkListResponseDto> getDefaultBookmarkList() {
+        List<Bookmark> defaultBookmark = bookmarkFinder.getDefaultBookmark();
+        return defaultBookmark.stream()
+            .map(BookmarkMapper::mapBookmarkListResponseDto)
+            .toList();
+    }
 }

@@ -4,6 +4,7 @@ import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,5 +17,9 @@ public class BookmarkFinder {
     public Bookmark findById(Long bookmarkId) {
         return bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new CustomException(
             ErrorType.ENTITY_NOT_FOUND));
+    }
+
+    public List<Bookmark> getDefaultBookmark() {
+        return bookmarkRepository.findAllByUserIsNull();
     }
 }
