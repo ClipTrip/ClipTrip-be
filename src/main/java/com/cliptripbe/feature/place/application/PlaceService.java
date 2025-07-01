@@ -39,6 +39,8 @@ public class PlaceService {
     }
 
     public List<PlaceListResponseDto> getPlacesByCategory(PlaceSearchByCategoryRequestDto request) {
+
+
         List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->

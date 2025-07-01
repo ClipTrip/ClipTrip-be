@@ -15,12 +15,15 @@ import com.cliptripbe.infrastructure.kakao.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.application.ChatGPTService;
 import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
 import com.cliptripbe.infrastructure.openai.utils.ChatGPTUtils;
+import java.time.Duration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.retry.Retry;
 
 @Slf4j
 @Service
@@ -966,12 +969,18 @@ public class VideoService {
             PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption;
 
         List<String> extractPlacesText = chatGPTService.ask(requestPlacePrompt)
+//            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+//                .filter(throwable ->
+//                    throwable instanceof WebClientResponseException.TooManyRequests))
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::extractPlaces)
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
         String summaryKo = chatGPTService.ask(requestSummaryPrompt)
+//            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
+//                .filter(throwable ->
+//                    throwable instanceof WebClientResponseException.TooManyRequests))
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::removeLiteralNewlines)
             .blockOptional()
