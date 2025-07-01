@@ -71,18 +71,6 @@ public class ScheduleService {
         }
     }
 
-//    public void deleteSchedulePlace(Long scheduleId, Long placeIdList, User user) {
-//        Schedule schedule = scheduleRepository.findById(scheduleId)
-//            .orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
-//
-//        if (!schedule.getUser().getId().equals(user.getId())) {
-//            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
-//        }
-//        schedule.getSchedulePlaceList().removeIf(sp ->
-//            sp.getPlace().getId().equals(placeIdList)
-//        );
-//    }
-
     @Transactional(readOnly = true)
     public List<ScheduleListResponseDto> getUserSchedule(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
@@ -92,22 +80,14 @@ public class ScheduleService {
             .toList();
     }
 
-//    public void addPlaceInSchedule(User user, Long scheduleId,
-//        PlaceInfoRequestDto placeInfoRequestDto) {
-//        Schedule schedule = scheduleRepository.findById(scheduleId)
-//            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
-//
-//        if (!schedule.getUser().getId().equals(user.getId())) {
-//            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
-//        }
-//
-//        SchedulePlace newPlace = SchedulePlace.builder()
-//            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
-//            .schedule(schedule)
-//            .build();
-//        schedule.addSchedulePlace(newPlace);
-//        scheduleRepository.save(schedule);
-//    }
+    public void deleteSchedule(User user, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
 
+        if (!schedule.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
+        scheduleRepository.delete(schedule);
+    }
 
 }

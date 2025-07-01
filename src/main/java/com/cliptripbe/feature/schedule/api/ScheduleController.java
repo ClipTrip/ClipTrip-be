@@ -11,6 +11,7 @@ import com.cliptripbe.global.response.type.SuccessType;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -93,5 +94,14 @@ public class ScheduleController implements ScheduleControllerDocs {
         List<ScheduleListResponseDto> list = scheduleService.getUserSchedule(
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, list);
+    }
+
+    @Override
+    @DeleteMapping("/{scheduleId}")
+    public ApiResponse<?> deleteUserSchedule(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable(value = "scheduleId") Long scheduleId) {
+        scheduleService.deleteSchedule(customerDetails.getUser(), scheduleId);
+        return ApiResponse.success(SuccessType.SUCCESS, scheduleId);
     }
 }

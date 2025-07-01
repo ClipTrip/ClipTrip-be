@@ -36,6 +36,12 @@ public interface ScheduleControllerDocs {
     @Operation(summary = "유저 일정 조회하기")
     ApiResponse<?> getUserSchedule(CustomerDetails customerDetails);
 
+    @Operation(summary = "유저 일정 삭제하기")
+    ApiResponse<?> deleteUserSchedule(
+        CustomerDetails customerDetails,
+        Long scheduleId
+    );
+
 //    @Operation(summary = "유저 일정안에 장소 추가하기")
 //    ApiResponse<?> addPlaceInSchedule(
 //        CustomerDetails customerDetails,
