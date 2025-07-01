@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PlaceFinder {
 
-    final PlaceRepository placeRepository;
-    final PlaceRegister placeRegister;
+    private final PlaceRepository placeRepository;
 
     public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
         Optional<Place> place = placeRepository.findPlaceByPlaceInfo(
@@ -25,5 +24,11 @@ public class PlaceFinder {
             throw new CustomException(ErrorType.ENTITY_NOT_FOUND);
         }
         return place.get();
+    }
+
+    public Place getPlaceById(Long placeId) {
+        return placeRepository.findById(placeId).orElseThrow(
+            () -> new CustomException(ErrorType.ENTITY_NOT_FOUND)
+        );
     }
 }
