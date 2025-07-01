@@ -8,12 +8,10 @@ import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestD
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
-import com.cliptripbe.global.response.ApiResponse;
-import com.cliptripbe.global.response.type.SuccessType;
-import java.util.List;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;

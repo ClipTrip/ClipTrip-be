@@ -1,12 +1,8 @@
 package com.cliptripbe.feature.place.domain.type;
 
-import static com.cliptripbe.global.response.type.ErrorType.ENUM_RESOURCE_NOT_FOUND;
-
-import com.cliptripbe.global.response.exception.CustomException;
 import java.util.Arrays;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter

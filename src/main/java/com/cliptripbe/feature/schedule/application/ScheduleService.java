@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.application.PlaceFinder;
 import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
@@ -21,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    final PlaceFinder placeFinder;
-    final ScheduleRepository scheduleRepository;
+    private final PlaceFinder placeFinder;
+    private final ScheduleRepository scheduleRepository;
 
     public void create(User user, CreateScheduleRequestDto createRentalRequest) {
         Schedule schedule = Schedule
@@ -53,16 +54,14 @@ public class ScheduleService {
         Long scheduleId,
         UpdateScheduleRequestDto updateSchedule
     ) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+        Schedule schedule = getSchedule(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
 
-        schedule.updateName(updateSchedule.scheduleName());
-        schedule.getSchedulePlaceList().clear();
-
+        schedule.update(updateSchedule.scheduleName(), updateSchedule.description());
+        schedule.clear();
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
@@ -72,20 +71,8 @@ public class ScheduleService {
         }
     }
 
-    public void deleteSchedulePlace(Long scheduleId, Long placeIdList, User user) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("일정이 존재하지 않습니다."));
-
-        if (!schedule.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
-        }
-        schedule.getSchedulePlaceList().removeIf(sp ->
-            sp.getPlace().getId().equals(placeIdList)
-        );
-    }
-
     @Transactional(readOnly = true)
-    public List<ScheduleListResponseDto> getUserSchedule(User user) {
+    public List<ScheduleListResponseDto> getUserScheduleList(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
         return scheduleList
             .stream()
@@ -93,22 +80,24 @@ public class ScheduleService {
             .toList();
     }
 
-    public void addPlaceInSchedule(User user, Long scheduleId,
-        PlaceInfoRequestDto placeInfoRequestDto) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+    public void deleteSchedule(User user, Long scheduleId) {
+        Schedule schedule = getSchedule(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
-
-        SchedulePlace newPlace = SchedulePlace.builder()
-            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
-            .schedule(schedule)
-            .build();
-        schedule.addSchedulePlace(newPlace);
-        scheduleRepository.save(schedule);
+        scheduleRepository.delete(schedule);
     }
 
 
+    public ScheduleInfoResponseDto getScheduleById(Long scheduleId) {
+        Schedule schedule = getSchedule(scheduleId);
+        return SchedulePlaceMapper.mapScheduleInfoResponseDto(
+            schedule);
+    }
+
+    private Schedule getSchedule(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
+            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
+    }
 }

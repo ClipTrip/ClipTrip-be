@@ -2,9 +2,8 @@ package com.cliptripbe.feature.schedule.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.request.DeleteSchedulePlaceRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
@@ -39,15 +38,14 @@ public class ScheduleController implements ScheduleControllerDocs {
 //    }
 
     @Override
-    @PostMapping()
+    @PostMapping
     public ApiResponse<?> createSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         scheduleService.create(customerDetails.getUser());
         return ApiResponse.success(SuccessType.CREATED);
     }
-
-
+    
     @Override
     @PutMapping("/{scheduleId}")
     public ApiResponse<?> updateSchedule(
@@ -59,42 +57,61 @@ public class ScheduleController implements ScheduleControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
+//    @Override
+//    @PostMapping("/{scheduleId}")
+//    public ApiResponse<?> addPlaceInSchedule(
+//        @AuthenticationPrincipal CustomerDetails customerDetails,
+//        @PathVariable Long scheduleId,
+//        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
+//    ) {
+//        scheduleService.addPlaceInSchedule(
+//            customerDetails.getUser(),
+//            scheduleId,
+//            placeInfoRequestDto
+//        );
+//        return ApiResponse.success(SuccessType.SUCCESS);
+//    }
+//
+//    @Override
+//    @DeleteMapping("/{scheduleId}")
+//    public ApiResponse<?> deleteSchedulePlace(
+//        @AuthenticationPrincipal CustomerDetails customerDetails,
+//        @PathVariable Long scheduleId,
+//        @RequestBody DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
+//    ) {
+//        scheduleService.deleteSchedulePlace(
+//            scheduleId,
+//            deleteSchedulePlaceRequestDto.placeId(),
+//            customerDetails.getUser());
+//        return ApiResponse.success(SuccessType.SUCCESS);
+//    }
+
     @Override
-    @PostMapping("/{scheduleId}")
-    public ApiResponse<?> addPlaceInSchedule(
-        @AuthenticationPrincipal CustomerDetails customerDetails,
-        @PathVariable Long scheduleId,
-        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
+    @GetMapping()
+    public ApiResponse<?> getUserScheduleList(
+        @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        scheduleService.addPlaceInSchedule(
-            customerDetails.getUser(),
-            scheduleId,
-            placeInfoRequestDto
-        );
-        return ApiResponse.success(SuccessType.SUCCESS);
+        List<ScheduleListResponseDto> list = scheduleService.getUserScheduleList(
+            customerDetails.getUser());
+        return ApiResponse.success(SuccessType.SUCCESS, list);
+    }
+
+    @Override
+    @GetMapping("/{scheduleId}")
+    public ApiResponse<?> getUserSchedule(
+        @PathVariable(value = "scheduleId") Long scheduleId
+    ) {
+        ScheduleInfoResponseDto scheduleInfoResponseDto = scheduleService.getScheduleById(
+            scheduleId);
+        return ApiResponse.success(SuccessType.SUCCESS, scheduleInfoResponseDto);
     }
 
     @Override
     @DeleteMapping("/{scheduleId}")
-    public ApiResponse<?> deleteSchedulePlace(
+    public ApiResponse<?> deleteUserSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
-        @PathVariable Long scheduleId,
-        @RequestBody DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
-    ) {
-        scheduleService.deleteSchedulePlace(
-            scheduleId,
-            deleteSchedulePlaceRequestDto.placeId(),
-            customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS);
-    }
-
-    @Override
-    @GetMapping()
-    public ApiResponse<?> getUserSchedule(
-        @AuthenticationPrincipal CustomerDetails customerDetails
-    ) {
-        List<ScheduleListResponseDto> list = scheduleService.getUserSchedule(
-            customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, list);
+        @PathVariable(value = "scheduleId") Long scheduleId) {
+        scheduleService.deleteSchedule(customerDetails.getUser(), scheduleId);
+        return ApiResponse.success(SuccessType.SUCCESS, scheduleId);
     }
 }

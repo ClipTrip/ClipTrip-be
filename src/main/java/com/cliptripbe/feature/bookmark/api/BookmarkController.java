@@ -8,6 +8,7 @@ import com.cliptripbe.feature.bookmark.api.dto.request.UpdateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkInfoResponseDto;
 import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.application.BookmarkService;
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -28,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(API_VERSION + "/bookmarks")
 public class BookmarkController implements BookmarkControllerDocs {
 
-    final BookmarkService bookmarkService;
+    private final BookmarkService bookmarkService;
 
     @Override
     @PostMapping
@@ -54,6 +55,22 @@ public class BookmarkController implements BookmarkControllerDocs {
         );
         return ApiResponse.success(SuccessType.SUCCESS, bookmarkId);
     }
+
+    @Override
+    @PostMapping("/{bookmarkId}")
+    public ApiResponse<?> addBookmark(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable Long bookmarkId,
+        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
+    ) {
+        bookmarkService.addBookmark(
+            customerDetails.getUser(),
+            bookmarkId,
+            placeInfoRequestDto
+        );
+        return ApiResponse.success(SuccessType.SUCCESS, bookmarkId);
+    }
+
 
     @Override
     @GetMapping

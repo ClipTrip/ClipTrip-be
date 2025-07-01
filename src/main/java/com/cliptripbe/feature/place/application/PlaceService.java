@@ -2,8 +2,9 @@ package com.cliptripbe.feature.place.application;
 
 
 import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
+
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
+import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
@@ -11,15 +12,13 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoRespo
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceCategory;
-import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.kakao.KakaoMapService;
 import java.util.List;
-import com.cliptripbe.feature.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Service
@@ -28,7 +27,6 @@ import reactor.core.scheduler.Schedulers;
 public class PlaceService {
 
     private final PlaceFinder placeFinder;
-    private final PlaceRepository placeRepository;
     private final KakaoMapService kakaoMapService;
     private final BookmarkRepository bookmarkRepository;
 
@@ -60,7 +58,8 @@ public class PlaceService {
         return keywordPlaces.stream()
             .map(PlaceListResponseDto::from)
             .toList();
-      
+    }
+
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
         User user) {
         Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);

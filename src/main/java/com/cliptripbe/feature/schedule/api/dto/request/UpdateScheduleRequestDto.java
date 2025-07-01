@@ -5,6 +5,7 @@ import java.util.List;
 
 public record UpdateScheduleRequestDto(
     String scheduleName,
+    String description,
     List<PlaceInfoRequestDto> placeInfoRequestDtos
 ) {
 
