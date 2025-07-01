@@ -2,6 +2,7 @@ package com.cliptripbe.infrastructure.kakao;
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -45,12 +46,15 @@ public class KakaoMapService {
 
     }
 
-    public Mono<List<PlaceDto>> searchPlaces(String keyword) {
+    public List<PlaceDto> searchPlaces(PlaceSearchByKeywordRequestDto req) {
         long start = System.currentTimeMillis();
         return kakaoWebClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/v2/local/search/keyword.json")
-                .queryParam("query", keyword)
+                .queryParam("query", req.query())
+                .queryParam("x", req.x())
+                .queryParam("y", req.y())
+                .queryParam("radius", req.radius())
                 .build()
             )
             .retrieve()
@@ -61,8 +65,9 @@ public class KakaoMapService {
             )
             .doOnSuccess(place -> {
                 long elapsed = System.currentTimeMillis() - start;
-                log.info("[{}] 개별 호출 레이턴시: {} ms", keyword, elapsed);
-            });
+                log.info("[{}] 개별 호출 레이턴시: {} ms", req.query(), elapsed);
+            })
+            .block();
     }
 
     public Mono<PlaceDto> searchFirstPlace(String keyword) {

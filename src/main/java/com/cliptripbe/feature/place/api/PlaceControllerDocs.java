@@ -2,6 +2,7 @@ package com.cliptripbe.feature.place.api;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.global.response.ApiResponse;
@@ -22,5 +23,12 @@ public interface PlaceControllerDocs {
         description = "카테고리를 이용해 현재 장소 정보들을 조회합니다.")
     ApiResponse<List<PlaceListResponseDto>> getPlacesByCategory(
         PlaceSearchByCategoryRequestDto request
+    );
+
+    @Operation(
+        summary = "키워드 장소리스트 조회",
+        description = "키워드를 이용해 현재 장소 정보들을 조회합니다.")
+    ApiResponse<List<PlaceListResponseDto>> getPlacesByKeyword(
+        PlaceSearchByKeywordRequestDto request
     );
 }
