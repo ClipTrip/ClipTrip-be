@@ -11,6 +11,7 @@ public record PlaceDto(
     String address,
     String roadAddress,
     String phone,
+    String categoryCode,
     double longitude,
     double latitude
 ) {
@@ -21,6 +22,7 @@ public record PlaceDto(
             .address(document.address_name())
             .roadAddress(document.road_address_name())
             .phone(document.phone())
+            .categoryCode(document.category_group_code())
             .longitude(Double.parseDouble(document.x()))
             .latitude(Double.parseDouble(document.y()))
             .build();

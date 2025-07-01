@@ -22,6 +22,7 @@ public record KakaoMapResponse(
         String id,
         String phone,
         String category_name,
+        String category_group_code,
         String x,
         String y
     ) {

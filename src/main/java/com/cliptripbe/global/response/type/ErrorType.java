@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ErrorType {
 
+    //common
+    ENUM_RESOURCE_NOT_FOUND(404, "해당 이넘 값을 찾을 수 없습니다."),
+
     BAD_REQUEST(400, "잘못된 요청입니다."),
     ENTITY_NOT_FOUND(400, "요청한 정보로 엔터티를 찾을 수 없습니다."),
     DUPLICATE_EMAIL_RESOURCE(409, "이미 존재하는 아이디입니다."),
