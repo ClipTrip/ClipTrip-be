@@ -16,9 +16,9 @@ public class ChatGPTUtils {
     }
 
     public static String removeLiteralNewlines(String input) {
-        if (Objects.isNull(input)) {
+        if (input == null) {
             return "";
         }
-        return input.replace("\\n", "");
+        return input.replace("\n", "");
     }
 }
