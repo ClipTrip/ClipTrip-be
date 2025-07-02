@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.domain.AccessibilityFeatureConverter;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
+import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -21,7 +22,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Place {
+public class Place extends BaseTimeEntity {
 
     @Id
     @Column

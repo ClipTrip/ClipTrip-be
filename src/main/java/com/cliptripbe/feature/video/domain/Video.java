@@ -28,18 +28,18 @@ public class Video extends BaseTimeEntity {
     @Column(name = "url", nullable = false)
     private String url;
 
-    @Column(name = "youtubeVideoId", nullable = false)
+    @Column(name = "youtube_video_id", nullable = false)
     private String youtubeVideoId;
 
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "summaryKo", nullable = false)
+    @Column(name = "summary_ko", columnDefinition = "TEXT", nullable = false)
     private String summaryKo;
 
-    @Column(name = "summaryTranslated")
+    @Column(name = "summary_translated", columnDefinition = "TEXT")
     private String summaryTranslated;
 
-    @Column(name = "translatedLangCode")
+    @Column(name = "translated_lang_code")
     private String translatedLangCode;
 }
