@@ -12,6 +12,7 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoRespo
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceCategory;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.kakao.KakaoMapService;
@@ -46,7 +47,7 @@ public class PlaceService {
             .map((PlaceDto placeDto) ->
                 PlaceListResponseDto.of(
                     placeDto,
-                    PlaceCategory.findByCode(request.categoryCode()))
+                    PlaceType.findByCode(request.categoryCode()))
             )
             .toList();
     }

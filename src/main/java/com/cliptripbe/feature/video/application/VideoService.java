@@ -969,18 +969,12 @@ public class VideoService {
             PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption;
 
         List<String> extractPlacesText = chatGPTService.ask(requestPlacePrompt)
-//            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
-//                .filter(throwable ->
-//                    throwable instanceof WebClientResponseException.TooManyRequests))
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::extractPlaces)
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
         String summaryKo = chatGPTService.ask(requestSummaryPrompt)
-//            .retryWhen(Retry.backoff(3, Duration.ofSeconds(1))
-//                .filter(throwable ->
-//                    throwable instanceof WebClientResponseException.TooManyRequests))
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::removeLiteralNewlines)
             .blockOptional()
