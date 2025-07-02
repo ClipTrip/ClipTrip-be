@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.place.api.dto.response;
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.domain.type.PlaceCategory;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -12,7 +11,7 @@ public record PlaceListResponseDto(
     String placeName,
     String roadAddress,
     String phone,
-    String category,
+    String type,
     double longitude,
     double latitude
 ) {
@@ -22,7 +21,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .category(type.getDisplayName())
+            .type(type.getDisplayName())
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
@@ -33,7 +32,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .category(PlaceType.findByCode(placeDto.categoryCode()).getDisplayName())
+            .type(PlaceType.findByCode(placeDto.categoryCode()).getDisplayName())
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
