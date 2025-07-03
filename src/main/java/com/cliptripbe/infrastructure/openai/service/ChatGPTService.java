@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.openai.application;
+package com.cliptripbe.infrastructure.openai.service;
 
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTRequest;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
@@ -7,12 +7,12 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 @Slf4j
-@Service
+@Component
 @RequiredArgsConstructor
 public class ChatGPTService {
 

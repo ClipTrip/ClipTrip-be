@@ -15,7 +15,7 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.infrastructure.kakao.KakaoMapService;
+import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
