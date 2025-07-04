@@ -5,8 +5,14 @@ import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONS
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceRegister;
+import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.schedule.application.ScheduleRegister;
+import com.cliptripbe.feature.schedule.domain.entity.Schedule;
+import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
+import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
+import com.cliptripbe.feature.video.domain.Video;
 import com.cliptripbe.feature.video.infrastructure.VideoRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
@@ -30,6 +36,7 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class VideoService {
 
+    private final ScheduleRegister scheduleRegister;
     private final PlaceRegister placeRegister;
     private final VideoRepository videoRepository;
 
@@ -37,7 +44,7 @@ public class VideoService {
     private final KakaoMapService kakaoMapService;
     private final CaptionService captionService;
 
-    public void extractPlace(User user, ExtractPlaceRequestDto request) {
+    public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequestDto request) {
         CaptionUtils.extractVideoId(request.youtubeUrl());
         CaptionResponse caption = captionService.getCaptions(
             CaptionRequest.of(request.youtubeUrl())
@@ -66,8 +73,18 @@ public class VideoService {
             .blockOptional()
             .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
 
-        System.out.println("하이");
-        placeRegister.registerAllPlaces(places);
-        videoRepository.save(request.toVideo(summaryKo));
+        List<Place> placeEntities = placeRegister.registerAllPlaces(places);
+        Video video = videoRepository.save(request.toVideo(summaryKo));
+        Schedule schedule = scheduleRegister.registerSchedule(user);
+
+        placeEntities.stream()
+            .map(place -> SchedulePlace.builder()
+                .place(place)
+                .schedule(schedule)
+                .build()
+            )
+            .forEach(schedule::addSchedulePlace);
+
+        return VideoScheduleResponse.of(video, schedule);
     }
 }

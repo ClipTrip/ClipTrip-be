@@ -3,7 +3,9 @@ package com.cliptripbe.feature.video.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
+import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.application.VideoService;
+import com.cliptripbe.feature.video.domain.Video;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -26,7 +28,8 @@ public class VideoController implements VideoControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @RequestBody ExtractPlaceRequestDto request
     ) {
-        videoService.extractPlace(customerDetails.getUser(), request);
-        return ApiResponse.success(SuccessType.CREATED);
+        VideoScheduleResponse videoScheduleResponse = videoService.extractPlace(
+            customerDetails.getUser(), request);
+        return ApiResponse.success(SuccessType.CREATED, videoScheduleResponse);
     }
 }

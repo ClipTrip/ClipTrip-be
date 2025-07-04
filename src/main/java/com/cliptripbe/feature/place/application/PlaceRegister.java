@@ -12,9 +12,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PlaceRegister {
 
-    final FileService fileService;
-    final PlaceMapper placeMapper;
-    final PlaceRepository placeRepository;
+    private final PlaceRepository placeRepository;
 
     public List<Place> registerAllPlaces(List<PlaceDto> placeDtoList) {
         List<Place> entities = placeDtoList.stream()
