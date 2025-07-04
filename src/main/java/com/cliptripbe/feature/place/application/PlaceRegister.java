@@ -5,7 +5,6 @@ import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
-import com.cliptripbe.infrastructure.file.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -25,11 +24,13 @@ public class PlaceRegister {
     }
 
     public Place createPlaceFromInfo(PlaceInfoRequestDto placeInfoRequestDto) {
-        return Place.builder()
+        Place place = Place.builder()
             .name(placeInfoRequestDto.placeName())
             .phoneNumber(placeInfoRequestDto.phoneNumber())
             .address(placeInfoRequestDto.address())
             .placeType(PlaceType.ETC)
             .build();
+        placeRepository.save(place);
+        return place;
     }
 }

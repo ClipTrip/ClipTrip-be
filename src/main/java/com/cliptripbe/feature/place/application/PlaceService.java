@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
@@ -54,6 +54,7 @@ public class PlaceService {
         return PlaceResponseDto.of(place, bookmarked);
     }
 
+
     public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
         return placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequestDto.placeName(),
@@ -61,6 +62,7 @@ public class PlaceService {
         ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
     }
 
+    @Transactional(readOnly = true)
     public List<PlaceListResponseDto> getPlacesByCategory(PlaceSearchByCategoryRequestDto request) {
         List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
         return categoryPlaces.stream()
@@ -72,6 +74,7 @@ public class PlaceService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<PlaceListResponseDto> getPlacesByKeyword(PlaceSearchByKeywordRequestDto request) {
         List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request)
             .subscribeOn(Schedulers.boundedElastic())
