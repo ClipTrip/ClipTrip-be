@@ -57,4 +57,9 @@ public class Bookmark {
     public void cleanBookmarkPlace() {
         this.bookmarkPlaces.clear();
     }
+
+    public void modifyInfo(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

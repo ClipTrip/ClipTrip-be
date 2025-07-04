@@ -1,8 +1,8 @@
 package com.cliptripbe.feature.schedule.application;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.application.PlaceFinder;
-import com.cliptripbe.feature.schedule.api.dto.request.CreateScheduleRequestDto;
+import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
@@ -22,27 +22,27 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final PlaceFinder placeFinder;
     private final ScheduleRepository scheduleRepository;
+    private final PlaceService placeService;
 
-    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
-        Schedule schedule = Schedule
-            .builder()
-            .user(user)
-            .description(createRentalRequest.description())
-            .name(createRentalRequest.scheduleName())
-            .build();
-
-        for (PlaceInfoRequestDto placeInfoRequestDto : createRentalRequest.placeInfoRequestDtos()) {
-            SchedulePlace schedulePlace = SchedulePlace
-                .builder()
-                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
-                .schedule(schedule)
-                .build();
-            schedule.addSchedulePlace(schedulePlace);
-        }
-        scheduleRepository.save(schedule);
-    }
+//    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
+//        Schedule schedule = Schedule
+//            .builder()
+//            .user(user)
+//            .description(createRentalRequest.description())
+//            .name(createRentalRequest.scheduleName())
+//            .build();
+//
+//        for (PlaceInfoRequestDto placeInfoRequestDto : createRentalRequest.placeInfoRequestDtos()) {
+//            SchedulePlace schedulePlace = SchedulePlace
+//                .builder()
+//                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
+//                .schedule(schedule)
+//                .build();
+//            schedule.addSchedulePlace(schedulePlace);
+//        }
+//        scheduleRepository.save(schedule);
+//    }
 
     public void create(User user) {
         Schedule schedule = Schedule.createDefault(user);
@@ -60,11 +60,13 @@ public class ScheduleService {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
 
-        schedule.update(updateSchedule.scheduleName(), updateSchedule.description());
+        schedule.modifyInfo(updateSchedule.scheduleName(), updateSchedule.description());
         schedule.clear();
+
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
+            Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
             SchedulePlace newPlace = SchedulePlace.builder()
-                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
+                .place(place)
                 .schedule(schedule)
                 .build();
             schedule.addSchedulePlace(newPlace);

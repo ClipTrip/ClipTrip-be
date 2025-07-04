@@ -1,6 +1,5 @@
 package com.cliptripbe.feature.place.application;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -15,15 +14,11 @@ public class PlaceFinder {
 
     private final PlaceRepository placeRepository;
 
-    public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
-        Optional<Place> place = placeRepository.findPlaceByPlaceInfo(
-            placeInfoRequestDto.placeName(),
-            placeInfoRequestDto.roadAddress()
+    public Optional<Place> getOptionPlaceByPlaceInfo(String placeName, String roadAddress) {
+        return placeRepository.findPlaceByPlaceInfo(
+            placeName,
+            roadAddress
         );
-        if (!place.isPresent()) {
-            throw new CustomException(ErrorType.ENTITY_NOT_FOUND);
-        }
-        return place.get();
     }
 
     public Place getPlaceById(Long placeId) {

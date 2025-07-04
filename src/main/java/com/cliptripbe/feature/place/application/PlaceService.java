@@ -27,21 +27,21 @@ import reactor.core.scheduler.Schedulers;
 @RequiredArgsConstructor
 public class PlaceService {
 
-    private final PlaceFinder placeFinder;
     private final KakaoMapService kakaoMapService;
     private final BookmarkRepository bookmarkRepository;
+    private final PlaceFinder placeFinder;
+    private final PlaceRegister placeRegister;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
     ) {
-        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
-
+        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
         User user) {
-        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
@@ -52,6 +52,13 @@ public class PlaceService {
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceResponseDto.of(place, bookmarked);
+    }
+
+    public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+        return placeFinder.getOptionPlaceByPlaceInfo(
+            placeInfoRequestDto.placeName(),
+            placeInfoRequestDto.address().roadAddress()
+        ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
     }
 
     public List<PlaceListResponseDto> getPlacesByCategory(PlaceSearchByCategoryRequestDto request) {
