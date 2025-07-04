@@ -7,6 +7,7 @@ import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequest
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 
@@ -38,7 +39,7 @@ public class PlaceController implements PlaceControllerDocs {
     }
 
     @GetMapping
-    public ApiResponse<?> getPlaceInfo(
+    public ApiResponse<?> getPlaceById(
         @ModelAttribute PlaceInfoRequestDto placeInfoRequestDto,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
@@ -47,15 +48,13 @@ public class PlaceController implements PlaceControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
     }
 
-    @Override
     @GetMapping("/{placeId}")
-    public ApiResponse<?> getPlaceInfo(
+    public ApiResponse<?> getPlaceById(
         @PathVariable(value = "placeId") Long placeId,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(placeId,
-            customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
+        PlaceResponseDto place = placeService.getPlaceById(placeId, customerDetails.getUser());
+        return ApiResponse.success(SuccessType.SUCCESS, place);
     }
 
     @GetMapping("/category")

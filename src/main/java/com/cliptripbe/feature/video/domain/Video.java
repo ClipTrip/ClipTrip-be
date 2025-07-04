@@ -31,9 +31,6 @@ public class Video extends BaseTimeEntity {
     @Column(name = "youtube_video_id", nullable = false)
     private String youtubeVideoId;
 
-    @Column(name = "title", nullable = false)
-    private String title;
-
     @Column(name = "summary_ko", columnDefinition = "TEXT", nullable = false)
     private String summaryKo;
 

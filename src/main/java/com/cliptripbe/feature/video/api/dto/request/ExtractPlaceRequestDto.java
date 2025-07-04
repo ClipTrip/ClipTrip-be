@@ -1,17 +1,16 @@
 package com.cliptripbe.feature.video.api.dto.request;
 
 import com.cliptripbe.feature.video.domain.Video;
-import com.cliptripbe.infrastructure.youtube.YoutubeUtils;
+import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 
 public record ExtractPlaceRequestDto(
     String youtubeUrl
 ) {
 
-    public Video toVideo(String title, String summaryKo) {
+    public Video toVideo(String summaryKo) {
         return Video.builder()
             .url(youtubeUrl)
-            .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
-            .title(title)
+            .youtubeVideoId(CaptionUtils.extractVideoId(youtubeUrl))
             .summaryKo(summaryKo)
             .build();
     }

@@ -8,5 +8,4 @@ public record UpdateScheduleRequestDto(
     String description,
     List<PlaceInfoRequestDto> placeInfoRequestDtos
 ) {
-
 }

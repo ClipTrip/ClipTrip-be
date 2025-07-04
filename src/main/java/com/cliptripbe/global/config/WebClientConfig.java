@@ -14,21 +14,17 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Configuration
 public class WebClientConfig {
 
-    @Value("${youtube.api.base-url:https://video.google.com}")
-    private String youtubeBaseUrl;
-
     @Value("${openai.api.base-url:https://api.openai.com/v1}")
     private String openaiBaseUrl;
 
     @Value("${kakao.api.base-url:https://dapi.kakao.com}")
     private String kakaoBaseUrl;
 
+    @Value("${captions.service.base-url}")
+    private String captionsBaseUrl;
+
     @Value("${openai.api.key}")
     private String openAiApiKey;
-
-    @Getter
-    @Value("${youtube.api.key}")
-    private String youtubeApiKey;
 
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
@@ -44,33 +40,19 @@ public class WebClientConfig {
     }
 
     @Bean
-    @Qualifier("youtubeWebClient")
-    public WebClient youtubeWebClient(WebClient.Builder builder) {
-        return builder
-            .baseUrl(youtubeBaseUrl)
-            .codecs(clientCodecConfigurer ->
-                clientCodecConfigurer
-                    .defaultCodecs()
-                    .maxInMemorySize(1024 * 1024) // 1MB (기본값은 256KB)
-            )
-            .filter((request, next) -> {
-                log.info("[WebClient] Request: {} {}", request.method(), request.url());
-                request.headers().forEach((k, v) -> log.debug("Header {}={}", k, v));
-
-                return next.exchange(request)
-                    .doOnNext(response ->
-                        log.info("[WebClient] Response: {} {}",
-                            response.statusCode().value(), response.headers().asHttpHeaders()));
-            })
-            .build();
-    }
-
-    @Bean
     @Qualifier("kakaoWebClient")
     public WebClient kakaoWebClient(WebClient.Builder builder) {
         return builder
             .baseUrl(kakaoBaseUrl)
             .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
+            .build();
+    }
+
+    @Bean
+    @Qualifier("captionWebClient")
+    public WebClient captionsWebClient(WebClient.Builder builder) {
+        return builder
+            .baseUrl(captionsBaseUrl)
             .build();
     }
 }
