@@ -62,7 +62,7 @@ public class Schedule {
     }
 
 
-    public void update(String name, String description) {
+    public void modifyInfo(String name, String description) {
         this.name = name;
         this.description = description;
     }

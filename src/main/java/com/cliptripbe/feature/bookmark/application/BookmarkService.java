@@ -8,7 +8,9 @@ import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.application.PlaceFinder;
+import com.cliptripbe.feature.place.application.PlaceRegister;
+import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
@@ -22,9 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class BookmarkService {
 
-    final PlaceFinder placeFinder;
     final BookmarkRepository bookmarkRepository;
     final BookmarkFinder bookmarkFinder;
+    final PlaceRegister placeRegister;
+    final PlaceService placeService;
 
     @Transactional
     public Long createBookmark(User user, CreateBookmarkRequestDto request) {
@@ -44,12 +47,17 @@ public class BookmarkService {
         UpdateBookmarkRequestDto updateBookmarkRequestDto
     ) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+
+        bookmark.modifyInfo(updateBookmarkRequestDto.bookmarkName(),
+            updateBookmarkRequestDto.description());
         bookmark.cleanBookmarkPlace();
+
         for (PlaceInfoRequestDto placeInfoRequestDto : updateBookmarkRequestDto.placeInfoRequestDtos()) {
+            Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
             BookmarkPlace bookmarkPlace = BookmarkPlace
                 .builder()
                 .bookmark(bookmark)
-                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
+                .place(place)
                 .build();
             bookmark.addBookmarkPlace(bookmarkPlace);
         }
@@ -62,11 +70,12 @@ public class BookmarkService {
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
+        Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
 
         BookmarkPlace bookmarkPlace = BookmarkPlace
             .builder()
             .bookmark(bookmark)
-            .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
+            .place(place)
             .build();
         bookmark.addBookmarkPlace(bookmarkPlace);
     }

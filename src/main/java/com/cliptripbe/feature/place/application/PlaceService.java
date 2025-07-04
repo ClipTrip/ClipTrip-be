@@ -23,25 +23,25 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
-    private final PlaceFinder placeFinder;
     private final KakaoMapService kakaoMapService;
     private final BookmarkRepository bookmarkRepository;
+    private final PlaceFinder placeFinder;
+    private final PlaceRegister placeRegister;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
     ) {
-        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
-
+        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
         User user) {
-        Place place = placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
@@ -54,6 +54,15 @@ public class PlaceService {
         return PlaceResponseDto.of(place, bookmarked);
     }
 
+
+    public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+        return placeFinder.getOptionPlaceByPlaceInfo(
+            placeInfoRequestDto.placeName(),
+            placeInfoRequestDto.address().roadAddress()
+        ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
+    }
+
+    @Transactional(readOnly = true)
     public List<PlaceListResponseDto> getPlacesByCategory(PlaceSearchByCategoryRequestDto request) {
         List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
         return categoryPlaces.stream()
@@ -65,6 +74,7 @@ public class PlaceService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public List<PlaceListResponseDto> getPlacesByKeyword(PlaceSearchByKeywordRequestDto request) {
         List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request)
             .subscribeOn(Schedulers.boundedElastic())
