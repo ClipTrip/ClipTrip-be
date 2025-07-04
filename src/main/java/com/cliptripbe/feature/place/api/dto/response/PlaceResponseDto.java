@@ -1,6 +1,8 @@
 package com.cliptripbe.feature.place.api.dto.response;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -12,6 +14,7 @@ public record PlaceResponseDto(
     String type,
     double longitude,
     double latitude,
+    List<AccessibilityFeature> accessibilityFeatures,
     Boolean bookmarked
 ) {
 
@@ -24,6 +27,7 @@ public record PlaceResponseDto(
             .type(place.getPlaceType().getDisplayName())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
+            .accessibilityFeatures(place.getAccessibilityFeatures())
             .bookmarked(bookmarked)
             .build();
     }
