@@ -83,24 +83,4 @@ public class PlaceController implements PlaceControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
 
-//    @Operation(
-//        summary = "도로명 주소로 장소 사진 조회",
-//        description = "입력한 도로명 주소로 첫 번째 장소를 검색하여, 그 사진을 JPEG 바이너리로 반환합니다."
-//    )
-//    @GetMapping(
-//        path = "/photo/by-address",
-//        produces = MediaType.IMAGE_JPEG_VALUE     // <- 여기서 이미지 타입 명시
-//    )
-//    public Mono<ResponseEntity<ByteArrayResource>> getPhotoByAddress(
-//        @RequestParam("address") String address
-//    ) {
-//        return googlePlacesService.getPhotoByAddress(address)
-//            .map(bytes -> {
-//                var resource = new ByteArrayResource(bytes);
-//                return ResponseEntity.ok()
-//                    .contentLength(bytes.length)
-//                    .contentType(MediaType.IMAGE_JPEG)
-//                    .body(resource);
-//            });
-//    }
 }
