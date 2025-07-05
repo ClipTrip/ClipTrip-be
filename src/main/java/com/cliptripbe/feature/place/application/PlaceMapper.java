@@ -130,4 +130,24 @@ public class PlaceMapper {
             .placeType(PlaceType.ACCOMMODATION)
             .build();
     }
+
+    public Place mapPlaceFour(String line, PlaceType placeType) {
+        String[] tokens = line.split(",");
+        String name = tokens[0].trim();
+        String roadAddress = tokens[1].trim();
+        Double longitude = parseDouble(tokens[2].trim());
+        Double latitude = parseDouble(tokens[3].trim());
+
+        Address address = Address.builder()
+            .roadAddress(roadAddress)
+            .latitude(latitude)
+            .longitude(longitude)
+            .build();
+        return Place
+            .builder()
+            .name(name)
+            .address(address)
+            .placeType(placeType)
+            .build();
+    }
 }

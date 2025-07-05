@@ -2,7 +2,7 @@ spring:
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -10,8 +10,8 @@ spring:
         highlight_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3305/clip-trip-db
-    username: root
-    password: cliptrip!
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3305/clip-trip-db
+#    username: root
+#    password: cliptrip!
