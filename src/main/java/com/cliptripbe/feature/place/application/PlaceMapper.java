@@ -104,4 +104,30 @@ public class PlaceMapper {
             .placeType(PlaceType.LUGGAGE_STORAGE)
             .build();
     }
+
+    public Place mapPlaceAccmodation(String line) {
+
+        String[] tokens = line.split(",");
+
+        if (tokens.length < 15) {
+            throw new IllegalArgumentException("CSV 필드 수 부족: " + tokens.length);
+        }
+
+        String name = tokens[1].trim();        // FCLTY_NM
+        String roadAddress = tokens[2].trim();         // RDNMADR_NM
+        Double longitude = parseDouble(tokens[13].trim()); // FCLTY_LO
+        Double latitude = parseDouble(tokens[14].trim());  // FCLTY_LA
+
+        Address address = Address.builder()
+            .roadAddress(roadAddress)
+            .latitude(latitude)
+            .longitude(longitude)
+            .build();
+        return Place
+            .builder()
+            .name(name)
+            .address(address)
+            .placeType(PlaceType.ACCOMMODATION)
+            .build();
+    }
 }

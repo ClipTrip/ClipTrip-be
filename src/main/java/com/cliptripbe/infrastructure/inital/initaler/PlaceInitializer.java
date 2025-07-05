@@ -57,4 +57,21 @@ public class PlaceInitializer {
             e.printStackTrace();
         }
     }
+
+    public void registerAccomodationPlace() {
+        List<Place> placeList = new ArrayList<>();
+        try (BufferedReader br = s3FileReader.readCsv(
+            FileKind.RB_DSPSN_TURIST_TURSM_INFO.getFileName())) {
+            String line;
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                Place place = placeMapper.mapPlaceAccmodation(line);
+                placeList.add(place);
+            }
+            placeRepository.saveAll(placeList);
+        } catch (IOException e) {
+            // 예외 처리
+            e.printStackTrace();
+        }
+    }
 }
