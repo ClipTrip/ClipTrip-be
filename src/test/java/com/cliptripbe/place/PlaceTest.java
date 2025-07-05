@@ -5,7 +5,7 @@ import static com.cliptripbe.infrastructure.file.FileKind.BF_CULTURE_TOURISM;
 import com.cliptripbe.feature.place.application.PlaceMapper;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
-import com.cliptripbe.infrastructure.s3.S3FileReader;
+import com.cliptripbe.infrastructure.s3.S3Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class PlaceTest {
     private PlaceRepository placeRepository;
 
     @Autowired
-    private S3FileReader s3FileReader;
+    private S3Service s3Service;
 
     @Autowired
     private PlaceMapper placeMapper;
@@ -35,7 +35,7 @@ public class PlaceTest {
     @Test
     void registerPlace_실제CSV_저장확인() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(BF_CULTURE_TOURISM.getFileName())) {
+        try (BufferedReader br = s3Service.readCsv(BF_CULTURE_TOURISM.getFileName())) {
             String line;
             while ((line = br.readLine()) != null) {
                 Place place = placeMapper.mapPlace(line);
