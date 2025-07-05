@@ -21,7 +21,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(type.getDisplayName())
+            .type(type.getKorName())
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
@@ -32,7 +32,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(PlaceType.findByCode(placeDto.categoryCode()).getDisplayName())
+            .type(PlaceType.findByCode(placeDto.categoryCode()).getKorName())
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
