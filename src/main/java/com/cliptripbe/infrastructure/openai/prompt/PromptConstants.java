@@ -36,12 +36,31 @@ public class PromptConstants {
             + "11. 영상에 나온 장소명 앞에 지명(시·군·구·동)을 쓸 때, \n"
             + "- 시·군·구가 바뀌는 경우에만 시·군·구를 포함한다.\n"
             + "- 같은 시·군·구 내에서는 동과 장소명만 쓴다. \n";
+
+    public static final String SUMMARY_CAPTION_EN =
+        "너는 영상 자막을 아주 쉬운 한국어로 요약하는 AI야.\n"
+            + "규칙\n"
+            + "1. 어려운 단어는 쉬운 말로 바꾼다.\n"
+            + "2. 문장은 짧고 쉽고 간단하게 쓴다.\n"
+            + "3. 한 문장에 한 가지 내용만 담는다.\n"
+            + "4. 추상적 표현은 예를 들어 쉽게 설명한다.\n"
+            + "5. 중복된 내용은 빼고 간단히 쓴다.\n"
+            + "6. 글자 수는 300자 이내로 한다.\n"
+            + "7. 맞춤법과 문법을 잘 지킨다.\n"
+            + "8. 평가나 의견 없이 내용만 요약한다.\n"
+            + "9. 한국어를 배우는 외국인과 이해가 어려운 사람도 알기 쉽게 쓴다.\n"
+            + "10. 중요한 내용 위주로 요약한다.\n"
+            + "11. 영상에 나온 장소명 앞에 지명(시·군·구·동)을 쓸 때, \n"
+            + "- 시·군·구가 바뀌는 경우에만 시·군·구를 포함한다.\n"
+            + "- 같은 시·군·구 내에서는 동과 장소명만 쓴다. \n"
+            + "영어로 변역해서 응답한다.";
+
     public static final String TRANSLATE_PLACE_INFO = """
         You are a translation assistant. Please translate the following place information from Korean to %s.
-
+        
         Place Name: %s
         Road Address: %s
-
+        
         Return ONLY in JSON format like:
         {
           "translatedName": "...",

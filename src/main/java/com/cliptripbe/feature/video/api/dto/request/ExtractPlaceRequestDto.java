@@ -7,7 +7,16 @@ public record ExtractPlaceRequestDto(
     String youtubeUrl
 ) {
 
-    public Video toVideo(String summaryKo) {
+    public Video toVideo(String summaryKo, String summaryTranslated) {
+        if (summaryTranslated != null) {
+            return Video.builder()
+                .url(youtubeUrl)
+                .youtubeVideoId(CaptionUtils.extractVideoId(youtubeUrl))
+                .summaryKo(summaryKo)
+                .summaryTranslated(summaryTranslated)
+                .translatedLang("ENGLISH")
+                .build();
+        }
         return Video.builder()
             .url(youtubeUrl)
             .youtubeVideoId(CaptionUtils.extractVideoId(youtubeUrl))

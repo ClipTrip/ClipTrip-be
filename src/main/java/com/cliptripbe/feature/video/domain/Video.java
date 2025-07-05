@@ -37,6 +37,6 @@ public class Video extends BaseTimeEntity {
     @Column(name = "summary_translated", columnDefinition = "TEXT")
     private String summaryTranslated;
 
-    @Column(name = "translated_lang_code")
-    private String translatedLangCode;
+    @Column(name = "translated_lang")
+    private String translatedLang;
 }
