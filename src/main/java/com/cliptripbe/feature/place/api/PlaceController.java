@@ -13,6 +13,7 @@ import com.cliptripbe.global.auth.security.CustomerDetails;
 
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,7 +50,7 @@ public class PlaceController implements PlaceControllerDocs {
     }
 
     @GetMapping("/{placeId}")
-    public ApiResponse<?> getPlaceById(
+    public ApiResponse<PlaceResponseDto> getPlaceById(
         @PathVariable(value = "placeId") Long placeId,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
@@ -59,7 +60,7 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping("/category")
     public ApiResponse<List<PlaceListResponseDto>> getPlacesByCategory(
-        @ModelAttribute PlaceSearchByCategoryRequestDto request
+        @ModelAttribute @Valid PlaceSearchByCategoryRequestDto request
     ) {
         List<PlaceListResponseDto> places = placeService.getPlacesByCategory(request);
         return ApiResponse.success(SuccessType.SUCCESS, places);
@@ -67,7 +68,7 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping("/keyword")
     public ApiResponse<List<PlaceListResponseDto>> getPlacesByKeyword(
-        @ModelAttribute PlaceSearchByKeywordRequestDto request) {
+        @ModelAttribute @Valid PlaceSearchByKeywordRequestDto request) {
         List<PlaceListResponseDto> places = placeService.getPlacesByKeyword(request);
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
