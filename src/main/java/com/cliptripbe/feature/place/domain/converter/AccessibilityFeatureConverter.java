@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain;
+package com.cliptripbe.feature.place.domain.converter;
 
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import jakarta.persistence.AttributeConverter;
