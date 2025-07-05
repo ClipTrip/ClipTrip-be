@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.place.domain.entity;
 
-import com.cliptripbe.feature.place.domain.AccessibilityFeatureConverter;
+import com.cliptripbe.feature.place.domain.converter.AccessibilityFeatureConverter;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;

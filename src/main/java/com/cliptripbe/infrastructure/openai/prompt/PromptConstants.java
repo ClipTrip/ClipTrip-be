@@ -36,5 +36,16 @@ public class PromptConstants {
             + "11. 영상에 나온 장소명 앞에 지명(시·군·구·동)을 쓸 때, \n"
             + "- 시·군·구가 바뀌는 경우에만 시·군·구를 포함한다.\n"
             + "- 같은 시·군·구 내에서는 동과 장소명만 쓴다. \n";
+    public static final String TRANSLATE_PLACE_INFO = """
+        You are a translation assistant. Please translate the following place information from Korean to %s.
 
+        Place Name: %s
+        Road Address: %s
+
+        Return ONLY in JSON format like:
+        {
+          "translatedName": "...",
+          "translatedRoadAddress": "..."
+        }
+        """;
 }

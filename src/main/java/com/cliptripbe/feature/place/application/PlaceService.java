@@ -31,6 +31,7 @@ public class PlaceService {
     private final BookmarkRepository bookmarkRepository;
     private final PlaceFinder placeFinder;
     private final PlaceRegister placeRegister;
+    private final PlaceTranslationService placeTranslationService;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
@@ -56,10 +57,13 @@ public class PlaceService {
 
 
     public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
-        return placeFinder.getOptionPlaceByPlaceInfo(
+        Place place = placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequestDto.placeName(),
             placeInfoRequestDto.address().roadAddress()
         ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
+
+        placeTranslationService.registerPlace(place);
+        return place;
     }
 
     @Transactional(readOnly = true)
