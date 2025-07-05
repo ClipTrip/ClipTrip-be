@@ -20,9 +20,7 @@ import org.springframework.stereotype.Component;
 public class PlaceInitializer {
 
     private final PlaceRepository placeRepository;
-
     private final S3Service s3Service;
-
     private final PlaceMapper placeMapper;
 
     public void registerCulturePlace() {
@@ -60,7 +58,7 @@ public class PlaceInitializer {
 
     public void registerAccomodationPlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(
+        try (BufferedReader br = s3Service.readCsv(
             FileKind.RB_DSPSN_TURIST_TURSM_INFO.getFileName())) {
             String line;
             br.readLine();

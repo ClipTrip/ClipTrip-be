@@ -8,6 +8,7 @@ import lombok.Builder;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record PlaceListResponseDto(
+    Long placeId,
     String placeName,
     String roadAddress,
     String phone,
