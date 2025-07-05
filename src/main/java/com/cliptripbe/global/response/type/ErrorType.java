@@ -31,6 +31,7 @@ public enum ErrorType {
 
     // google api
     GOOGLE_PLACES_EMPTY_RESPONSE(404, "해당 주소로 검색된 장소 또는 사진이 없습니다."),
+    GOOGLE_PLACES_NO_RESPONSE(502, "google places로부터 응답을 받지 못했습니다."),
     ;
 
     private final int httpStatusCode;

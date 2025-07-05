@@ -33,7 +33,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @PostMapping
-    public ApiResponse<?> createBookmark(
+    public ApiResponse<Long> createBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @RequestBody CreateBookmarkRequestDto createBookmarkRequestDto
     ) {
@@ -45,7 +45,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @PutMapping("/{bookmarkId}")
-    public ApiResponse<?> updateBookmark(
+    public ApiResponse<Long> updateBookmark(
         @PathVariable(value = "bookmarkId") Long bookmarkId,
         @RequestBody UpdateBookmarkRequestDto updateBookmarkRequestDto
     ) {
@@ -58,7 +58,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @PostMapping("/{bookmarkId}")
-    public ApiResponse<?> addBookmark(
+    public ApiResponse<Long> addBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId,
         @RequestBody PlaceInfoRequestDto placeInfoRequestDto
@@ -74,7 +74,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @GetMapping
-    public ApiResponse<?> getUserBookmark(
+    public ApiResponse<List<BookmarkListResponseDto>> getUserBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         List<BookmarkListResponseDto> list = bookmarkService.getUserBookmark(
@@ -84,7 +84,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @GetMapping("/{bookmarkId}")
-    public ApiResponse<?> getBookmarkInfo(
+    public ApiResponse<BookmarkInfoResponseDto> getBookmarkInfo(
         @PathVariable Long bookmarkId
     ) {
         BookmarkInfoResponseDto responseDto = bookmarkService.getBookmarkInfo(bookmarkId);
@@ -102,7 +102,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     }
 
     @GetMapping("/default")
-    public ApiResponse<?> getDefaultBookmarkList() {
+    public ApiResponse<List<BookmarkListResponseDto>> getDefaultBookmarkList() {
         List<BookmarkListResponseDto> defaultBookmarkList = bookmarkService.getDefaultBookmarkList();
         return ApiResponse.success(SuccessType.SUCCESS, defaultBookmarkList);
     }

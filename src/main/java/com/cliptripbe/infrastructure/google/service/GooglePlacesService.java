@@ -34,10 +34,14 @@ public class GooglePlacesService {
             .bodyToMono(GooglePlacesSearchResponse.class)
             .flatMap(resp -> {
                 var results = resp.results();
-                if (results.isEmpty() || results.get(0).photos().isEmpty()) {
+                if (results == null || results.isEmpty()) {
                     return Mono.error(new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
                 }
-                String photoRef = results.get(0).photos().get(0).photoReference();
+                var photos = results.get(0).photos();
+                if (photos == null || photos.isEmpty()) {
+                    return Mono.error(new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
+                }
+                String photoRef = photos.get(0).photoReference();
                 return fetchPhotoByReference(photoRef);
             });
     }

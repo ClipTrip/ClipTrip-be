@@ -16,7 +16,8 @@ public record PlaceResponseDto(
     double longitude,
     double latitude,
     List<AccessibilityFeature> accessibilityFeatures,
-    Boolean bookmarked
+    Boolean bookmarked,
+    String imageUrl
 ) {
 
     public static PlaceResponseDto of(Place place, Boolean bookmarked) {
@@ -30,6 +31,7 @@ public record PlaceResponseDto(
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
             .bookmarked(bookmarked)
+            .imageUrl(place.getImageUrl())
             .build();
     }
 
@@ -48,6 +50,7 @@ public record PlaceResponseDto(
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
             .bookmarked(bookmarked)
+            .imageUrl(place.getImageUrl())
             .build();
     }
 }

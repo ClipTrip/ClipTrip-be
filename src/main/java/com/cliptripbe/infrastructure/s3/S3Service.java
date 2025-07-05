@@ -3,6 +3,7 @@ package com.cliptripbe.infrastructure.s3;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -37,18 +38,19 @@ public class S3Service {
     }
 
     public String upload(String key, byte[] data) {
+        String filename = UUID.randomUUID().toString() + ".png";
+        String fullKey = key + filename;
         PutObjectRequest req = PutObjectRequest.builder()
             .bucket(bucket)
-            .key(key)
-            .acl(ObjectCannedACL.PUBLIC_READ)
-            .contentType("image/jpeg")
+            .key(fullKey)
+            .contentType("image/png")
             .build();
 
         s3Client.putObject(req, RequestBody.fromBytes(data));
         return String.format("https://%s.s3.%s.amazonaws.com/%s",
             bucket,
             awsRegion.id(),
-            key
+            fullKey
         );
     }
 }
