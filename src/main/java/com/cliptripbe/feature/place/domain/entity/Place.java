@@ -47,18 +47,23 @@ public class Place extends BaseTimeEntity {
     @Enumerated(value = EnumType.STRING)
     private PlaceType placeType;
 
+    @Column
+    private String imageUrl;
+
     @Builder
     public Place(
         String name,
         String phoneNumber,
         Address address,
         List<AccessibilityFeature> accessibilityFeatures,
-        PlaceType placeType
+        PlaceType placeType,
+        String imageUrl
     ) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
         this.accessibilityFeatures = accessibilityFeatures;
         this.placeType = placeType;
+        this.imageUrl = imageUrl;
     }
 }
