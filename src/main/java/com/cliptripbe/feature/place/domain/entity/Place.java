@@ -66,4 +66,8 @@ public class Place extends BaseTimeEntity {
         this.placeType = placeType;
         this.imageUrl = imageUrl;
     }
+
+    public void addImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
 }

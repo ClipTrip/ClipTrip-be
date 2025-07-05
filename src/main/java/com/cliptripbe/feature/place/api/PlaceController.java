@@ -17,6 +17,7 @@ import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -82,5 +83,27 @@ public class PlaceController implements PlaceControllerDocs {
         List<PlaceListResponseDto> places = placeService.getPlacesByKeyword(request);
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
+
+    @Operation(
+        summary = "키워드로 구글 장소 사진 조회",
+        description = "입력한 키워드로 장소를 검색하고, 첫 번째 결과의 사진을 JPEG 바이너리로 반환합니다."
+    )
+    @GetMapping(
+        path = "/photo/by-keyword",
+        produces = MediaType.IMAGE_JPEG_VALUE
+    )
+    public Mono<ResponseEntity<ByteArrayResource>> getPhotoByKeyword(
+        @RequestParam("keyword") String keyword
+    ) {
+        return googlePlacesService.getPhotoByAddress(keyword)
+            .map(bytes -> {
+                ByteArrayResource resource = new ByteArrayResource(bytes);
+                return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentLength(bytes.length)
+                    .body(resource);
+            });
+    }
+
 
 }
