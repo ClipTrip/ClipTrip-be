@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
+import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,6 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,17 +29,17 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Column
-    String name;
+    private String name;
 
     @Column
-    String description;
+    private String description;
 
     @JoinColumn
     @ManyToOne
-    User user;
+    private User user;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SchedulePlace> schedulePlaceList = new ArrayList<>();
@@ -49,8 +52,7 @@ public class Schedule {
     }
 
     public static Schedule createDefault(User user) {
-        return Schedule
-            .builder()
+        return Schedule.builder()
             .user(user)
             .description(DESCRIPTION)
             .name(NAME)
@@ -69,5 +71,11 @@ public class Schedule {
 
     public void clear() {
         this.schedulePlaceList.clear();
+    }
+
+    public List<Place> getPlaces() {
+        return schedulePlaceList.stream()
+            .map(SchedulePlace::getPlace)
+            .collect(Collectors.toList());
     }
 }
