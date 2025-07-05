@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.place.domain.type;
 
+import java.util.Arrays;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -26,11 +28,9 @@ public enum PlaceType {
     private final String korName;
 
     public static PlaceType findByCode(String code) {
-        for (PlaceType type : values()) {
-            if (type.code.equals(code)) {
-                return type;
-            }
-        }
-        return ETC;
+        return Arrays.stream(values())
+            .filter(type -> Objects.equals(type.getCode(), code))
+            .findFirst()
+            .orElse(ETC);
     }
 }

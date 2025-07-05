@@ -28,6 +28,10 @@ public enum ErrorType {
     // video
     CHATGPT_NO_RESPONSE(502, "ChatGPT로부터 응답을 받지 못했습니다."),
     KAKAO_MAP_NO_RESPONSE(502, "kakaoMap으로부터 응답을 받지 못했습니다."),
+
+    // google api
+    GOOGLE_PLACES_EMPTY_RESPONSE(404, "해당 주소로 검색된 장소 또는 사진이 없습니다."),
+    GOOGLE_PLACES_NO_RESPONSE(502, "google places로부터 응답을 받지 못했습니다."),
     ;
 
     private final int httpStatusCode;

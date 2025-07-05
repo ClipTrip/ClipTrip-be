@@ -9,7 +9,7 @@ import com.cliptripbe.feature.place.application.PlaceMapper;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.inital.type.DefaultData;
-import com.cliptripbe.infrastructure.s3.S3FileReader;
+import com.cliptripbe.infrastructure.s3.S3Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,13 +23,13 @@ public class PlaceInitializer {
 
     private final PlaceRepository placeRepository;
 
-    private final S3FileReader s3FileReader;
+    private final S3Service s3Service;
 
     private final PlaceMapper placeMapper;
 
     public void registerCulturePlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(BF_CULTURE_TOURISM.getFileName())) {
+        try (BufferedReader br = s3Service.readCsv(BF_CULTURE_TOURISM.getFileName())) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
@@ -45,7 +45,7 @@ public class PlaceInitializer {
 
     public List<Place> registerStoragePlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(
+        try (BufferedReader br = s3Service.readCsv(
             STORAGE_SEOUL.getFileName())) {
             String line;
             br.readLine();
@@ -63,7 +63,7 @@ public class PlaceInitializer {
 
     public List<Place> registerAccomodationPlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(
+        try (BufferedReader br = s3Service.readCsv(
             ACCOMMODATION_SEOUL.getFileName())) {
             String line;
             br.readLine();
@@ -81,7 +81,7 @@ public class PlaceInitializer {
 
     public List<Place> registerFourCoulmn(DefaultData defaultData) {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(
+        try (BufferedReader br = s3Service.readCsv(
             defaultData.getFileName())) {
             String line;
             br.readLine();

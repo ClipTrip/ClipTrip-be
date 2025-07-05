@@ -24,7 +24,7 @@ public class VideoController implements VideoControllerDocs {
     private final VideoService videoService;
 
     @PostMapping()
-    public ApiResponse<?> extractPlacesFromYoutube(
+    public ApiResponse<VideoScheduleResponse> extractPlacesFromYoutube(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @RequestBody ExtractPlaceRequestDto request
     ) {
