@@ -11,7 +11,7 @@ public record PlaceListResponseDto(
     String placeName,
     String roadAddress,
     String phone,
-    String type,
+    PlaceType type,
     double longitude,
     double latitude
 ) {
@@ -21,7 +21,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(type.getDisplayName())
+            .type(type)
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
@@ -32,7 +32,7 @@ public record PlaceListResponseDto(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(PlaceType.findByCode(placeDto.categoryCode()).getDisplayName())
+            .type(PlaceType.findByCode(placeDto.categoryCode()))
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .build();
