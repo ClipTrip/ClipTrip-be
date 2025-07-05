@@ -3,7 +3,6 @@ package com.cliptripbe.feature.place.application;
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,7 @@ public class PlaceRegister {
             .name(placeInfoRequestDto.placeName())
             .phoneNumber(placeInfoRequestDto.phoneNumber())
             .address(placeInfoRequestDto.address())
-            .placeType(PlaceType.ETC)
+            .placeType(placeInfoRequestDto.type())
             .build();
         placeRepository.save(place);
         return place;
