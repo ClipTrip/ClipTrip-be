@@ -7,14 +7,18 @@ import lombok.Builder;
 public record VideoResponseDto(
     Long videoId,
     String url,
-    String summaryKo
+    String summary
 ) {
 
     public static VideoResponseDto from(Video video) {
+        String summaryText = video.getSummaryTranslated() != null
+            ? video.getSummaryTranslated()
+            : video.getSummaryKo();
+
         return VideoResponseDto.builder()
             .videoId(video.getId())
             .url(video.getUrl())
-            .summaryKo(video.getSummaryKo())
+            .summary(summaryText)
             .build();
     }
 }

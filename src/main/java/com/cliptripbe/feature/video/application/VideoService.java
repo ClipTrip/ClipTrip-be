@@ -10,6 +10,7 @@ import com.cliptripbe.feature.schedule.application.ScheduleRegister;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
 import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.domain.Video;
@@ -56,6 +57,9 @@ public class VideoService {
         String requestSummaryPrompt =
             PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption.captions();
 
+        String requestSummaryEnPrompt =
+            PromptConstants.SUMMARY_CAPTION_EN + System.lineSeparator() + caption.captions();
+
         List<String> extractPlacesText = chatGPTService.ask(requestPlacePrompt)
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::extractPlaces)
@@ -68,13 +72,22 @@ public class VideoService {
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
+        String summaryTranslated = null;
+        if (user.getLanguage() == Language.ENGLISH) {
+            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt)
+                .subscribeOn(Schedulers.boundedElastic())
+                .map(ChatGPTUtils::removeLiteralNewlines)
+                .blockOptional()
+                .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+        }
+
         List<PlaceDto> places = kakaoMapService.searchFirstPlaces(extractPlacesText)
             .subscribeOn(Schedulers.boundedElastic())
             .blockOptional()
             .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
 
         List<Place> placeEntities = placeRegister.registerAllPlaces(places);
-        Video video = videoRepository.save(request.toVideo(summaryKo));
+        Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
         Schedule schedule = scheduleRegister.registerSchedule(user);
 
         placeEntities.stream()
