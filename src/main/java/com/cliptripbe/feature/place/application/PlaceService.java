@@ -12,8 +12,10 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoRespo
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import java.util.List;
@@ -32,6 +34,7 @@ public class PlaceService {
     private final PlaceFinder placeFinder;
     private final PlaceRegister placeRegister;
     private final PlaceTranslationService placeTranslationService;
+    private final PlaceTranslationFinder placeTranslationFinder;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
@@ -52,7 +55,12 @@ public class PlaceService {
         Place place = placeFinder.getPlaceById(placeId);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
-        return PlaceResponseDto.of(place, bookmarked);
+        if (user.getLanguage() == Language.KOREAN) {
+            return PlaceResponseDto.of(place, bookmarked);
+        }
+        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
+            user.getLanguage());
+        return PlaceResponseDto.of(place, bookmarked, placeTranslation);
     }
 
 
