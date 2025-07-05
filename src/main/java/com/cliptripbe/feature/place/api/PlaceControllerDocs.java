@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,7 +28,7 @@ public interface PlaceControllerDocs {
     @Operation(
         summary = "장소카드 상세조회, 로그인 필요",
         description = "장소 카드 상세 조회입니다. 유저가 해당 장소에 북마크를 했는지 여부를 알려줍니다.")
-    ApiResponse<?> getPlaceById(
+    ApiResponse<PlaceResponseDto> getPlaceById(
         Long placeId,
         CustomerDetails customerDetails
     );

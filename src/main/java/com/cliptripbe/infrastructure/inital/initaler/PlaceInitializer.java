@@ -7,7 +7,7 @@ import com.cliptripbe.feature.place.application.PlaceMapper;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.file.FileKind;
-import com.cliptripbe.infrastructure.s3.S3FileReader;
+import com.cliptripbe.infrastructure.s3.S3Service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ public class PlaceInitializer {
 
     private final PlaceRepository placeRepository;
 
-    private final S3FileReader s3FileReader;
+    private final S3Service s3Service;
 
     private final PlaceMapper placeMapper;
 
     public void registerCulturePlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(BF_CULTURE_TOURISM.getFileName())) {
+        try (BufferedReader br = s3Service.readCsv(BF_CULTURE_TOURISM.getFileName())) {
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
@@ -43,7 +43,7 @@ public class PlaceInitializer {
 
     public void registerStoragePlace() {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3FileReader.readCsv(
+        try (BufferedReader br = s3Service.readCsv(
             FileKind.RB_TURIST_THNG_DPSTRY_LCINFO.getFileName())) {
             String line;
             br.readLine();

@@ -28,4 +28,9 @@ public class S3Config {
             .credentialsProvider(StaticCredentialsProvider.create(credentials))
             .build();
     }
+
+    @Bean
+    public Region awsRegion() {
+        return Region.of(region);
+    }
 }

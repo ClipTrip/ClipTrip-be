@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,9 @@ public class WebClientConfig {
     @Value("${kakao.api.base-url:https://dapi.kakao.com}")
     private String kakaoBaseUrl;
 
+    @Value("${google.api.base-url:https://maps.googleapis.com}")
+    private String googleBaseUrl;
+
     @Value("${captions.service.base-url}")
     private String captionsBaseUrl;
 
@@ -28,6 +32,10 @@ public class WebClientConfig {
 
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
+
+    @Getter
+    @Value("${google.api.key}")
+    private String googleApiKey;
 
     @Bean
     @Qualifier("openAIWebClient")
@@ -45,6 +53,15 @@ public class WebClientConfig {
         return builder
             .baseUrl(kakaoBaseUrl)
             .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
+            .build();
+    }
+
+    @Bean
+    @Qualifier("googleWebClient")
+    public WebClient googleMapsWebClient(WebClient.Builder builder) {
+        return builder
+            .baseUrl(googleBaseUrl)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
     }
 
