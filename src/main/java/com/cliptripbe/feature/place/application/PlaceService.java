@@ -79,7 +79,7 @@ public class PlaceService {
         List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->
-                PlaceListResponseDto.of(
+                PlaceListResponseDto.ofDto(
                     placeDto,
                     PlaceType.findByCode(request.categoryCode()))
             )
@@ -94,7 +94,7 @@ public class PlaceService {
             .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
 
         return keywordPlaces.stream()
-            .map(PlaceListResponseDto::from)
+            .map(PlaceListResponseDto::fromDto)
             .toList();
     }
 }
