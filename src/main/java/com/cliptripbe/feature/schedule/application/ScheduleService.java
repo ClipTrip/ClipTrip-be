@@ -1,8 +1,13 @@
 package com.cliptripbe.feature.schedule.application;
 
+import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
+
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.application.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
@@ -12,6 +17,7 @@ import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,7 +30,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final PlaceService placeService;
-
+    private final PlaceTranslationFinder placeTranslationFinder;
 //    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
 //        Schedule schedule = Schedule
 //            .builder()
@@ -92,10 +98,24 @@ public class ScheduleService {
     }
 
 
-    public ScheduleInfoResponseDto getScheduleById(Long scheduleId) {
+    public ScheduleInfoResponseDto getScheduleById(
+        User user,
+        Long scheduleId
+    ) {
         Schedule schedule = getSchedule(scheduleId);
-        return SchedulePlaceMapper.mapScheduleInfoResponseDto(
-            schedule);
+        if (user.getLanguage() == KOREAN) {
+            return SchedulePlaceMapper.mapScheduleInfoResponseDto(
+                schedule);
+        }
+        List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
+        for (SchedulePlace sp : schedule.getSchedulePlaceList()) {
+            Place place = sp.getPlace();
+            PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
+                place,
+                user.getLanguage());
+            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation));
+        }
+        return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
     }
 
     private Schedule getSchedule(Long scheduleId) {
