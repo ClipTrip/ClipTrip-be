@@ -95,10 +95,12 @@ public class BookmarkService {
 
     public BookmarkInfoResponseDto getBookmarkInfo(Long bookmarkId, User user) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+
         if (user.getLanguage() == KOREAN) {
             return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
         }
-        List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
+        List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces().stream().limit(10)
+            .toList();
         List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
         for (BookmarkPlace bp : bookmarkPlaces) {
             Place place = bp.getPlace();
