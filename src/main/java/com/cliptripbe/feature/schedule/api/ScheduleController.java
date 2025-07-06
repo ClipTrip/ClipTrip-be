@@ -45,7 +45,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         scheduleService.create(customerDetails.getUser());
         return ApiResponse.success(SuccessType.CREATED);
     }
-    
+
     @Override
     @PutMapping("/{scheduleId}")
     public ApiResponse<?> updateSchedule(
@@ -99,9 +99,11 @@ public class ScheduleController implements ScheduleControllerDocs {
     @Override
     @GetMapping("/{scheduleId}")
     public ApiResponse<?> getUserSchedule(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId
     ) {
         ScheduleInfoResponseDto scheduleInfoResponseDto = scheduleService.getScheduleById(
+            customerDetails.getUser(),
             scheduleId);
         return ApiResponse.success(SuccessType.SUCCESS, scheduleInfoResponseDto);
     }

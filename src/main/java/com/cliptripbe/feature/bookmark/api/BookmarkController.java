@@ -85,9 +85,11 @@ public class BookmarkController implements BookmarkControllerDocs {
     @Override
     @GetMapping("/{bookmarkId}")
     public ApiResponse<BookmarkInfoResponseDto> getBookmarkInfo(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId
     ) {
-        BookmarkInfoResponseDto responseDto = bookmarkService.getBookmarkInfo(bookmarkId);
+        BookmarkInfoResponseDto responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
+            customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, responseDto);
     }
 

@@ -34,7 +34,7 @@ public interface ScheduleControllerDocs {
     ApiResponse<?> getUserScheduleList(CustomerDetails customerDetails);
 
     @Operation(summary = "유저 일정 상제 조회하기")
-    ApiResponse<?> getUserSchedule(Long scheduleId);
+    ApiResponse<?> getUserSchedule(CustomerDetails customerDetails, Long scheduleId);
 
     @Operation(summary = "유저 일정 삭제하기")
     ApiResponse<?> deleteUserSchedule(

@@ -35,7 +35,10 @@ public interface BookmarkControllerDocs {
     ApiResponse<List<BookmarkListResponseDto>> getUserBookmark(CustomerDetails customerDetails);
 
     @Operation(summary = "북마크안의 장소 리스트 조회하기, \n로그인 필요")
-    ApiResponse<BookmarkInfoResponseDto> getBookmarkInfo(Long bookmarkId);
+    ApiResponse<BookmarkInfoResponseDto> getBookmarkInfo(
+        CustomerDetails customerDetails,
+        Long bookmarkId
+    );
 
     @Operation(summary = "북마크 삭제하기, \n로그인 필요")
     ApiResponse<?> deleteBookmark(
