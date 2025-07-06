@@ -2,6 +2,7 @@ package com.cliptripbe.feature.place.api.dto.response;
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
@@ -45,6 +46,21 @@ public record PlaceListResponseDto(
             .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
+            .phone(place.getPhoneNumber())
+            .type(place.getPlaceType())
+            .longitude(place.getAddress().longitude())
+            .latitude(place.getAddress().latitude())
+            .build();
+    }
+
+    public static PlaceListResponseDto of(
+        Place place,
+        PlaceTranslation placeTranslation
+    ) {
+        return PlaceListResponseDto.builder()
+            .placeId(place.getId())
+            .placeName(placeTranslation.getName())
+            .roadAddress(placeTranslation.getRoadAddress())
             .phone(place.getPhoneNumber())
             .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())
