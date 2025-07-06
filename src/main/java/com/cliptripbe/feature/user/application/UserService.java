@@ -1,5 +1,8 @@
 package com.cliptripbe.feature.user.application;
 
+import com.cliptripbe.feature.bookmark.application.BookmarkFinder;
+import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
+import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
 import com.cliptripbe.feature.user.api.dto.response.UserInfoResponse;
@@ -7,6 +10,7 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import com.cliptripbe.global.auth.AuthService;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,8 @@ public class UserService {
     private final UserChecker userChecker;
     private final UserRepository userRepository;
     private final UserLoader userLoader;
+    private final BookmarkFinder bookmarkFinder;
+    private final BookmarkRepository bookmarkRepository;
 
     @Transactional
     public UserInfoResponse signUp(UserSignUpRequestDto signUpDto) {
@@ -31,6 +37,19 @@ public class UserService {
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
         userRepository.save(user);
+        List<Bookmark> defaultBookmarks = bookmarkFinder.getDefaultBookmark();
+        List<Bookmark> newUserBookmarks = new ArrayList<>();
+
+        for (Bookmark bm : defaultBookmarks) {
+            Bookmark copied = Bookmark
+                .builder()
+                .name(bm.getName())
+                .user(user)
+                .description(bm.getDescription())
+                .build();
+            newUserBookmarks.add(copied);
+        }
+        bookmarkRepository.saveAll(newUserBookmarks);
         return UserInfoResponse.from(user);
     }
 

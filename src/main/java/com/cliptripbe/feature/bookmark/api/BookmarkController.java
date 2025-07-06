@@ -103,9 +103,9 @@ public class BookmarkController implements BookmarkControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS);
     }
 
-    @GetMapping("/default")
-    public ApiResponse<List<BookmarkListResponseDto>> getDefaultBookmarkList() {
-        List<BookmarkListResponseDto> defaultBookmarkList = bookmarkService.getDefaultBookmarkList();
-        return ApiResponse.success(SuccessType.SUCCESS, defaultBookmarkList);
-    }
+//    @GetMapping("/default")
+//    public ApiResponse<List<BookmarkListResponseDto>> getDefaultBookmarkList() {
+//        List<BookmarkListResponseDto> defaultBookmarkList = bookmarkService.getDefaultBookmarkList();
+//        return ApiResponse.success(SuccessType.SUCCESS, defaultBookmarkList);
+//    }
 }
