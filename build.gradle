@@ -65,6 +65,9 @@ dependencies {
 
     // macOS용 네이티브 DNS 모듈
     implementation "io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64"
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
 }
 
 tasks.named('test') {
