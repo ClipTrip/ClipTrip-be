@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.api.dto;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import lombok.Builder;
@@ -42,6 +43,7 @@ public record PlaceDto(
                 .roadAddress(roadAddress)
                 .build()
             )
+            .placeType(PlaceType.findByCode(categoryCode))
             .build();
     }
 }
