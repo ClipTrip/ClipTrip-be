@@ -17,10 +17,14 @@ public record PlaceDto(
 ) {
 
     public static PlaceDto from(KakaoMapResponse.Document document) {
+        String roadAddress = document.road_address_name();
+        if (document.road_address_name() == null || document.road_address_name().isEmpty()) {
+            roadAddress = document.address_name();
+        }
         return PlaceDto.builder()
             .placeName(document.place_name())
             .address(document.address_name())
-            .roadAddress(document.road_address_name())
+            .roadAddress(roadAddress)
             .phone(document.phone())
             .categoryCode(document.category_group_code())
             .longitude(Double.parseDouble(document.x()))
