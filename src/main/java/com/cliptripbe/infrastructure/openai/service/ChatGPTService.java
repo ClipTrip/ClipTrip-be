@@ -26,7 +26,7 @@ public class ChatGPTService {
             .build();
 
         ChatGPTRequest request = ChatGPTRequest.builder()
-            .model("gpt-4o-mini")
+            .model("gpt-4.1-nano")
             .messages(List.of(message))
             .build();
 
