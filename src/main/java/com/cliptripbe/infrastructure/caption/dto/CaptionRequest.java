@@ -11,7 +11,7 @@ public record CaptionRequest(
     public static CaptionRequest of(String youtubeUrl) {
         return CaptionRequest.builder()
             .youtubeUrl(youtubeUrl)
-            .langs("ko, en")
+            .langs("ko,en")
             .build();
     }
 }
