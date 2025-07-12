@@ -31,6 +31,8 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final PlaceService placeService;
     private final PlaceTranslationFinder placeTranslationFinder;
+
+
 //    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
 //        Schedule schedule = Schedule
 //            .builder()
