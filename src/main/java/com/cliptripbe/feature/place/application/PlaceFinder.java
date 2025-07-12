@@ -1,9 +1,11 @@
 package com.cliptripbe.feature.place.application;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,5 +28,9 @@ public class PlaceFinder {
             .orElseThrow(
                 () -> new CustomException(ErrorType.ENTITY_NOT_FOUND)
             );
+    }
+
+    public List<Place> getPlaceByType(PlaceType placeType) {
+        return placeRepository.findByPlaceType(placeType);
     }
 }

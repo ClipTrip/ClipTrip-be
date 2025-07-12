@@ -21,4 +21,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         @Param("placeType") PlaceType placeType);
 
 
+    List<Place> findByPlaceType(PlaceType placeType);
 }
