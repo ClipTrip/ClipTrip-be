@@ -9,29 +9,20 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoRespo
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
-
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
 import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,6 +72,15 @@ public class PlaceController implements PlaceControllerDocs {
     public ApiResponse<List<PlaceListResponseDto>> getPlacesByKeyword(
         @ModelAttribute @Valid PlaceSearchByKeywordRequestDto request) {
         List<PlaceListResponseDto> places = placeService.getPlacesByKeyword(request);
+        return ApiResponse.success(SuccessType.SUCCESS, places);
+    }
+
+    @GetMapping("/luggage-storages")
+    public ApiResponse<List<PlaceListResponseDto>> getLuggageStorages(
+        @ModelAttribute @Valid LuggageStorageRequestDto luggageStorageRequestDto
+    ) {
+        List<PlaceListResponseDto> places = placeService.getLuggageStorage(
+            luggageStorageRequestDto);
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
 }
