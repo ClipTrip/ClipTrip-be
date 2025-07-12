@@ -75,6 +75,7 @@ public class PlaceController implements PlaceControllerDocs {
         return ApiResponse.success(SuccessType.SUCCESS, places);
     }
 
+    @Override
     @GetMapping("/luggage-storages")
     public ApiResponse<List<PlaceListResponseDto>> getLuggageStorages(
         @ModelAttribute @Valid LuggageStorageRequestDto luggageStorageRequestDto
