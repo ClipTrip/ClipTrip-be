@@ -66,12 +66,6 @@ public class VideoService {
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
-//        String extractPlacesText1 = chatGPTService.ask(requestPlacePrompt)
-//            .subscribeOn(Schedulers.boundedElastic())
-////            .map(ChatGPTUtils::extractPlaces)
-//            .blockOptional()
-//            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
-
         String summaryKo = chatGPTService.ask(requestSummaryPrompt)
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::removeLiteralNewlines)

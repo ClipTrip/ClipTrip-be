@@ -26,6 +26,7 @@ public class PlaceRegister {
         List<String> addressList = placeDtoList.stream()
             .map(PlaceDto::roadAddress)
             .filter(Objects::nonNull)
+            .distinct()
             .toList();
 
         if (placeDtoList.isEmpty()) {
@@ -39,7 +40,6 @@ public class PlaceRegister {
 
         List<Place> toSavePlaces = placeDtoList.stream()
             .filter(dto -> !existingAddresses.contains(dto.roadAddress()))
-            .distinct()
             .filter(distinctByKey(PlaceDto::roadAddress))
             .map(PlaceDto::toPlace)
             .toList();
