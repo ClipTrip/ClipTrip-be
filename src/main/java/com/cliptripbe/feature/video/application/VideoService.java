@@ -23,7 +23,7 @@ import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
-import com.cliptripbe.infrastructure.openai.utils.ChatGPTUtils;
+import com.cliptripbe.global.util.ChatGPTUtils;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,11 +1,12 @@
 package com.cliptripbe.feature.place.application;
 
+import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
+
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -39,6 +40,7 @@ public class PlaceRegister {
         List<Place> toSavePlaces = placeDtoList.stream()
             .filter(dto -> !existingAddresses.contains(dto.roadAddress()))
             .distinct()
+            .filter(distinctByKey(PlaceDto::roadAddress))
             .map(PlaceDto::toPlace)
             .toList();
 
