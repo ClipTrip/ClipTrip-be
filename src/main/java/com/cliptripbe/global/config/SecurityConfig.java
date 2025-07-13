@@ -35,9 +35,9 @@ public class SecurityConfig {
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 .requestMatchers("/api/v1/users/**").permitAll()
-                .anyRequest().hasRole(Role.USER.getRole())
+                .anyRequest().hasAuthority(Role.USER.getRole())
             )
             // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
