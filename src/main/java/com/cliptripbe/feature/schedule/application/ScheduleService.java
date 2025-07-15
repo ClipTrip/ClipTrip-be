@@ -72,7 +72,7 @@ public class ScheduleService {
 
         Integer placeOrder = 0;
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
-            Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
+            Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)
                 .schedule(schedule)
