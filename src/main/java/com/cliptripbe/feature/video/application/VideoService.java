@@ -23,8 +23,9 @@ import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
-import com.cliptripbe.infrastructure.openai.utils.ChatGPTUtils;
+import com.cliptripbe.global.util.ChatGPTUtils;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -90,10 +91,11 @@ public class VideoService {
         Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
         Schedule schedule = scheduleRegister.registerSchedule(user);
 
-        placeEntities.stream()
-            .map(place -> SchedulePlace.builder()
-                .place(place)
+        IntStream.range(0, placeEntities.size())
+            .mapToObj(i -> SchedulePlace.builder()
+                .place(placeEntities.get(i))
                 .schedule(schedule)
+                .placeOrder(i)
                 .build()
             )
             .forEach(schedule::addSchedulePlace);

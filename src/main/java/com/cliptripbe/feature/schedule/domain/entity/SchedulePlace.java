@@ -2,6 +2,7 @@ package com.cliptripbe.feature.schedule.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.vo.PlaceDetailVO;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,15 +22,19 @@ public class SchedulePlace {
     private Long id;
 
     @ManyToOne
-    Schedule schedule;
+    private Schedule schedule;
 
     @ManyToOne
-    Place place;
+    private Place place;
+
+    @Column
+    private Integer placeOrder;
 
     @Builder
-    public SchedulePlace(Schedule schedule, Place place) {
+    public SchedulePlace(Schedule schedule, Place place, Integer placeOrder) {
         this.schedule = schedule;
         this.place = place;
+        this.placeOrder = placeOrder;
     }
 
     public PlaceDetailVO toVO() {

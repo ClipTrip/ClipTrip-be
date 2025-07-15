@@ -31,6 +31,7 @@ public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
     private final PlaceService placeService;
     private final PlaceTranslationFinder placeTranslationFinder;
+
 //    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
 //        Schedule schedule = Schedule
 //            .builder()
@@ -69,13 +70,16 @@ public class ScheduleService {
         schedule.modifyInfo(updateSchedule.scheduleName(), updateSchedule.description());
         schedule.clear();
 
+        Integer placeOrder = 0;
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
             Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)
                 .schedule(schedule)
+                .placeOrder(placeOrder)
                 .build();
             schedule.addSchedulePlace(newPlace);
+            placeOrder++;
         }
     }
 
@@ -104,16 +108,18 @@ public class ScheduleService {
     ) {
         Schedule schedule = getSchedule(scheduleId);
         if (user.getLanguage() == KOREAN) {
-            return SchedulePlaceMapper.mapScheduleInfoResponseDto(
-                schedule);
+            return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
+
         List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
         for (SchedulePlace sp : schedule.getSchedulePlaceList()) {
             Place place = sp.getPlace();
+            Integer placeOrder = sp.getPlaceOrder();
             PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
                 place,
-                user.getLanguage());
-            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation));
+                user.getLanguage()
+            );
+            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation, placeOrder));
         }
         return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
     }

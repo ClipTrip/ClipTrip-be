@@ -107,7 +107,7 @@ public class BookmarkService {
             PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
                 place,
                 user.getLanguage());
-            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation));
+            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation, -1));
         }
         return BookmarkMapper.mapBookmarkInfoResponse(bookmark, placeListResponseDtos);
     }

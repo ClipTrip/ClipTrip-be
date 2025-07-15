@@ -14,16 +14,24 @@ public class SchedulePlaceMapper {
             .scheduleName(schedule.getName())
             .description(schedule.getDescription())
             .placeList(
-                schedule.getPlaces().stream()
-                    .map(PlaceListResponseDto::fromEntity)
+                schedule.getSchedulePlaceList().stream()
+                    .map(schedulePlace -> PlaceListResponseDto.fromEntity(
+                        schedulePlace.getPlace(), schedulePlace.getPlaceOrder()))
                     .toList()
             )
+//            .placeList(
+//                schedule.getPlaces().stream()
+//                    .map(place -> PlaceListResponseDto.fromEntity(place, ))
+//                    .toList()
+//            )
             .build();
     }
 
+
     public static ScheduleInfoResponseDto mapScheduleInfoResponseDto(
         Schedule schedule,
-        List<PlaceListResponseDto> placeListResponseDtos) {
+        List<PlaceListResponseDto> placeListResponseDtos
+    ) {
         return ScheduleInfoResponseDto.builder()
             .scheduleId(schedule.getId())
             .scheduleName(schedule.getName())

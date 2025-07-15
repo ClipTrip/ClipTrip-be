@@ -16,7 +16,8 @@ public record PlaceListResponseDto(
     String phone,
     PlaceType type,
     double longitude,
-    double latitude
+    double latitude,
+    Integer placeOrder
 ) {
 
     public static PlaceListResponseDto ofDto(PlaceDto placeDto, PlaceType type) {
@@ -41,7 +42,7 @@ public record PlaceListResponseDto(
             .build();
     }
 
-    public static PlaceListResponseDto fromEntity(Place place) {
+    public static PlaceListResponseDto fromEntity(Place place, Integer placeOrder) {
         return PlaceListResponseDto.builder()
             .placeId(place.getId())
             .placeName(place.getName())
@@ -50,12 +51,14 @@ public record PlaceListResponseDto(
             .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
+            .placeOrder(placeOrder)
             .build();
     }
 
     public static PlaceListResponseDto of(
         Place place,
-        PlaceTranslation placeTranslation
+        PlaceTranslation placeTranslation,
+        Integer placeOrder
     ) {
         return PlaceListResponseDto.builder()
             .placeId(place.getId())
@@ -65,6 +68,7 @@ public record PlaceListResponseDto(
             .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
+            .placeOrder(placeOrder)
             .build();
     }
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class Schedule {
     private User user;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("placeOrder ASC")
     private List<SchedulePlace> schedulePlaceList = new ArrayList<>();
 
     @Builder
@@ -63,7 +65,6 @@ public class Schedule {
         this.schedulePlaceList.add(schedulePlace);
     }
 
-
     public void modifyInfo(String name, String description) {
         this.name = name;
         this.description = description;
@@ -73,9 +74,9 @@ public class Schedule {
         this.schedulePlaceList.clear();
     }
 
-    public List<Place> getPlaces() {
-        return schedulePlaceList.stream()
-            .map(SchedulePlace::getPlace)
-            .collect(Collectors.toList());
-    }
+//    public List<Place> getPlaces() {
+//        return schedulePlaceList.stream()
+//            .map(SchedulePlace::getPlace)
+//            .collect(Collectors.toList());
+//    }
 }

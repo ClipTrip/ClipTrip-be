@@ -1,8 +1,7 @@
-package com.cliptripbe.infrastructure.openai.utils;
+package com.cliptripbe.global.util;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ChatGPTUtils {
