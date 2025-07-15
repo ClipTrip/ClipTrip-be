@@ -22,4 +22,18 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
             WHERE bp.bookmark.user.id = :userId AND bp.place.id = :placeId
         """)
     boolean isPlaceBookmarkedByUser(@Param("userId") Long userId, @Param("placeId") Long placeId);
+
+    @Query("SELECT b FROM Bookmark b JOIN FETCH b.bookmarkPlaces bp WHERE b.id = :bookmarkId")
+    Optional<Bookmark> findByIdWithBookmarkPlaces(@Param("bookmarkId") Long bookmarkId);
+
+    @Query("SELECT b FROM Bookmark b " +
+        "JOIN FETCH b.bookmarkPlaces bp " +
+        "JOIN FETCH bp.place p " +
+        "LEFT JOIN FETCH p.placeTranslations pt " +
+        "WHERE b.id = :bookmarkId AND pt.language = :language")
+    Optional<Bookmark> findByIdWithPlacesAndTranslations(
+        @Param("bookmarkId") Long bookmarkId,
+        @Param("language") String language);
+
 }
+
