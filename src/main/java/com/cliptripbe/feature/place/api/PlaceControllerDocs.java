@@ -5,6 +5,7 @@ import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequest
 import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
+import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,4 +48,11 @@ public interface PlaceControllerDocs {
         PlaceSearchByKeywordRequestDto request
     );
 
+    @Operation(
+        summary = "특정 범위 이내의 물품보관소 리스트 조회",
+        description = "위도 경도를 이용해 2km 이내 물품 보관소 정보를 조회합니다."
+    )
+    ApiResponse<List<PlaceListResponseDto>> getLuggageStorages(
+        LuggageStorageRequestDto luggageStorageRequestDto
+    );
 }

@@ -1,5 +1,6 @@
 package com.cliptripbe.global.config;
 
+import com.cliptripbe.feature.user.domain.type.Role;
 import com.cliptripbe.global.auth.jwt.JwtAuthenticationFilter;
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +35,9 @@ public class SecurityConfig {
             .sessionManagement(
                 session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/v1/users/**").permitAll()
+                .anyRequest().hasAuthority(Role.USER.getRole())
             )
             // JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),

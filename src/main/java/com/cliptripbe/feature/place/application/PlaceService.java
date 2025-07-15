@@ -15,6 +15,7 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
+import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -25,7 +26,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 @Service
@@ -36,10 +36,13 @@ public class PlaceService {
     private static final String S3_PLACE_PREFIX = "place/";
 
     private final BookmarkRepository bookmarkRepository;
+
     private final PlaceFinder placeFinder;
     private final PlaceRegister placeRegister;
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
+    private final PlaceClassifier placeClassifier;
+    private final PlaceDtoMapper placeDtoMapper;
 
     private final KakaoMapService kakaoMapService;
     private final S3Service s3Service;
@@ -116,5 +119,18 @@ public class PlaceService {
         return keywordPlaces.stream()
             .map(PlaceListResponseDto::fromDto)
             .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<PlaceListResponseDto> getLuggageStorage(
+        LuggageStorageRequestDto luggageStorageRequestDto
+    ) {
+        List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
+
+        List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
+            luggageStorageRequestDto,
+            luggageStoragePlaces
+        );
+        return placeDtoMapper.toDtoList(placesInRange);
     }
 }
