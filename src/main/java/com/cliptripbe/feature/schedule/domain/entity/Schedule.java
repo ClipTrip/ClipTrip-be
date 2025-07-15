@@ -74,9 +74,9 @@ public class Schedule {
         this.schedulePlaceList.clear();
     }
 
-    public List<Place> getPlaces() {
-        return schedulePlaceList.stream()
-            .map(SchedulePlace::getPlace)
-            .collect(Collectors.toList());
-    }
+//    public List<Place> getPlaces() {
+//        return schedulePlaceList.stream()
+//            .map(SchedulePlace::getPlace)
+//            .collect(Collectors.toList());
+//    }
 }

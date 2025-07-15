@@ -108,16 +108,18 @@ public class ScheduleService {
     ) {
         Schedule schedule = getSchedule(scheduleId);
         if (user.getLanguage() == KOREAN) {
-            return SchedulePlaceMapper.mapScheduleInfoResponseDto(
-                schedule);
+            return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
+
         List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
         for (SchedulePlace sp : schedule.getSchedulePlaceList()) {
             Place place = sp.getPlace();
+            Integer placeOrder = sp.getPlaceOrder();
             PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
                 place,
-                user.getLanguage());
-            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation));
+                user.getLanguage()
+            );
+            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation, placeOrder));
         }
         return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
     }
