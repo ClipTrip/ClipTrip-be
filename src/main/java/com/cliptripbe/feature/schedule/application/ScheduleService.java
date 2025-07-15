@@ -5,7 +5,6 @@ import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
-import com.cliptripbe.feature.place.application.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
@@ -13,55 +12,38 @@ import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
+import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final PlaceService placeService;
-    private final PlaceTranslationFinder placeTranslationFinder;
+    private final ScheduleFinder scheduleFinder;
 
-//    public void create(User user, CreateScheduleRequestDto createRentalRequest) {
-//        Schedule schedule = Schedule
-//            .builder()
-//            .user(user)
-//            .description(createRentalRequest.description())
-//            .name(createRentalRequest.scheduleName())
-//            .build();
-//
-//        for (PlaceInfoRequestDto placeInfoRequestDto : createRentalRequest.placeInfoRequestDtos()) {
-//            SchedulePlace schedulePlace = SchedulePlace
-//                .builder()
-//                .place(placeFinder.getPlaceByPlaceInfo(placeInfoRequestDto))
-//                .schedule(schedule)
-//                .build();
-//            schedule.addSchedulePlace(schedulePlace);
-//        }
-//        scheduleRepository.save(schedule);
-//    }
-
+    @Transactional
     public void create(User user) {
         Schedule schedule = Schedule.createDefault(user);
         scheduleRepository.save(schedule);
     }
 
+    @Transactional
     public void updateSchedule(
         User user,
         Long scheduleId,
         UpdateScheduleRequestDto updateSchedule
     ) {
-        Schedule schedule = getSchedule(scheduleId);
+        Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
@@ -92,8 +74,9 @@ public class ScheduleService {
             .toList();
     }
 
+    @Transactional
     public void deleteSchedule(User user, Long scheduleId) {
-        Schedule schedule = getSchedule(scheduleId);
+        Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
         if (!schedule.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
@@ -101,31 +84,33 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
-
+    @Transactional(readOnly = true)
     public ScheduleInfoResponseDto getScheduleById(
         User user,
         Long scheduleId
     ) {
-        Schedule schedule = getSchedule(scheduleId);
         if (user.getLanguage() == KOREAN) {
+            Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
             return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
+        Schedule schedule = scheduleFinder.findByIdWithSchedulePlacesAndTranslations(scheduleId,
+                user.getLanguage().getName())
+            .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
 
-        List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
-        for (SchedulePlace sp : schedule.getSchedulePlaceList()) {
-            Place place = sp.getPlace();
-            Integer placeOrder = sp.getPlaceOrder();
-            PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
-                place,
-                user.getLanguage()
-            );
-            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation, placeOrder));
-        }
+        List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
+            .map(sp -> {
+                Place place = sp.getPlace();
+                Integer placeOrder = sp.getPlaceOrder();
+                PlaceTranslation placeTranslation = place.getPlaceTranslations().stream()
+                    .filter(pt -> pt.getLanguage() == user.getLanguage())
+                    .findFirst()
+                    .orElse(null);
+                return PlaceListResponseDto.of(place, placeTranslation, placeOrder);
+            })
+            .collect(Collectors.toList()); // 리스트로 최종 수집
+
         return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
     }
 
-    private Schedule getSchedule(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId)
-            .orElseThrow(() -> new IllegalArgumentException("해당 스케줄이 존재하지 않습니다."));
-    }
+
 }
