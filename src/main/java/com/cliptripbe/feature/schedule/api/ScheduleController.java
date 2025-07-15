@@ -28,15 +28,6 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     private final ScheduleService scheduleService;
 
-//    @Override
-//    @PostMapping()
-//    public ApiResponse<?> createScheduleByVideo(
-//        @AuthenticationPrincipal CustomerDetails customerDetails,
-//        @RequestBody CreateScheduleRequestDto createScheduleRequestDto) {
-//        scheduleService.create(customerDetails.getUser(), createScheduleRequestDto);
-//        return ApiResponse.success(SuccessType.CREATED);
-//    }
-
     @Override
     @PostMapping
     public ApiResponse<?> createSchedule(
@@ -56,35 +47,6 @@ public class ScheduleController implements ScheduleControllerDocs {
         scheduleService.updateSchedule(customerDetails.getUser(), scheduleId, updateSchedule);
         return ApiResponse.success(SuccessType.SUCCESS);
     }
-
-//    @Override
-//    @PostMapping("/{scheduleId}")
-//    public ApiResponse<?> addPlaceInSchedule(
-//        @AuthenticationPrincipal CustomerDetails customerDetails,
-//        @PathVariable Long scheduleId,
-//        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
-//    ) {
-//        scheduleService.addPlaceInSchedule(
-//            customerDetails.getUser(),
-//            scheduleId,
-//            placeInfoRequestDto
-//        );
-//        return ApiResponse.success(SuccessType.SUCCESS);
-//    }
-//
-//    @Override
-//    @DeleteMapping("/{scheduleId}")
-//    public ApiResponse<?> deleteSchedulePlace(
-//        @AuthenticationPrincipal CustomerDetails customerDetails,
-//        @PathVariable Long scheduleId,
-//        @RequestBody DeleteSchedulePlaceRequestDto deleteSchedulePlaceRequestDto
-//    ) {
-//        scheduleService.deleteSchedulePlace(
-//            scheduleId,
-//            deleteSchedulePlaceRequestDto.placeId(),
-//            customerDetails.getUser());
-//        return ApiResponse.success(SuccessType.SUCCESS);
-//    }
 
     @Override
     @GetMapping()
