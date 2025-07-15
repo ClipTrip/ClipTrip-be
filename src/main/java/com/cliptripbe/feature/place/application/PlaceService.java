@@ -51,13 +51,13 @@ public class PlaceService {
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequestDto placeInfoRequestDto
     ) {
-        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
         User user) {
-        Place place = getPlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
@@ -87,7 +87,7 @@ public class PlaceService {
     }
 
 
-    public Place getPlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
         Place place = placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequestDto.placeName(),
             placeInfoRequestDto.address().roadAddress()
