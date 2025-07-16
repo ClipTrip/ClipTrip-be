@@ -109,11 +109,8 @@ public class BookmarkService {
         List<PlaceListResponseDto> placeListResponseDtos = bookmarkPlaces.stream()
             .map(bp -> {
                 Place place = bp.getPlace();
-                PlaceTranslation placeTranslation = place.getPlaceTranslations().stream()
-                    .filter(pt -> pt.getLanguage() == user.getLanguage())
-                    .findFirst()
-                    .orElse(null);
-
+                PlaceTranslation placeTranslation = place.getTranslationByLanguage(
+                    user.getLanguage());
                 return PlaceListResponseDto.of(place, placeTranslation, -1);
             })
             .collect(Collectors.toList());

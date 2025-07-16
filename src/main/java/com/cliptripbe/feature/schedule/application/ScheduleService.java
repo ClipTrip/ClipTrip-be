@@ -92,11 +92,8 @@ public class ScheduleService {
             Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
             return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
-        Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
-            scheduleId,
-            user.getLanguage()
-        );
-
+        Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
+        
         List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();
