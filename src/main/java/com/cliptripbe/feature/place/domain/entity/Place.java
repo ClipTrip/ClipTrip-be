@@ -6,6 +6,7 @@ import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.entity.BaseTimeEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -17,6 +18,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,9 +54,8 @@ public class Place extends BaseTimeEntity {
     @Column
     private String imageUrl;
 
-    @Column
-    @OneToMany
-    private List<PlaceTranslation> placeTranslations;
+    @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
+    private Set<PlaceTranslation> placeTranslations;
 
     @Builder
     public Place(
