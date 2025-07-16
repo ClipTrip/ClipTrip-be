@@ -18,7 +18,6 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,21 +92,19 @@ public class ScheduleService {
             Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
             return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
-        Schedule schedule = scheduleFinder.findByIdWithSchedulePlacesAndTranslations(scheduleId,
-                user.getLanguage().getName())
-            .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
+        Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
+            scheduleId,
+            user.getLanguage()
+        );
 
         List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();
                 Integer placeOrder = sp.getPlaceOrder();
-                PlaceTranslation placeTranslation = place.getPlaceTranslations().stream()
-                    .filter(pt -> pt.getLanguage() == user.getLanguage())
-                    .findFirst()
-                    .orElse(null);
-                return PlaceListResponseDto.of(place, placeTranslation, placeOrder);
+                PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
+                return PlaceListResponseDto.of(place, translation, placeOrder);
             })
-            .collect(Collectors.toList()); // 리스트로 최종 수집
+            .toList();
 
         return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
     }

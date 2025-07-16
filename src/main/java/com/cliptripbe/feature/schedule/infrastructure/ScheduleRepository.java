@@ -2,6 +2,7 @@ package com.cliptripbe.feature.schedule.infrastructure;
 
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,5 +23,5 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
         "WHERE s.id = :scheduleId AND pt.language = :language")
     Optional<Schedule> findByIdWithSchedulePlacesAndTranslations(
         @Param("scheduleId") Long scheduleId,
-        @Param("language") String name);
+        @Param("language") Language language);
 }

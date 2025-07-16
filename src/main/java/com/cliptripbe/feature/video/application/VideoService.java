@@ -5,10 +5,12 @@ import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONS
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceRegister;
+import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.schedule.application.ScheduleRegister;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
+import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
@@ -39,8 +41,10 @@ import reactor.core.scheduler.Schedulers;
 public class VideoService {
 
     private final ScheduleRegister scheduleRegister;
+    private final ScheduleFinder scheduleFinder;
     private final PlaceRegister placeRegister;
     private final VideoRepository videoRepository;
+    private final PlaceTranslationService placeTranslationService;
 
     private final ChatGPTService chatGPTService;
     private final KakaoMapService kakaoMapService;
@@ -88,9 +92,13 @@ public class VideoService {
             .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
 
         List<Place> placeEntities = placeRegister.registerAllPlaces(places);
+        if (user.getLanguage() == Language.ENGLISH) {
+            placeEntities.forEach(placeTranslationService::registerPlace);
+        }
         Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
         Schedule schedule = scheduleRegister.registerSchedule(user);
 
+        // 스케줄 서비스로 뺴기
         IntStream.range(0, placeEntities.size())
             .mapToObj(i -> SchedulePlace.builder()
                 .place(placeEntities.get(i))
@@ -100,6 +108,12 @@ public class VideoService {
             )
             .forEach(schedule::addSchedulePlace);
 
-        return VideoScheduleResponse.of(video, schedule);
+//        Schedule scheduleEntity = scheduleFinder.findByIdWithSchedulePlacesAndTranslations(
+//            schedule.getId(),
+//            user.getLanguage()
+//        );
+
+        Schedule scheduleEntity = scheduleFinder.getScheduleById(schedule.getId());
+        return VideoScheduleResponse.of(video, scheduleEntity, user.getLanguage());
     }
 }

@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.domain.converter.AccessibilityFeatureConvert
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -74,5 +75,12 @@ public class Place extends BaseTimeEntity {
 
     public void addImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public PlaceTranslation getTranslationByLanguage(Language language) {
+        return placeTranslations.stream()
+            .filter(pt -> pt.getLanguage() == language)
+            .findFirst()
+            .orElse(null);
     }
 }

@@ -60,10 +60,18 @@ public record PlaceListResponseDto(
         PlaceTranslation placeTranslation,
         Integer placeOrder
     ) {
+        String placeName = placeTranslation != null && placeTranslation.getName() != null
+            ? placeTranslation.getName()
+            : place.getName();
+
+        String roadAddress = placeTranslation != null && placeTranslation.getRoadAddress() != null
+            ? placeTranslation.getRoadAddress()
+            : place.getAddress().roadAddress();
+
         return PlaceListResponseDto.builder()
             .placeId(place.getId())
-            .placeName(placeTranslation.getName())
-            .roadAddress(placeTranslation.getRoadAddress())
+            .placeName(placeName)
+            .roadAddress(roadAddress)
             .phone(place.getPhoneNumber())
             .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())

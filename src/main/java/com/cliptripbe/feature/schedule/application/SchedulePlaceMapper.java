@@ -1,6 +1,8 @@
 package com.cliptripbe.feature.schedule.application;
 
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
 import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
@@ -16,14 +18,11 @@ public class SchedulePlaceMapper {
             .placeList(
                 schedule.getSchedulePlaceList().stream()
                     .map(schedulePlace -> PlaceListResponseDto.fromEntity(
-                        schedulePlace.getPlace(), schedulePlace.getPlaceOrder()))
+                        schedulePlace.getPlace(),
+                        schedulePlace.getPlaceOrder())
+                    )
                     .toList()
             )
-//            .placeList(
-//                schedule.getPlaces().stream()
-//                    .map(place -> PlaceListResponseDto.fromEntity(place, ))
-//                    .toList()
-//            )
             .build();
     }
 
@@ -41,8 +40,7 @@ public class SchedulePlaceMapper {
     }
 
     public static ScheduleListResponseDto mapScheduleListResponseDto(Schedule schedule) {
-        return ScheduleListResponseDto
-            .builder()
+        return ScheduleListResponseDto.builder()
             .scheduleId(schedule.getId())
             .scheduleName(schedule.getName())
             .description(schedule.getDescription())
