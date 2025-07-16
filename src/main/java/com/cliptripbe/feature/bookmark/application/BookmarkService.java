@@ -18,14 +18,13 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BookmarkService {
 
@@ -58,7 +57,7 @@ public class BookmarkService {
         bookmark.cleanBookmarkPlace();
 
         for (PlaceInfoRequestDto placeInfoRequestDto : updateBookmarkRequestDto.placeInfoRequestDtos()) {
-            Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
+            Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
             BookmarkPlace bookmarkPlace = BookmarkPlace
                 .builder()
                 .bookmark(bookmark)
@@ -75,7 +74,7 @@ public class BookmarkService {
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
-        Place place = placeService.getPlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
 
         BookmarkPlace bookmarkPlace = BookmarkPlace
             .builder()
@@ -85,6 +84,7 @@ public class BookmarkService {
         bookmark.addBookmarkPlace(bookmarkPlace);
     }
 
+    @Transactional(readOnly = true)
     public List<BookmarkListResponseDto> getUserBookmark(User user) {
         List<Bookmark> bookmarks = bookmarkRepository.findAllByUser(user);
         return bookmarks
@@ -93,22 +93,32 @@ public class BookmarkService {
             .toList();
     }
 
+    @Transactional(readOnly = true)
     public BookmarkInfoResponseDto getBookmarkInfo(Long bookmarkId, User user) {
-        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
         if (user.getLanguage() == KOREAN) {
+            Bookmark bookmark = bookmarkRepository.findByIdWithBookmarkPlaces(bookmarkId)
+                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
             return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
         }
-        List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces().stream().limit(10)
-            .toList();
-        List<PlaceListResponseDto> placeListResponseDtos = new ArrayList<>();
-        for (BookmarkPlace bp : bookmarkPlaces) {
-            Place place = bp.getPlace();
-            PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
-                place,
-                user.getLanguage());
-            placeListResponseDtos.add(PlaceListResponseDto.of(place, placeTranslation, -1));
-        }
+        Bookmark bookmark = bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId,
+                user.getLanguage().getName())
+            .orElseThrow(() -> new IllegalArgumentException("Bookmark not found")); // 적절한 예외 처리
+
+        List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
+
+        List<PlaceListResponseDto> placeListResponseDtos = bookmarkPlaces.stream()
+            .map(bp -> {
+                Place place = bp.getPlace();
+                PlaceTranslation placeTranslation = place.getPlaceTranslations().stream()
+                    .filter(pt -> pt.getLanguage() == user.getLanguage())
+                    .findFirst()
+                    .orElse(null); // 해당 언어의 번역이 없을 경우 처리
+
+                return PlaceListResponseDto.of(place, placeTranslation, -1);
+            })
+            .collect(Collectors.toList());
+
         return BookmarkMapper.mapBookmarkInfoResponse(bookmark, placeListResponseDtos);
     }
 
@@ -121,6 +131,7 @@ public class BookmarkService {
         bookmarkRepository.delete(bookmark);
     }
 
+    @Transactional(readOnly = true)
     public List<BookmarkListResponseDto> getDefaultBookmarkList() {
         List<Bookmark> defaultBookmark = bookmarkFinder.getDefaultBookmark();
         return defaultBookmark.stream()

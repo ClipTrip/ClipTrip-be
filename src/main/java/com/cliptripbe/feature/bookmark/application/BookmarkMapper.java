@@ -27,7 +27,6 @@ public class BookmarkMapper {
                 bookmark.getPlaces().stream()
                     .limit(10)
                     .map(place -> PlaceListResponseDto.fromEntity(place, -1))
-//                    .map(PlaceListResponseDto::fromEntity)
                     .toList()
             )
             .build();

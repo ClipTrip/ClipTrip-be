@@ -13,6 +13,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class PlaceTranslationService {
     private final ChatGPTService chatGPTService;
     private final PlaceTranslationRepository placeTranslationRepository;
 
+    @Transactional
     public void registerPlace(Place place) {
         placeTranslationRepository.findByPlaceAndLanguage(place, ENGLISH)
             .orElseGet(() -> {

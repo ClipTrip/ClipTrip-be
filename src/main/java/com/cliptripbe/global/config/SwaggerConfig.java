@@ -8,11 +8,18 @@ import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import java.util.List;
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class SwaggerConfig {
+
+    @Value("${swagger.server.url}")
+    private String swaggerServerUrl;
+
+    @Value("${swagger.server.description}")
+    private String swaggerServerDescription;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -20,7 +27,8 @@ public class SwaggerConfig {
             .info(apiInfo())
             .components(createComponents())
             .addSecurityItem(createSecurityRequirement())
-            .servers(httpsServer()); // 
+            .servers(List.of(new Server().url(swaggerServerUrl)
+                .description(swaggerServerDescription))); // 설정 파일에서 읽어옴
     }
 
     private static SecurityRequirement createSecurityRequirement() {
@@ -34,13 +42,6 @@ public class SwaggerConfig {
                 .in(SecurityScheme.In.HEADER)
                 .name("Authorization")
             );
-    }
-
-    private static List<Server> httpsServer() {
-        return List.of(
-            new Server().url("https://clip-trip.shop")  // HTTPS로 설정
-                .description("Production server")
-        );
     }
 
     private static Info apiInfo() {
