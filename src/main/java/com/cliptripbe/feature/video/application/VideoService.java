@@ -61,7 +61,7 @@ public class VideoService {
         String requestSummaryEnPrompt =
             PromptConstants.SUMMARY_CAPTION_EN + System.lineSeparator() + caption.captions();
 
-        List<String> extractPlacesText = chatGPTService.ask(requestPlacePrompt)
+        List<String> extractPlacesText = chatGPTService.askPlaceExtraction(requestPlacePrompt)
             .subscribeOn(Schedulers.boundedElastic())
             .map(ChatGPTUtils::extractPlaces)
             .blockOptional()

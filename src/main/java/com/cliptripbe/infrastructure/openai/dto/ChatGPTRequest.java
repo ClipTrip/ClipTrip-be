@@ -13,4 +13,10 @@ public class ChatGPTRequest {
     private String model;
 
     private List<Message> messages;
+
+    private Double temperature;
+
+    private Integer max_tokens;
+
+    private Double frequency_penalty;
 }

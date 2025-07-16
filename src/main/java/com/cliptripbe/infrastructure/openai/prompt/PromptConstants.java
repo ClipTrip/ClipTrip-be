@@ -3,22 +3,30 @@ package com.cliptripbe.infrastructure.openai.prompt;
 public class PromptConstants {
 
     public static final String EXTRACT_CAPTION =
-        "너는 아래 여행 자막에서 장소(POI)만 추출해 Kakao Local Keyword API용 키워드를 만들어야 해.\n"
-            + "규칙\n"
-            + "1) 장소로 인정하는 패턴\n"
-            + "1-a) 고유명+업종(미르분식·미르 분식)\n"
-            + "1-b) 고유명(2자↑)+‘집/식당/카페/베이커리…’ 접미\n"
-            + "1-c) 체인 브랜드 단독(스타벅스·다이소) → 직전 context(동) 상속\n"
-            + "1-d) “상호명 없이 음식 이름만” 등장 → 직전 context(시·군·구 또는 동) + 음식명\n"
-            + "2) 제외 조건\n"
-            + "2-a) 업종명만(‘카페’, ‘식당’) & 글자 수 2↓ → 제외\n"
-            + "2-b) 업종명만이어도 앞뒤 자막에 ‘먹다’, ‘가다’, ‘맛있다’ 등 행위 동사 있으면 포함\n"
-            + "3) 동명이인 방지: meta location 활용, context(행정구 or 동) 채우기\n"
-            + "4) 출력 형식\n"
-            + " - 기본: “시·군·구 + 장소명”\n"
-            + " - 체인 · 다지점은 “시·군·구·동 + 장소명”"
-            + "응답은 오직 장소 이름만, 줄바꿈으로 구분하여 나열해주세요.(괄호도 제외) \n"
-            + "설명 문장이나 머리말(예: “~다음과 같습니다”)은 절대 포함하지 마세요.\n";
+        "너는 아래 여행 자막 전체에서 등장하는 모든 장소(POI)를 추출해 Kakao Local Keyword API용 키워드를 만들어야 해. \n"
+            + "한 장소만이 아니라, 자막 안에 나온 모든 장소를 빠짐없이 찾아야 해. 중복 장소는 한 번만, 다른 장소는 빠뜨리지 마.\n"
+            + "출력은 반드시 규칙에 따라 정제된 장소명만 줄바꿈으로 나열해야 해.\n"
+            + "\n"
+            + "[장소로 인정하는 패턴]\n"
+            + "- 고유명+업종 (예: 미르분식, 미르 분식)\n"
+            + "- 고유명(2자 이상) + ‘집’, ‘식당’, ‘카페’, ‘베이커리’ 등의 접미\n"
+            + "- 체인 브랜드 단독 (예: 스타벅스, 다이소) → 직전 context(동)를 상속\n"
+            + "- 상호명 없이 음식 이름만 등장한 경우 → 직전 context(시·군·구 또는 동) + 음식명\n"
+            + "\n"
+            + "[제외 조건]\n"
+            + "- 업종명만 있는 경우 (‘카페’, ‘식당’ 등)이고 글자 수가 2자 이하인 경우 → 제외\n"
+            + "- 업종명만 있어도 앞뒤 자막에 ‘먹다’, ‘가다’, ‘맛있다’ 등의 동사가 있으면 포함\n"
+            + "\n"
+            + "[지명/출력 규칙]\n"
+            + "- 동명 장소 방지를 위해 meta location을 활용하고, context(행정구 또는 동)를 반드시 채워야 해.\n"
+            + "\n"
+            + "출력 형식:  \n"
+            + "- 기본: 시·군·구 + 장소명\n"
+            + "- 체인 또는 다지점: 시·군·구·동 + 장소명\n"
+            + "응답은 오직 장소 이름만, 줄바꿈으로 구분하여 나열해. \n"
+            + "괄호도 제외해.\n"
+            + "설명 문장이나 머리말(예: “~다음과 같습니다”)은 절대 제외해. \n";
+
     public static final String SUMMARY_CAPTION =
         "너는 영상 자막을 아주 쉬운 한국어로 요약하는 AI야.\n"
             + "이 요약의 목적은 문해력이 낮은 사람과 외국인이 장소별 활동을 쉽게 이해하고, 여행 일정을 만들 수 있도록 돕는 거야.\n"
@@ -52,10 +60,10 @@ public class PromptConstants {
 
     public static final String TRANSLATE_PLACE_INFO = """
         You are a translation assistant. Please translate the following place information from Korean to %s.
-                
+        
         Place Name: %s
         Road Address: %s
-                
+        
         Return ONLY in JSON format like:
         {
           "translatedName": "...",
