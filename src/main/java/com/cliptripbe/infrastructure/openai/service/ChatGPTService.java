@@ -26,7 +26,7 @@ public class ChatGPTService {
             .build();
 
         ChatGPTRequest request = ChatGPTRequest.builder()
-            .model("gpt-4.1-nano")
+            .model("gpt-4.1-mini")
             .messages(List.of(message))
             .temperature(0.0)
             .max_tokens(350)
