@@ -6,6 +6,7 @@ import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
 import com.cliptripbe.feature.user.api.dto.response.UserInfoResponse;
+import com.cliptripbe.feature.user.api.dto.response.UserLoginResponse;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import com.cliptripbe.global.auth.AuthService;
@@ -53,9 +54,13 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
 
-    public JwtToken userSignIn(UserSignInRequestDto userSignInRequestDto) {
-        return authService.createAuthenticationToken(userSignInRequestDto.email(),
+    public UserLoginResponse userSignIn(UserSignInRequestDto userSignInRequestDto) {
+        JwtToken tokens = authService.createAuthenticationToken(
+            userSignInRequestDto.email(),
             userSignInRequestDto.password());
+        User user = userLoader.findByEmail(userSignInRequestDto.email());
+
+        return UserLoginResponse.of(tokens, user.getLanguage());
     }
 
     public List<UserInfoResponse> getAllUserInfo() {

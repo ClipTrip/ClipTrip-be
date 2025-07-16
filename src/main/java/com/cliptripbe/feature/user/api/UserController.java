@@ -5,8 +5,8 @@ import static com.cliptripbe.global.constant.Constant.API_VERSION;
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
 import com.cliptripbe.feature.user.api.dto.response.UserInfoResponse;
+import com.cliptripbe.feature.user.api.dto.response.UserLoginResponse;
 import com.cliptripbe.feature.user.application.UserService;
-import com.cliptripbe.global.auth.jwt.entity.JwtToken;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
 import java.util.List;
@@ -34,10 +34,11 @@ public class UserController implements UserControllerDocs {
 
     @Override
     @PostMapping("/sign-in")
-    public ApiResponse<JwtToken> signIn(
-        @RequestBody UserSignInRequestDto userSignInRequestDto) {
-        JwtToken jwtToken = userService.userSignIn(userSignInRequestDto);
-        return ApiResponse.success(SuccessType.SUCCESS, jwtToken);
+    public ApiResponse<UserLoginResponse> signIn(
+        @RequestBody UserSignInRequestDto userSignInRequestDto
+    ) {
+        UserLoginResponse userLoginResponse = userService.userSignIn(userSignInRequestDto);
+        return ApiResponse.success(SuccessType.SUCCESS, userLoginResponse);
     }
 
     @Override
