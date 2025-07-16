@@ -101,8 +101,7 @@ public class BookmarkService {
                 .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
             return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
         }
-        Bookmark bookmark = bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId,
-                user.getLanguage().getName())
+        Bookmark bookmark = bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId)
             .orElseThrow(() -> new IllegalArgumentException("Bookmark not found")); // 적절한 예외 처리
 
         List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
@@ -113,7 +112,7 @@ public class BookmarkService {
                 PlaceTranslation placeTranslation = place.getPlaceTranslations().stream()
                     .filter(pt -> pt.getLanguage() == user.getLanguage())
                     .findFirst()
-                    .orElse(null); // 해당 언어의 번역이 없을 경우 처리
+                    .orElse(null);
 
                 return PlaceListResponseDto.of(place, placeTranslation, -1);
             })

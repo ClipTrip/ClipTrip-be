@@ -30,10 +30,9 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
         "JOIN FETCH b.bookmarkPlaces bp " +
         "JOIN FETCH bp.place p " +
         "LEFT JOIN FETCH p.placeTranslations pt " +
-        "WHERE b.id = :bookmarkId AND pt.language = :language")
+        "WHERE b.id = :bookmarkId")
     Optional<Bookmark> findByIdWithPlacesAndTranslations(
-        @Param("bookmarkId") Long bookmarkId,
-        @Param("language") String language);
-
+        @Param("bookmarkId") Long bookmarkId
+    );
 }
 
