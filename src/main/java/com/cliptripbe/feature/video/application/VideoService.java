@@ -50,6 +50,16 @@ public class VideoService {
     private final KakaoMapService kakaoMapService;
     private final CaptionService captionService;
 
+    /**
+     * Processes a YouTube video URL to extract mentioned places from captions, generate summaries, register related places and schedules, and return a combined video and schedule response.
+     *
+     * The method uses AI services to extract place names and generate summaries from video captions, searches for place details, registers places (and their translations if the user language is English), creates a video and schedule entity, associates places with the schedule, and returns a response containing the video and schedule information.
+     *
+     * @param user the user requesting the extraction, whose language preference affects summary and translation handling
+     * @param request the request containing the YouTube video URL and related data
+     * @return a response containing the saved video, the associated schedule, and language-specific information
+     * @throws CustomException if external AI or map services fail to respond
+     */
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequestDto request) {
         CaptionUtils.extractVideoId(request.youtubeUrl());
         CaptionResponse caption = captionService.getCaptions(

@@ -16,7 +16,14 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("SELECT s FROM Schedule s JOIN FETCH s.schedulePlaceList sp WHERE s.id = :scheduleId")
     Optional<Schedule> findByIdWithSchedulePlaces(@Param("scheduleId") Long scheduleId);
 
-    @Query("SELECT s FROM Schedule s " +
+    /**
+         * Retrieves a {@link Schedule} by its ID, including its associated schedule places, each place, and the place translations filtered by the specified language.
+         *
+         * @param scheduleId the ID of the schedule to retrieve
+         * @param language the language used to filter place translations
+         * @return an {@link Optional} containing the matching {@link Schedule} with its places and filtered translations, or empty if not found
+         */
+        @Query("SELECT s FROM Schedule s " +
         "JOIN FETCH s.schedulePlaceList sp " +
         "JOIN FETCH sp.place p " +
         "LEFT JOIN FETCH p.placeTranslations pt " +

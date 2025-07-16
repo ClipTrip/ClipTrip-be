@@ -55,6 +55,16 @@ public record PlaceListResponseDto(
             .build();
     }
 
+    /**
+     * Creates a PlaceListResponseDto from a Place entity, optionally using translated name and address if provided.
+     *
+     * If the PlaceTranslation is non-null and contains non-null name or road address, those values are used; otherwise, the original values from the Place entity are used.
+     *
+     * @param place the Place entity to extract data from
+     * @param placeTranslation optional translation for the place's name and road address
+     * @param placeOrder the order of the place in the list
+     * @return a PlaceListResponseDto populated with the appropriate values
+     */
     public static PlaceListResponseDto of(
         Place place,
         PlaceTranslation placeTranslation,

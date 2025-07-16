@@ -16,11 +16,26 @@ public class ScheduleFinder {
 
     private final ScheduleRepository scheduleRepository;
 
+    /**
+     * Retrieves a Schedule by its ID along with its associated schedule places.
+     *
+     * @param scheduleId the ID of the schedule to retrieve
+     * @return the Schedule entity with its schedule places
+     * @throws CustomException if the schedule is not found
+     */
     public Schedule getScheduleWithSchedulePlaces(Long scheduleId) {
         return scheduleRepository.findByIdWithSchedulePlaces(scheduleId)
             .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
     }
 
+    /**
+     * Retrieves a Schedule by its ID, including its associated schedule places and translations for the specified language.
+     *
+     * @param scheduleId the ID of the schedule to retrieve
+     * @param language the language to filter schedule place translations
+     * @return the Schedule with its schedule places and translations in the specified language
+     * @throws CustomException if the schedule is not found
+     */
     public Schedule getByIdWithSchedulePlacesAndTranslations(
         Long scheduleId,
         Language language
@@ -29,6 +44,13 @@ public class ScheduleFinder {
             .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
     }
 
+    /**
+     * Retrieves a Schedule by its ID.
+     *
+     * @param scheduleId the ID of the schedule to retrieve
+     * @return the Schedule with the specified ID
+     * @throws CustomException if no schedule with the given ID is found
+     */
     public Schedule getScheduleById(Long scheduleId) {
         return scheduleRepository.findById(scheduleId)
             .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
