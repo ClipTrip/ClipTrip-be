@@ -73,10 +73,21 @@ public class Place extends BaseTimeEntity {
         this.imageUrl = imageUrl;
     }
 
+    /**
+     * Sets or updates the image URL associated with this place.
+     *
+     * @param imageUrl the URL of the image to associate with the place
+     */
     public void addImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 
+    /**
+     * Retrieves the first translation of this place that matches the specified language.
+     *
+     * @param language the language to filter translations by
+     * @return the matching PlaceTranslation, or null if none is found
+     */
     public PlaceTranslation getTranslationByLanguage(Language language) {
         return placeTranslations.stream()
             .filter(pt -> pt.getLanguage() == language)

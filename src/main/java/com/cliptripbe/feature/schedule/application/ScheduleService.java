@@ -83,6 +83,16 @@ public class ScheduleService {
         scheduleRepository.delete(schedule);
     }
 
+    /**
+     * Retrieves detailed schedule information for a user in their preferred language.
+     *
+     * If the user's language is Korean, returns the schedule with its places in Korean.
+     * For other languages, returns the schedule with places and their translations in the user's language.
+     *
+     * @param user the user requesting the schedule
+     * @param scheduleId the ID of the schedule to retrieve
+     * @return a response DTO containing detailed schedule information and place details in the appropriate language
+     */
     @Transactional(readOnly = true)
     public ScheduleInfoResponseDto getScheduleById(
         User user,
