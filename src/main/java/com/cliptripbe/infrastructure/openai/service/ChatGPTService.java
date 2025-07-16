@@ -19,6 +19,36 @@ public class ChatGPTService {
     @Qualifier("openAIWebClient")
     private final WebClient openAIWebClient;
 
+    public Mono<String> askPlaceExtraction(String userMessage) {
+        Message message = Message.builder()
+            .role("user")
+            .content(userMessage)
+            .build();
+
+        ChatGPTRequest request = ChatGPTRequest.builder()
+            .model("gpt-4.1-nano")
+            .messages(List.of(message))
+            .temperature(0.0)
+            .max_tokens(350)
+            .frequency_penalty(0.0)
+            .build();
+
+        long start = System.currentTimeMillis();
+
+        return openAIWebClient.post()
+            .uri("/chat/completions")
+            .bodyValue(request)
+            .retrieve()
+            .bodyToMono(ChatGPTResponse.class)
+            .map(resp -> {
+                return resp.getChoices().get(0).getMessage().getContent();
+            })
+            .doOnSuccess(result -> {
+                long elapsed = System.currentTimeMillis() - start;
+                log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
+            });
+    }
+
     public Mono<String> ask(String userMessage) {
         Message message = Message.builder()
             .role("user")
@@ -28,6 +58,9 @@ public class ChatGPTService {
         ChatGPTRequest request = ChatGPTRequest.builder()
             .model("gpt-4.1-nano")
             .messages(List.of(message))
+            .temperature(0.0)
+            .max_tokens(350)
+            .frequency_penalty(0.0)
             .build();
 
         long start = System.currentTimeMillis();
