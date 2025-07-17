@@ -48,7 +48,6 @@ public class VideoService {
     private final PlaceRegister placeRegister;
     private final VideoRepository videoRepository;
     private final PlaceTranslationService placeTranslationService;
-    private final EntityManager entityManager;
 
     private final ChatGPTService chatGPTService;
     private final KakaoMapService kakaoMapService;
