@@ -11,6 +11,7 @@ import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -34,7 +35,8 @@ public class PlaceTranslationService {
                     .roadAddress(translationInfo.translatedRoadAddress())
                     .language(ENGLISH)
                     .build();
-                return placeTranslationRepository.save(translation);
+                place.addTranslation(translation);
+                return placeTranslationRepository.saveAndFlush(translation);
             });
     }
 

@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.Builder;
@@ -55,7 +56,7 @@ public class Place extends BaseTimeEntity {
     private String imageUrl;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
-    private Set<PlaceTranslation> placeTranslations;
+    private Set<PlaceTranslation> placeTranslations = new HashSet<>();
 
     @Builder
     public Place(
@@ -83,5 +84,10 @@ public class Place extends BaseTimeEntity {
             .filter(pt -> pt.getLanguage() == language)
             .findFirst()
             .orElse(null);
+    }
+
+    public void addTranslation(PlaceTranslation translation) {
+        placeTranslations.add(translation);
+        translation.addPlace(this);
     }
 }

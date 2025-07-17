@@ -18,15 +18,8 @@ public record VideoScheduleResponse(
     ScheduleInfoResponseDto scheduleInfoResponse
 ) {
 
-    public static VideoScheduleResponse of(Video video, Schedule schedule, Language language) {
-        List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
-            .map(sp -> {
-                Place place = sp.getPlace();
-                Integer placeOrder = sp.getPlaceOrder();
-                PlaceTranslation translation = place.getTranslationByLanguage(language);
-                return PlaceListResponseDto.of(place, translation, placeOrder);
-            })
-            .toList();
+    public static VideoScheduleResponse of(Video video, Schedule schedule,
+        List<PlaceListResponseDto> placeListResponseDtos) {
 
         return VideoScheduleResponse.builder()
             .videoResponse(VideoResponseDto.from(video))

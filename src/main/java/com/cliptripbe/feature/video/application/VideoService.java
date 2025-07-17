@@ -4,9 +4,11 @@ import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
 import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceRegister;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.schedule.application.ScheduleRegister;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
@@ -26,6 +28,7 @@ import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
 import com.cliptripbe.global.util.ChatGPTUtils;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -108,12 +111,18 @@ public class VideoService {
             )
             .forEach(schedule::addSchedulePlace);
 
-//        Schedule scheduleEntity = scheduleFinder.findByIdWithSchedulePlacesAndTranslations(
-//            schedule.getId(),
-//            user.getLanguage()
-//        );
+        Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
+            schedule.getId());
 
-        Schedule scheduleEntity = scheduleFinder.getScheduleById(schedule.getId());
-        return VideoScheduleResponse.of(video, scheduleEntity, user.getLanguage());
+        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList().stream()
+            .map(sp -> {
+                Place place = sp.getPlace();
+                Integer placeOrder = sp.getPlaceOrder();
+                PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
+                return PlaceListResponseDto.of(place, translation, placeOrder);
+            })
+            .toList();
+
+        return VideoScheduleResponse.of(video, scheduleEntity, placeListResponseDtos);
     }
 }
