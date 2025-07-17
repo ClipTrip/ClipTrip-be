@@ -33,4 +33,8 @@ public class PlaceTranslation {
     private String name;
 
     private String roadAddress;
+
+    public void addPlace(Place place) {
+        this.place = place;
+    }
 }
