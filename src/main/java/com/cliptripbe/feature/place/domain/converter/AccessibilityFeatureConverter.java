@@ -5,17 +5,17 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Converter
 public class AccessibilityFeatureConverter implements
-    AttributeConverter<List<AccessibilityFeature>, String> {
+    AttributeConverter<Set<AccessibilityFeature>, String> {
 
     private static final String DELIMITER = ",";
 
     @Override
-    public String convertToDatabaseColumn(List<AccessibilityFeature> attribute) {
+    public String convertToDatabaseColumn(Set<AccessibilityFeature> attribute) {
         if (attribute == null || attribute.isEmpty()) {
             return "";
         }
@@ -25,13 +25,13 @@ public class AccessibilityFeatureConverter implements
     }
 
     @Override
-    public List<AccessibilityFeature> convertToEntityAttribute(String dbData) {
+    public Set<AccessibilityFeature> convertToEntityAttribute(String dbData) {
         if (dbData == null || dbData.isBlank()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         return Arrays.stream(dbData.split(DELIMITER))
             .map(String::trim)
             .map(AccessibilityFeature::valueOf)
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     }
 }

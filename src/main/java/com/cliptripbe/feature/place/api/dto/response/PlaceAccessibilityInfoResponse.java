@@ -2,13 +2,13 @@ package com.cliptripbe.feature.place.api.dto.response;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
-import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 
 @Builder
 public record PlaceAccessibilityInfoResponse(
     String name,
-    List<AccessibilityFeature> accessibilityFeatures,
+    Set<AccessibilityFeature> accessibilityFeatures,
     Boolean bookmarked
 ) {
 
