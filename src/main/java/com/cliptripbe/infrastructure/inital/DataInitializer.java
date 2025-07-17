@@ -7,6 +7,7 @@ import static com.cliptripbe.infrastructure.inital.type.DefaultData.SOKCHO_OPEN_
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.inital.initaler.BookmarkInitializer;
 import com.cliptripbe.infrastructure.inital.initaler.PlaceInitializer;
 import com.cliptripbe.infrastructure.inital.type.DefaultData;
@@ -25,28 +26,29 @@ public class DataInitializer implements ApplicationRunner {
 
     private final PlaceInitializer placeinitializer;
     private final BookmarkInitializer bookmarkInitializer;
+    private final PlaceRepository placeRepository;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
+        if (placeRepository.count() == 0) {
+            placeinitializer.registerPlace(DefaultData.BF_CULTURE_TOURISM);
+            List<Place> placeList = placeinitializer.registerPlace(STORAGE_SEOUL);
+            bookmarkInitializer.initialBookmark(placeList, STORAGE_SEOUL);
 
-        placeinitializer.registerPlace(DefaultData.BF_CULTURE_TOURISM);
-        List<Place> placeList = placeinitializer.registerPlace(STORAGE_SEOUL);
-        bookmarkInitializer.initialBookmark(placeList, STORAGE_SEOUL);
+            placeList = placeinitializer.registerPlace(ACCOMMODATION_SEOUL);
+            bookmarkInitializer.initialBookmark(placeList, ACCOMMODATION_SEOUL);
 
-        placeList = placeinitializer.registerPlace(ACCOMMODATION_SEOUL);
-        bookmarkInitializer.initialBookmark(placeList, ACCOMMODATION_SEOUL);
+            List<DefaultData> accessibleTourismList = List.of(
+                INCHEON_ACCESSIBLE_TOURISM,
+                SOKCHO_OPEN_TOURISM,
+                BUSAN_ACCESSIBLE_TOURISM
+            );
 
-        List<DefaultData> accessibleTourismList = List.of(
-            INCHEON_ACCESSIBLE_TOURISM,
-            SOKCHO_OPEN_TOURISM,
-            BUSAN_ACCESSIBLE_TOURISM
-        );
-
-        for (DefaultData data : accessibleTourismList) {
-            List<Place> pl = placeinitializer.registerFourCoulmn(data);
-            bookmarkInitializer.initialBookmark(pl, data);
+            for (DefaultData data : accessibleTourismList) {
+                List<Place> pl = placeinitializer.registerFourCoulmn(data);
+                bookmarkInitializer.initialBookmark(pl, data);
+            }
         }
-
     }
 }
