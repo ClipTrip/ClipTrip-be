@@ -2,6 +2,7 @@ package com.cliptripbe.feature.place.api.dto;
 
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Pattern;
 
 public record PlaceInfoRequestDto(
@@ -15,6 +16,7 @@ public record PlaceInfoRequestDto(
 
 ) {
 
+    @JsonIgnore
     public Address getAddress() {
         return new Address(latitude, longitude, roadAddress);
     }
