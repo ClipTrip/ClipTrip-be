@@ -49,7 +49,6 @@ public class PlaceInitializer {
 
         try (BufferedReader br = s3Service.readCsv(defaultData.getFileName())) {
             PlaceCsvMapper placeCsvMapper = mapperMap.get(defaultData);
-
             String line;
             br.readLine();
             while ((line = br.readLine()) != null) {
@@ -63,14 +62,14 @@ public class PlaceInitializer {
                 Place place = getOrCreateByLine(newPlace);
                 placeList.add(place);
             }
-            placeRepository.saveAll(placeList);
+            placeRepository.saveAllAndFlush(placeList);
         } catch (IOException e) {
             // 예외 처리
             e.printStackTrace();
         }
         return placeList;
     }
-
+    
     public List<Place> registerFourCoulmn(DefaultData defaultData) {
         List<Place> placeList = new ArrayList<>();
         try (BufferedReader br = s3Service.readCsv(
@@ -81,7 +80,7 @@ public class PlaceInitializer {
                 Place place = placeMapper.mapPlaceFour(line, defaultData.getPlaceType());
                 placeList.add(place);
             }
-            placeRepository.saveAll(placeList);
+            placeRepository.saveAllAndFlush(placeList);
         } catch (IOException e) {
             // 예외 처리
             e.printStackTrace();
