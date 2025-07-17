@@ -2,10 +2,10 @@ package com.cliptripbe.infrastructure.inital.initaler;
 
 
 import com.cliptripbe.feature.place.application.PlaceFinder;
-import com.cliptripbe.feature.place.application.mapper.PlaceCsvMapper;
-import com.cliptripbe.feature.place.application.mapper.PlaceMapper;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceCsvMapper;
+import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceMapper;
 import com.cliptripbe.infrastructure.inital.type.DefaultData;
 import com.cliptripbe.infrastructure.s3.S3Service;
 import jakarta.annotation.PostConstruct;
@@ -69,7 +69,7 @@ public class PlaceInitializer {
         }
         return placeList;
     }
-    
+
     public List<Place> registerFourCoulmn(DefaultData defaultData) {
         List<Place> placeList = new ArrayList<>();
         try (BufferedReader br = s3Service.readCsv(
