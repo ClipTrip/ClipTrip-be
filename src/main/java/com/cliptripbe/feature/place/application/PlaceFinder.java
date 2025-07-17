@@ -33,4 +33,10 @@ public class PlaceFinder {
     public List<Place> getPlaceByType(PlaceType placeType) {
         return placeRepository.findByPlaceType(placeType);
     }
+
+    public Optional<Place> findByNameAndRoadAddress(String name, String roadAddress) {
+        return placeRepository.findByNameAndAddressRoadAddress(
+            name,
+            roadAddress);
+    }
 }
