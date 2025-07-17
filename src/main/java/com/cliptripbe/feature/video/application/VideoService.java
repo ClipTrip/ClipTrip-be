@@ -114,7 +114,8 @@ public class VideoService {
 
         Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
             schedule.getId());
-        List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
+
+        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();
                 Integer placeOrder = sp.getPlaceOrder();
