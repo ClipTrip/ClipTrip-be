@@ -12,7 +12,6 @@ import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
-import com.cliptripbe.feature.place.application.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.user.domain.User;
@@ -31,7 +30,6 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkFinder bookmarkFinder;
     private final PlaceService placeService;
-    private final PlaceTranslationFinder placeTranslationFinder;
 
     @Transactional
     public Long createBookmark(
@@ -40,7 +38,7 @@ public class BookmarkService {
     ) {
         Bookmark bookmark = Bookmark.createByUser(request.bookmarkName(), request.description(),
             user);
-        
+
         bookmarkRepository.save(bookmark);
         return bookmark.getId();
     }
@@ -97,8 +95,7 @@ public class BookmarkService {
     public BookmarkInfoResponseDto getBookmarkInfo(Long bookmarkId, User user) {
 
         if (user.getLanguage() == KOREAN) {
-            Bookmark bookmark = bookmarkRepository.findByIdWithBookmarkPlaces(bookmarkId)
-                .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
+            Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
             return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
         }
         Bookmark bookmark = bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId)

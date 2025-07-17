@@ -6,8 +6,8 @@ import static com.cliptripbe.infrastructure.inital.type.DefaultData.INCHEON_ACCE
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.SOKCHO_OPEN_TOURISM;
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
 
+import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.inital.initaler.BookmarkInitializer;
 import com.cliptripbe.infrastructure.inital.initaler.PlaceInitializer;
 import com.cliptripbe.infrastructure.inital.type.DefaultData;
@@ -26,14 +26,14 @@ public class DataInitializer implements ApplicationRunner {
 
     private final PlaceInitializer placeinitializer;
 
-    private final PlaceRepository placeRepository;
     private final BookmarkInitializer bookmarkInitializer;
+    private final BookmarkRepository bookmarkRepository;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
 
-        if (placeRepository.count() == 0) {
+        if (bookmarkRepository.count() == 0) {
             placeinitializer.registerCulturePlace();
             List<Place> placeList = placeinitializer.registerStoragePlace();
             bookmarkInitializer.initialBookmark(placeList, STORAGE_SEOUL);

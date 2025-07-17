@@ -2,6 +2,7 @@ package com.cliptripbe.feature.user.application;
 
 import com.cliptripbe.feature.bookmark.application.BookmarkFinder;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
+import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
@@ -38,19 +39,28 @@ public class UserService {
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
         userRepository.save(user);
-        List<Bookmark> defaultBookmarks = bookmarkFinder
-            .getDefaultBookmarksExcludingStorageSeoul();
+
+        List<Bookmark> defaultBookmarks = bookmarkFinder.getDefaultBookmarksExcludingStorageSeoul();
 
         List<Bookmark> newUserBookmarks = new ArrayList<>();
 
         for (Bookmark bm : defaultBookmarks) {
-            Bookmark copied = Bookmark
+            Bookmark copiedBookmark = Bookmark
                 .builder()
                 .name(bm.getName())
                 .user(user)
                 .description(bm.getDescription())
                 .build();
-            newUserBookmarks.add(copied);
+            if (bm.getBookmarkPlaces() != null) {
+                for (BookmarkPlace originalBp : bm.getBookmarkPlaces()) {
+                    BookmarkPlace newBookmarkPlace = BookmarkPlace.builder()
+                        .bookmark(copiedBookmark)
+                        .place(originalBp.getPlace())
+                        .build();
+                    copiedBookmark.addBookmarkPlace(newBookmarkPlace);
+                }
+            }
+            newUserBookmarks.add(copiedBookmark); // Add the fully constructed copied bookmark
         }
         bookmarkRepository.saveAll(newUserBookmarks);
         return UserInfoResponse.from(user);
