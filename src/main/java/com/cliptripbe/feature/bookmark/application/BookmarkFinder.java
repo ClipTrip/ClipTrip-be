@@ -17,8 +17,9 @@ public class BookmarkFinder {
     private final BookmarkRepository bookmarkRepository;
 
     public Bookmark findById(Long bookmarkId) {
-        return bookmarkRepository.findById(bookmarkId).orElseThrow(() -> new CustomException(
-            ErrorType.ENTITY_NOT_FOUND));
+        return bookmarkRepository.findByIdWithBookmarkPlaces(bookmarkId)
+            .orElseThrow(() -> new CustomException(
+                ErrorType.ENTITY_NOT_FOUND));
     }
 
     public List<Bookmark> getDefaultBookmarksExcludingStorageSeoul() {

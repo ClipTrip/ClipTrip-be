@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,9 +21,11 @@ public class BookmarkPlace {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "bookmark_id")
     Bookmark bookmark;
 
     @ManyToOne
+    @JoinColumn(name = "place_id")
     Place place;
 
     @Builder

@@ -11,9 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     List<Bookmark> findAllByUser(User user);
-
-    Optional<Bookmark> findByName(String s);
-
+    
     @Query("SELECT b FROM Bookmark b WHERE b.isDefault = true AND b.name != :excludedBookmarkName")
     List<Bookmark> findDefaultBookmarksExcludingName(
         @Param("excludedBookmarkName") String excludedBookmarkName);
