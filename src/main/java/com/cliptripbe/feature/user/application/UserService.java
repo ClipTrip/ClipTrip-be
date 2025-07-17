@@ -38,7 +38,9 @@ public class UserService {
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
         userRepository.save(user);
-        List<Bookmark> defaultBookmarks = bookmarkFinder.getDefaultBookmark();
+        List<Bookmark> defaultBookmarks = bookmarkFinder
+            .getDefaultBookmarksExcludingStorageSeoul();
+
         List<Bookmark> newUserBookmarks = new ArrayList<>();
 
         for (Bookmark bm : defaultBookmarks) {

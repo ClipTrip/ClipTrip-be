@@ -16,11 +16,8 @@ public class BookmarkInitializer {
     private final BookmarkRepository bookmarkRepository;
 
     public void initialBookmark(List<Place> placeList, DefaultData defaultData) {
-        Bookmark bookmark = Bookmark
-            .builder()
-            .name(defaultData.getName())
-            .description(defaultData.getDescription())
-            .build();
+        Bookmark bookmark = Bookmark.createDefault(defaultData.getName(),
+            defaultData.getDescription());
         for (Place place : placeList) {
             BookmarkPlace bookmarkPlace = BookmarkPlace
                 .builder()

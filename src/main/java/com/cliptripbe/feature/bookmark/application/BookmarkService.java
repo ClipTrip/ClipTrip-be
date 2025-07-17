@@ -34,13 +34,13 @@ public class BookmarkService {
     private final PlaceTranslationFinder placeTranslationFinder;
 
     @Transactional
-    public Long createBookmark(User user, CreateBookmarkRequestDto request) {
-        Bookmark bookmark = Bookmark
-            .builder()
-            .name(request.bookmarkName())
-            .description(request.description())
-            .user(user)
-            .build();
+    public Long createBookmark(
+        User user,
+        CreateBookmarkRequestDto request
+    ) {
+        Bookmark bookmark = Bookmark.createByUser(request.bookmarkName(), request.description(),
+            user);
+        
         bookmarkRepository.save(bookmark);
         return bookmark.getId();
     }
@@ -125,13 +125,5 @@ public class BookmarkService {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
         bookmarkRepository.delete(bookmark);
-    }
-
-    @Transactional(readOnly = true)
-    public List<BookmarkListResponseDto> getDefaultBookmarkList() {
-        List<Bookmark> defaultBookmark = bookmarkFinder.getDefaultBookmark();
-        return defaultBookmark.stream()
-            .map(BookmarkMapper::mapBookmarkListResponseDto)
-            .toList();
     }
 }
