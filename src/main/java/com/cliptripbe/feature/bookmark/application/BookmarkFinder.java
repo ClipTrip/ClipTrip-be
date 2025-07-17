@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.bookmark.application;
 
+import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
+
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -19,8 +21,8 @@ public class BookmarkFinder {
             ErrorType.ENTITY_NOT_FOUND));
     }
 
-    public List<Bookmark> getDefaultBookmark() {
-        return bookmarkRepository.findAllByUserIsNull();
+    public List<Bookmark> getDefaultBookmarksExcludingStorageSeoul() {
+        return bookmarkRepository.findDefaultBookmarksExcludingName(STORAGE_SEOUL.getName());
     }
 
 }

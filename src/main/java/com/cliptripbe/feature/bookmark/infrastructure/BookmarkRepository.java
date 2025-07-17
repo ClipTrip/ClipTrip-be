@@ -14,7 +14,9 @@ public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     Optional<Bookmark> findByName(String s);
 
-    List<Bookmark> findAllByUserIsNull();
+    @Query("SELECT b FROM Bookmark b WHERE b.isDefault = true AND b.name != :excludedBookmarkName")
+    List<Bookmark> findDefaultBookmarksExcludingName(
+        @Param("excludedBookmarkName") String excludedBookmarkName);
 
     @Query("""
             SELECT COUNT(bp) > 0
