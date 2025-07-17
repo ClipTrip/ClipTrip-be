@@ -53,6 +53,7 @@ public class ScheduleService {
 
         Integer placeOrder = 0;
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
+            //todo in절로 변경
             Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)
@@ -93,7 +94,7 @@ public class ScheduleService {
             return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
         Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
-        
+
         List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();

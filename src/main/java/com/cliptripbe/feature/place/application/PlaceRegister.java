@@ -53,7 +53,7 @@ public class PlaceRegister {
         Place place = Place.builder()
             .name(placeInfoRequestDto.placeName())
             .phoneNumber(placeInfoRequestDto.phoneNumber())
-            .address(placeInfoRequestDto.address())
+            .address(placeInfoRequestDto.getAddress())
             .placeType(placeInfoRequestDto.type())
             .build();
         placeRepository.save(place);

@@ -90,7 +90,7 @@ public class PlaceService {
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
         Place place = placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequestDto.placeName(),
-            placeInfoRequestDto.address().roadAddress()
+            placeInfoRequestDto.roadAddress()
         ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
 
         placeTranslationService.registerPlace(place);

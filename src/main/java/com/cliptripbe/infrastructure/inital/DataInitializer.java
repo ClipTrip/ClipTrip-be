@@ -6,8 +6,8 @@ import static com.cliptripbe.infrastructure.inital.type.DefaultData.INCHEON_ACCE
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.SOKCHO_OPEN_TOURISM;
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
 
-import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.inital.initaler.BookmarkInitializer;
 import com.cliptripbe.infrastructure.inital.initaler.PlaceInitializer;
 import com.cliptripbe.infrastructure.inital.type.DefaultData;
@@ -25,20 +25,18 @@ import org.springframework.stereotype.Component;
 public class DataInitializer implements ApplicationRunner {
 
     private final PlaceInitializer placeinitializer;
-
     private final BookmarkInitializer bookmarkInitializer;
-    private final BookmarkRepository bookmarkRepository;
+    private final PlaceRepository placeRepository;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
-
-        if (bookmarkRepository.count() == 0) {
-            placeinitializer.registerCulturePlace();
-            List<Place> placeList = placeinitializer.registerStoragePlace();
+        if (placeRepository.count() == 0) {
+            placeinitializer.registerPlace(DefaultData.BF_CULTURE_TOURISM);
+            List<Place> placeList = placeinitializer.registerPlace(STORAGE_SEOUL);
             bookmarkInitializer.initialBookmark(placeList, STORAGE_SEOUL);
 
-            placeList = placeinitializer.registerAccomodationPlace();
+            placeList = placeinitializer.registerPlace(ACCOMMODATION_SEOUL);
             bookmarkInitializer.initialBookmark(placeList, ACCOMMODATION_SEOUL);
 
             List<DefaultData> accessibleTourismList = List.of(

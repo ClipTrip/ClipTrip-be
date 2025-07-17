@@ -3,7 +3,7 @@ package com.cliptripbe.feature.place.api.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
-import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 
 @Builder
@@ -15,7 +15,7 @@ public record PlaceResponseDto(
     String type,
     double longitude,
     double latitude,
-    List<AccessibilityFeature> accessibilityFeatures,
+    Set<AccessibilityFeature> accessibilityFeatures,
     Boolean bookmarked,
     String imageUrl
 ) {
