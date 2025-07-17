@@ -17,7 +17,22 @@ public class CulturePlaceCsvMapper implements PlaceCsvMapper {
     public Place map(String line) {
         String[] tokens = line.split(",");
         String name = tokens[0];
-        String roadAddress = tokens[15];
+        String roadAddress;
+        if (tokens[15].isBlank()) {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 5; i <= 11; i++) {
+                if (!tokens[i].isBlank()) {
+                    sb.append(tokens[i].trim());
+                    if (i < 11) {
+                        sb.append(" ");
+                    }
+                }
+            }
+            roadAddress = sb.toString().trim();
+        } else {
+            roadAddress = tokens[15].trim();
+        }
+
         double latitude = PlaceCsvMapper.parseDouble(tokens[12]);
         double longitude = PlaceCsvMapper.parseDouble(tokens[13]);
 
