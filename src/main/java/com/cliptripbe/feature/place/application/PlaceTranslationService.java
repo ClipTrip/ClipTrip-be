@@ -7,13 +7,11 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
+import com.cliptripbe.infrastructure.openai.prompt.type.PromptConstants;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

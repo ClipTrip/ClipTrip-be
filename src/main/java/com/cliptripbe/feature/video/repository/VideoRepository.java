@@ -1,6 +1,5 @@
-package com.cliptripbe.feature.video.infrastructure;
+package com.cliptripbe.feature.video.repository;
 
-import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.video.domain.Video;
 import org.springframework.data.jpa.repository.JpaRepository;
 

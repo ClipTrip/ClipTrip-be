@@ -24,4 +24,6 @@ public class ScheduleFinder {
         return scheduleRepository.findByIdWithSchedulePlacesAndTranslations(scheduleId)
             .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
     }
+
+
 }

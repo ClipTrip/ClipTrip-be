@@ -2,13 +2,13 @@ package com.cliptripbe.feature.video.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
-import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
+import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
+import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.application.VideoService;
-import com.cliptripbe.feature.video.domain.Video;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,10 +26,12 @@ public class VideoController implements VideoControllerDocs {
     @PostMapping()
     public ApiResponse<VideoScheduleResponse> extractPlacesFromYoutube(
         @AuthenticationPrincipal CustomerDetails customerDetails,
-        @RequestBody ExtractPlaceRequestDto request
+        @Valid @RequestBody ExtractPlaceRequest request
     ) {
         VideoScheduleResponse videoScheduleResponse = videoService.extractPlace(
-            customerDetails.getUser(), request);
+            customerDetails.getUser(),
+            request
+        );
         return ApiResponse.success(SuccessType.CREATED, videoScheduleResponse);
     }
 }

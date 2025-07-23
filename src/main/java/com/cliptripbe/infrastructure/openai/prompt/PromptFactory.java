@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 public class PromptFactory {
 
     public String build(PromptType type, String captions) {
-
-        return null;
+        return type.getTemplate() + System.lineSeparator() + captions;
     }
 
 }

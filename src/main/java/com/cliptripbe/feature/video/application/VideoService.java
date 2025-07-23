@@ -15,10 +15,10 @@ import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
-import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
+import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
+import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.domain.Video;
-import com.cliptripbe.feature.video.infrastructure.VideoRepository;
+import com.cliptripbe.feature.video.repository.VideoRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
 import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
@@ -26,9 +26,8 @@ import com.cliptripbe.infrastructure.caption.service.CaptionService;
 import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
-import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
+import com.cliptripbe.infrastructure.openai.prompt.type.PromptConstants;
 import com.cliptripbe.global.util.ChatGPTUtils;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -53,14 +52,14 @@ public class VideoService {
     private final KakaoMapService kakaoMapService;
     private final CaptionService captionService;
 
-    public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequestDto request) {
+    public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         CaptionUtils.extractVideoId(request.youtubeUrl());
         CaptionResponse caption = captionService.getCaptions(
             CaptionRequest.of(request.youtubeUrl())
         );
 
         String requestPlacePrompt =
-            PromptConstants.EXTRACT_CAPTION + System.lineSeparator() + caption.captions();
+            PromptConstants.EXTRACT_PLACE + System.lineSeparator() + caption.captions();
 
         String requestSummaryPrompt =
             PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption.captions();
