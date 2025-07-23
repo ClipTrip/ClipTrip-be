@@ -1,8 +1,8 @@
-package com.cliptripbe.infrastructure.openai.prompt;
+package com.cliptripbe.infrastructure.openai.prompt.type;
 
 public class PromptConstants {
 
-    public static final String EXTRACT_CAPTION =
+    public static final String EXTRACT_PLACE =
         "너는 아래 여행 자막 전체에서 등장하는 모든 장소(POI)를 추출해 Kakao Local Keyword API용 키워드를 만들어야 해. \n"
             + "한 장소만이 아니라, 자막 안에 나온 모든 장소를 빠짐없이 찾아야 해. 중복 장소는 한 번만, 다른 장소는 빠뜨리지 마.\n"
             + "출력은 반드시 규칙에 따라 정제된 장소명만 줄바꿈으로 나열해야 해.\n"
@@ -11,7 +11,8 @@ public class PromptConstants {
             + "- 고유명+업종 (예: 미르분식, 미르 분식)\n"
             + "- 고유명(2자 이상) + ‘집’, ‘식당’, ‘카페’, ‘베이커리’ 등의 접미\n"
             + "- 체인 브랜드 단독 (예: 스타벅스, 다이소) → 직전 context(동)를 상속\n"
-            + "- 상호명 없이 음식 이름만 등장한 경우 → 직전 context(시·군·구 또는 동) + 음식명\n"
+            + "- 상호명 없이 음식 이름만 등장"
+            + "한 경우 → 직전 context(시·군·구 또는 동) + 음식명\n"
             + "\n"
             + "[제외 조건]\n"
             + "- 업종명만 있는 경우 (‘카페’, ‘식당’ 등)이고 글자 수가 2자 이하인 경우 → 제외\n"
