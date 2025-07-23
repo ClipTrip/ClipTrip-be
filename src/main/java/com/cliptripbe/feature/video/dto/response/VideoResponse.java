@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.video.dto.response;
 
-import com.cliptripbe.feature.video.domain.Video;
+import com.cliptripbe.feature.video.domain.entity.Video;
 import lombok.Builder;
 
 @Builder

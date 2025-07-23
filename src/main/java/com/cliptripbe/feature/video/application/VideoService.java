@@ -15,9 +15,10 @@ import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
+import com.cliptripbe.feature.video.domain.service.VideoRegister;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
-import com.cliptripbe.feature.video.domain.Video;
+import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.repository.VideoRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
@@ -51,6 +52,9 @@ public class VideoService {
     private final ChatGPTService chatGPTService;
     private final KakaoMapService kakaoMapService;
     private final CaptionService captionService;
+
+
+    private final VideoRegister videoRegister;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         CaptionUtils.extractVideoId(request.youtubeUrl());
@@ -113,7 +117,8 @@ public class VideoService {
         Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
             schedule.getId());
 
-        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList().stream()
+        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList()
+            .stream()
             .map(sp -> {
                 Place place = sp.getPlace();
                 Integer placeOrder = sp.getPlaceOrder();
@@ -123,5 +128,9 @@ public class VideoService {
             .toList();
 
         return VideoScheduleResponse.of(video, scheduleEntity, placeListResponseDtos);
+    }
+
+    public Video createVideo(Video video) {
+        return videoRegister.createVideo(video);
     }
 }
