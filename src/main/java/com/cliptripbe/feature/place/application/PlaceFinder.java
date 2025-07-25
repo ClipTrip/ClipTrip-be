@@ -9,8 +9,10 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class PlaceFinder {
 
@@ -32,5 +34,12 @@ public class PlaceFinder {
 
     public List<Place> getPlaceByType(PlaceType placeType) {
         return placeRepository.findByPlaceType(placeType);
+    }
+
+    public List<Place> findExistingPlaceByAddressAndName(
+        List<String> addressList,
+        List<String> placeNameList
+    ) {
+        return placeRepository.findExistingPlaceByAddressAndName(addressList, placeNameList);
     }
 }

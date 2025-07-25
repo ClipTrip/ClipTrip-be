@@ -102,7 +102,7 @@ public class VideoService {
             placeEntities.forEach(placeTranslationService::registerPlace);
         }
         Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
-        Schedule schedule = scheduleRegister.registerSchedule(user);
+        Schedule schedule = scheduleRegister.createDefaultSchedule(user);
 
         // 스케줄 서비스로 뺴기
         IntStream.range(0, placeEntities.size())

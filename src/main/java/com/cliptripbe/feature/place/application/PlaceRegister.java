@@ -22,31 +22,8 @@ public class PlaceRegister {
 
     private final PlaceRepository placeRepository;
 
-    public List<Place> registerAllPlaces(List<PlaceDto> placeDtoList) {
-        List<String> addressList = placeDtoList.stream()
-            .map(PlaceDto::roadAddress)
-            .filter(Objects::nonNull)
-            .distinct()
-            .toList();
-
-        if (placeDtoList.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<Place> existsPlace = placeRepository.findExistingPlaceByAddress(addressList);
-        Set<String> existingAddresses = existsPlace.stream()
-            .map(place -> place.getAddress().roadAddress())
-            .collect(Collectors.toSet());
-
-        List<Place> toSavePlaces = placeDtoList.stream()
-            .filter(dto -> !existingAddresses.contains(dto.roadAddress()))
-            .filter(distinctByKey(PlaceDto::roadAddress))
-            .map(PlaceDto::toPlace)
-            .toList();
-
-        List<Place> savedPlaces = placeRepository.saveAll(toSavePlaces);
-        savedPlaces.addAll(existsPlace);
-        return savedPlaces;
+    public List<Place> createAllPlaces(List<Place> placeList) {
+        return placeRepository.saveAll(placeList);
     }
 
     public Place createPlaceFromInfo(PlaceInfoRequestDto placeInfoRequestDto) {

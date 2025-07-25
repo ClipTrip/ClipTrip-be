@@ -5,7 +5,10 @@ import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONS
 
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.application.PlaceTranslationService;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
+import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
@@ -34,6 +37,7 @@ public class VideoPlaceExtractFacade {
     private final PlaceService placeService;
     private final ScheduleService scheduleService;
     private final VideoService videoService;
+    private final PlaceTranslationService placeTranslationService;
 
     private final CaptionService captionService;
     private final ChatGPTService chatGPTService;
@@ -89,8 +93,13 @@ public class VideoPlaceExtractFacade {
             .blockOptional()
             .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
 
+        List<Place> placeList = placeService.createPlaceAll(places);
+        if (user.getLanguage() == Language.ENGLISH) {
+            placeList.forEach(placeTranslationService::registerPlace);
+        }
+
         Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated));
-//        Schedule schedule = scheduleService.cre
+        Schedule schedule = scheduleService.createScheduleByVidoe(user, placeList);
 
         return null;
     }

@@ -8,5 +8,6 @@ import lombok.RequiredArgsConstructor;
 public enum Language {
     KOREAN("한국어"),
     ENGLISH("ENGLISH");
+
     private final String name;
 }

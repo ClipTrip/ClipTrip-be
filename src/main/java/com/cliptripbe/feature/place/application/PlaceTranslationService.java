@@ -2,6 +2,7 @@ package com.cliptripbe.feature.place.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.ENGLISH;
 
+import com.cliptripbe.feature.place.api.dto.PlaceDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
