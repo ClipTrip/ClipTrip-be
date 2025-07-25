@@ -18,6 +18,7 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final ScheduleRegister scheduleRegister;
     private final ScheduleRepository scheduleRepository;
+
     private final PlaceService placeService;
     private final ScheduleFinder scheduleFinder;
 
     @Transactional
     public void create(User user) {
-        Schedule schedule = Schedule.createDefault(user);
-        scheduleRepository.save(schedule);
+        scheduleRegister.createDefaultSchedule(user);
     }
 
     @Transactional
@@ -93,7 +95,7 @@ public class ScheduleService {
             return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
         }
         Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
-        
+
         List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();
@@ -107,4 +109,16 @@ public class ScheduleService {
     }
 
 
+    public Schedule createScheduleByVideo(User user, List<Place> placeList) {
+        Schedule schedule = scheduleRegister.createDefaultSchedule(user);
+        IntStream.range(0, placeList.size())
+            .mapToObj(i -> SchedulePlace.builder()
+                .place(placeList.get(i))
+                .schedule(schedule)
+                .placeOrder(i)
+                .build()
+            )
+            .forEach(schedule::addSchedulePlace);
+        return schedule;
+    }
 }

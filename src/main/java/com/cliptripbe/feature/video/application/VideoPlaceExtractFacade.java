@@ -30,7 +30,6 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class VideoPlaceExtractFacade {
 
@@ -99,7 +98,7 @@ public class VideoPlaceExtractFacade {
         }
 
         Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated));
-        Schedule schedule = scheduleService.createScheduleByVidoe(user, placeList);
+        Schedule schedule = scheduleService.createScheduleByVideo(user, placeList);
 
         return null;
     }

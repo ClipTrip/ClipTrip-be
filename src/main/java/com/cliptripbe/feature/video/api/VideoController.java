@@ -2,6 +2,7 @@ package com.cliptripbe.feature.video.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
+import com.cliptripbe.feature.video.application.VideoPlaceExtractFacade;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.application.VideoService;
@@ -21,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class VideoController implements VideoControllerDocs {
 
-    private final VideoService videoService;
+    private final VideoPlaceExtractFacade videoPlaceExtractFacade;
 
     @PostMapping()
     public ApiResponse<VideoScheduleResponse> extractPlacesFromYoutube(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @Valid @RequestBody ExtractPlaceRequest request
     ) {
-        VideoScheduleResponse videoScheduleResponse = videoService.extractPlace(
+        VideoScheduleResponse videoScheduleResponse = videoPlaceExtractFacade.extractPlace(
             customerDetails.getUser(),
             request
         );
