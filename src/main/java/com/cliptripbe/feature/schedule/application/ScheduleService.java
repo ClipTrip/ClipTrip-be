@@ -7,9 +7,9 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
@@ -86,13 +86,14 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public ScheduleInfoResponseDto getScheduleById(
+    public ScheduleResponse getScheduleById(
         User user,
         Long scheduleId
     ) {
         if (user.getLanguage() == KOREAN) {
             Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
-            return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
+            // [리팩토링] 지금 추상화 안하고 분기로 받지만 of 팩토리 메소드 안에서 분기 확인
+            return ScheduleResponse.of(schedule, user.getLanguage());
         }
         Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
 

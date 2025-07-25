@@ -13,6 +13,7 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
+import com.cliptripbe.feature.video.dto.response.VideoResponse;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.util.ChatGPTUtils;
@@ -67,6 +68,12 @@ public class VideoPlaceExtractFacade {
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
+        String extractPlacesText1 = chatGPTService.askPlaceExtraction(requestPlacePrompt)
+            .subscribeOn(Schedulers.boundedElastic())
+//            .map(ChatGPTUtils::extractPlaces)
+            .blockOptional()
+            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+
         // 자막 요약
         String summaryKo = chatGPTService.ask(requestSummaryPrompt)
             .subscribeOn(Schedulers.boundedElastic())
@@ -100,6 +107,6 @@ public class VideoPlaceExtractFacade {
         Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated));
         Schedule schedule = scheduleService.createScheduleByVideo(user, placeList);
 
-        return null;
+        return VideoScheduleResponse.of(video, schedule, user.getLanguage());
     }
 }

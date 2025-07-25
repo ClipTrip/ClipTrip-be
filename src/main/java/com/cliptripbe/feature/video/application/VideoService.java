@@ -116,7 +116,7 @@ public class VideoService {
 //
 //        Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
 //            schedule.getId());
-//
+////
 //        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList()
 //            .stream()
 //            .map(sp -> {
