@@ -8,12 +8,13 @@ import com.cliptripbe.infrastructure.google.dto.GooglePlacesSearchResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GooglePlacesService {
@@ -22,9 +23,9 @@ public class GooglePlacesService {
     private final RestClient googleMapsRestClient;
     private final RestClientConfig restClientConfig;
 
-
     public byte[] getPhotoByAddress(String address) {
-        // 1) Text Search API 호출
+        long start = System.currentTimeMillis();
+
         GooglePlacesSearchResponse searchResp = googleMapsRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/maps/api/place/textsearch/json")
@@ -48,10 +49,13 @@ public class GooglePlacesService {
 
         String photoReference = photoDto.photoReference();
         byte[] photoBytes = fetchPhotoByReference(photoReference);
-
-        return Optional.ofNullable(photoBytes)
+        byte[] responseBytes = Optional.ofNullable(photoBytes)
             .filter(bytes -> bytes.length > 0)
             .orElseThrow(() -> new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
+
+        long elapsed = System.currentTimeMillis() - start;
+        log.info("구글맵 사진 추출 레이턴시: {} ms", elapsed);
+        return responseBytes;
     }
 
     private byte[] fetchPhotoByReference(String photoReference) {
