@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ScheduleService {
 
@@ -33,7 +34,6 @@ public class ScheduleService {
     private final PlaceService placeService;
     private final ScheduleFinder scheduleFinder;
 
-    @Transactional
     public void create(User user) {
         scheduleRegister.createDefaultSchedule(user);
     }
@@ -75,7 +75,6 @@ public class ScheduleService {
             .toList();
     }
 
-    @Transactional
     public void deleteSchedule(User user, Long scheduleId) {
         Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
