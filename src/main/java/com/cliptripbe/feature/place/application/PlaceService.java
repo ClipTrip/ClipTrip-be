@@ -77,9 +77,7 @@ public class PlaceService {
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
-            byte[] imageBytes = googlePlacesService.getPhotoByAddress(searchKeyWord)
-                .blockOptional()
-                .orElseThrow(() -> new CustomException(GOOGLE_PLACES_NO_RESPONSE));
+            byte[] imageBytes = googlePlacesService.getPhotoByAddress(searchKeyWord);
             String imageUrl = s3Service.upload(S3_PLACE_PREFIX, imageBytes);
             place.addImageUrl(imageUrl);
         }
