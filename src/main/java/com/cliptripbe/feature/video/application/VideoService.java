@@ -15,10 +15,11 @@ import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.feature.video.api.dto.request.ExtractPlaceRequestDto;
-import com.cliptripbe.feature.video.api.dto.response.VideoScheduleResponse;
-import com.cliptripbe.feature.video.domain.Video;
-import com.cliptripbe.feature.video.infrastructure.VideoRepository;
+import com.cliptripbe.feature.video.domain.service.VideoRegister;
+import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
+import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
+import com.cliptripbe.feature.video.domain.entity.Video;
+import com.cliptripbe.feature.video.repository.VideoRepository;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
 import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
@@ -26,9 +27,8 @@ import com.cliptripbe.infrastructure.caption.service.CaptionService;
 import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
-import com.cliptripbe.infrastructure.openai.prompt.PromptConstants;
+import com.cliptripbe.infrastructure.openai.prompt.type.PromptConstants;
 import com.cliptripbe.global.util.ChatGPTUtils;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -53,76 +53,84 @@ public class VideoService {
     private final KakaoMapService kakaoMapService;
     private final CaptionService captionService;
 
-    public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequestDto request) {
-        CaptionUtils.extractVideoId(request.youtubeUrl());
-        CaptionResponse caption = captionService.getCaptions(
-            CaptionRequest.of(request.youtubeUrl())
-        );
 
-        String requestPlacePrompt =
-            PromptConstants.EXTRACT_CAPTION + System.lineSeparator() + caption.captions();
+    private final VideoRegister videoRegister;
 
-        String requestSummaryPrompt =
-            PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption.captions();
+//    public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
+//        CaptionUtils.extractVideoId(request.youtubeUrl());
+//        CaptionResponse caption = captionService.getCaptions(
+//            CaptionRequest.of(request.youtubeUrl())
+//        );
+//
+//        String requestPlacePrompt =
+//            PromptConstants.EXTRACT_PLACE + System.lineSeparator() + caption.captions();
+//
+//        String requestSummaryPrompt =
+//            PromptConstants.SUMMARY_CAPTION + System.lineSeparator() + caption.captions();
+//
+//        String requestSummaryEnPrompt =
+//            PromptConstants.SUMMARY_CAPTION_EN + System.lineSeparator() + caption.captions();
+//
+//        List<String> extractPlacesText = chatGPTService.askPlaceExtraction(requestPlacePrompt)
+//            .subscribeOn(Schedulers.boundedElastic())
+//            .map(ChatGPTUtils::extractPlaces)
+//            .blockOptional()
+//            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+//
+//        String summaryKo = chatGPTService.ask(requestSummaryPrompt)
+//            .subscribeOn(Schedulers.boundedElastic())
+//            .map(ChatGPTUtils::removeLiteralNewlines)
+//            .blockOptional()
+//            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+//
+//        String summaryTranslated = null;
+//        if (user.getLanguage() == Language.ENGLISH) {
+//            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt)
+//                .subscribeOn(Schedulers.boundedElastic())
+//                .map(ChatGPTUtils::removeLiteralNewlines)
+//                .blockOptional()
+//                .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+//        }
+//
+//        List<PlaceDto> places = kakaoMapService.searchFirstPlaces(extractPlacesText)
+//            .subscribeOn(Schedulers.boundedElastic())
+//            .blockOptional()
+//            .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
+//
+//        List<Place> placeEntities = placeRegister.registerAllPlaces(places);
+//        if (user.getLanguage() == Language.ENGLISH) {
+//            placeEntities.forEach(placeTranslationService::registerPlace);
+//        }
+//        Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
+//        Schedule schedule = scheduleRegister.createDefaultSchedule(user);
+//
+//        // 스케줄 서비스로 뺴기
+//        IntStream.range(0, placeEntities.size())
+//            .mapToObj(i -> SchedulePlace.builder()
+//                .place(placeEntities.get(i))
+//                .schedule(schedule)
+//                .placeOrder(i)
+//                .build()
+//            )
+//            .forEach(schedule::addSchedulePlace);
+//
+//        Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
+//            schedule.getId());
+////
+//        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList()
+//            .stream()
+//            .map(sp -> {
+//                Place place = sp.getPlace();
+//                Integer placeOrder = sp.getPlaceOrder();
+//                PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
+//                return PlaceListResponseDto.of(place, translation, placeOrder);
+//            })
+//            .toList();
+//
+//        return VideoScheduleResponse.of(video, scheduleEntity, placeListResponseDtos);
+//    }
 
-        String requestSummaryEnPrompt =
-            PromptConstants.SUMMARY_CAPTION_EN + System.lineSeparator() + caption.captions();
-
-        List<String> extractPlacesText = chatGPTService.askPlaceExtraction(requestPlacePrompt)
-            .subscribeOn(Schedulers.boundedElastic())
-            .map(ChatGPTUtils::extractPlaces)
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
-
-        String summaryKo = chatGPTService.ask(requestSummaryPrompt)
-            .subscribeOn(Schedulers.boundedElastic())
-            .map(ChatGPTUtils::removeLiteralNewlines)
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
-
-        String summaryTranslated = null;
-        if (user.getLanguage() == Language.ENGLISH) {
-            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt)
-                .subscribeOn(Schedulers.boundedElastic())
-                .map(ChatGPTUtils::removeLiteralNewlines)
-                .blockOptional()
-                .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
-        }
-
-        List<PlaceDto> places = kakaoMapService.searchFirstPlaces(extractPlacesText)
-            .subscribeOn(Schedulers.boundedElastic())
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
-
-        List<Place> placeEntities = placeRegister.registerAllPlaces(places);
-        if (user.getLanguage() == Language.ENGLISH) {
-            placeEntities.forEach(placeTranslationService::registerPlace);
-        }
-        Video video = videoRepository.save(request.toVideo(summaryKo, summaryTranslated));
-        Schedule schedule = scheduleRegister.registerSchedule(user);
-
-        // 스케줄 서비스로 뺴기
-        IntStream.range(0, placeEntities.size())
-            .mapToObj(i -> SchedulePlace.builder()
-                .place(placeEntities.get(i))
-                .schedule(schedule)
-                .placeOrder(i)
-                .build()
-            )
-            .forEach(schedule::addSchedulePlace);
-
-        Schedule scheduleEntity = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(
-            schedule.getId());
-
-        List<PlaceListResponseDto> placeListResponseDtos = scheduleEntity.getSchedulePlaceList().stream()
-            .map(sp -> {
-                Place place = sp.getPlace();
-                Integer placeOrder = sp.getPlaceOrder();
-                PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
-                return PlaceListResponseDto.of(place, translation, placeOrder);
-            })
-            .toList();
-
-        return VideoScheduleResponse.of(video, scheduleEntity, placeListResponseDtos);
+    public Video createVideo(Video video) {
+        return videoRegister.createVideo(video);
     }
 }

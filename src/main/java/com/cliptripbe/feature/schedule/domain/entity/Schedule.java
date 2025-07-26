@@ -1,7 +1,5 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
-import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
-import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,7 +13,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,10 +71,4 @@ public class Schedule {
     public void clear() {
         this.schedulePlaceList.clear();
     }
-
-//    public List<Place> getPlaces() {
-//        return schedulePlaceList.stream()
-//            .map(SchedulePlace::getPlace)
-//            .collect(Collectors.toList());
-//    }
 }

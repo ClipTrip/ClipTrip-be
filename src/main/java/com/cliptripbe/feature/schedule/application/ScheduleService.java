@@ -7,9 +7,9 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
@@ -18,22 +18,24 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ScheduleService {
 
+    private final ScheduleRegister scheduleRegister;
     private final ScheduleRepository scheduleRepository;
+
     private final PlaceService placeService;
     private final ScheduleFinder scheduleFinder;
 
-    @Transactional
     public void create(User user) {
-        Schedule schedule = Schedule.createDefault(user);
-        scheduleRepository.save(schedule);
+        scheduleRegister.createDefaultSchedule(user);
     }
 
     @Transactional
@@ -74,7 +76,6 @@ public class ScheduleService {
             .toList();
     }
 
-    @Transactional
     public void deleteSchedule(User user, Long scheduleId) {
         Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
@@ -85,13 +86,14 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public ScheduleInfoResponseDto getScheduleById(
+    public ScheduleResponse getScheduleById(
         User user,
         Long scheduleId
     ) {
         if (user.getLanguage() == KOREAN) {
             Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
-            return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule);
+            // [리팩토링] 지금 추상화 안하고 분기로 받지만 of 팩토리 메소드 안에서 분기 확인
+            return ScheduleResponse.of(schedule, user.getLanguage());
         }
         Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
 
@@ -108,4 +110,16 @@ public class ScheduleService {
     }
 
 
+    public Schedule createScheduleByVideo(User user, List<Place> placeList) {
+        Schedule schedule = scheduleRegister.createDefaultSchedule(user);
+        IntStream.range(0, placeList.size())
+            .mapToObj(i -> SchedulePlace.builder()
+                .place(placeList.get(i))
+                .schedule(schedule)
+                .placeOrder(i)
+                .build()
+            )
+            .forEach(schedule::addSchedulePlace);
+        return schedule;
+    }
 }

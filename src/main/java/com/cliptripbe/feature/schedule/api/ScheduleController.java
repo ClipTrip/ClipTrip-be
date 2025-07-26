@@ -2,9 +2,9 @@ package com.cliptripbe.feature.schedule.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleInfoResponseDto;
-import com.cliptripbe.feature.schedule.api.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
@@ -64,10 +64,10 @@ public class ScheduleController implements ScheduleControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId
     ) {
-        ScheduleInfoResponseDto scheduleInfoResponseDto = scheduleService.getScheduleById(
+        ScheduleResponse scheduleResponse = scheduleService.getScheduleById(
             customerDetails.getUser(),
             scheduleId);
-        return ApiResponse.success(SuccessType.SUCCESS, scheduleInfoResponseDto);
+        return ApiResponse.success(SuccessType.SUCCESS, scheduleResponse);
     }
 
     @Override

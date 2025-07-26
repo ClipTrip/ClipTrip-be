@@ -1,12 +1,11 @@
-package com.cliptripbe.feature.schedule.api.dto.request;
+package com.cliptripbe.feature.schedule.dto.request;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import java.util.List;
 
-public record CreateScheduleRequestDto(
+public record UpdateScheduleRequestDto(
     String scheduleName,
     String description,
     List<PlaceInfoRequestDto> placeInfoRequestDtos
 ) {
-
 }

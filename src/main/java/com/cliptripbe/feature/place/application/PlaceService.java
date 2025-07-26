@@ -3,6 +3,7 @@ package com.cliptripbe.feature.place.application;
 
 import static com.cliptripbe.global.response.type.ErrorType.GOOGLE_PLACES_NO_RESPONSE;
 import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
+import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceDto;
@@ -16,14 +17,20 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.s3.S3Service;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
@@ -37,8 +44,10 @@ public class PlaceService {
 
     private final BookmarkRepository bookmarkRepository;
 
-    private final PlaceFinder placeFinder;
     private final PlaceRegister placeRegister;
+    private final PlaceFinder placeFinder;
+    private final PlaceRepository placeRepository;
+
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
@@ -119,6 +128,43 @@ public class PlaceService {
         return keywordPlaces.stream()
             .map(PlaceListResponseDto::fromDto)
             .toList();
+    }
+
+    public List<Place> createPlaceAll(List<PlaceDto> placeDtoList) {
+        if (placeDtoList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> addressList = placeDtoList.stream()
+            .map(PlaceDto::roadAddress)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+
+        List<String> placeNameList = placeDtoList.stream()
+            .map(PlaceDto::placeName)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+
+        List<Place> existsPlaceList = placeFinder.findExistingPlaceByAddressAndName(
+            addressList,
+            placeNameList
+        );
+
+        Set<Pair<String, String>> existingPairs = existsPlaceList.stream()
+            .map(place -> Pair.of(place.getAddress().roadAddress(), place.getName()))
+            .collect(Collectors.toSet());
+
+        List<Place> placeList = placeDtoList.stream()
+            .filter(dto -> !existingPairs.contains(Pair.of(dto.roadAddress(), dto.placeName())))
+            .filter(distinctByKey(dto -> Pair.of(dto.roadAddress(), dto.placeName())))
+            .map(PlaceDto::toPlace)
+            .toList();
+
+        List<Place> savedPlaceList = placeRegister.createAllPlaces(placeList);
+        savedPlaceList.addAll(existsPlaceList);
+        return savedPlaceList;
     }
 
     @Transactional(readOnly = true)

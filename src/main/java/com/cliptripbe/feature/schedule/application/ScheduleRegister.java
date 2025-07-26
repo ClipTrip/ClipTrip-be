@@ -14,7 +14,7 @@ public class ScheduleRegister {
 
     private final ScheduleRepository scheduleRepository;
 
-    public Schedule registerSchedule(User user) {
+    public Schedule createDefaultSchedule(User user) {
         Schedule schedule = Schedule.createDefault(user);
         return scheduleRepository.save(schedule);
     }

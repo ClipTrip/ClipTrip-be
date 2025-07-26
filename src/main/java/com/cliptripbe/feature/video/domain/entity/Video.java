@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.video.domain;
+package com.cliptripbe.feature.video.domain.entity;
 
 import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;

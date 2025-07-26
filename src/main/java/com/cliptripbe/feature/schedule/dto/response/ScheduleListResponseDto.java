@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.schedule.api.dto.response;
+package com.cliptripbe.feature.schedule.dto.response;
 
 import lombok.Builder;
 

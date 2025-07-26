@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.api;
 
-import com.cliptripbe.feature.schedule.api.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;

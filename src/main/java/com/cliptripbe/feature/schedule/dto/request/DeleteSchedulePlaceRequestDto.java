@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.schedule.api.dto.request;
+package com.cliptripbe.feature.schedule.dto.request;
 
 public record DeleteSchedulePlaceRequestDto(
     Long placeId
