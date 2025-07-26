@@ -32,4 +32,10 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
         @Param("addressList") List<String> addressList,
         @Param("placeNameList") List<String> placeNameList
     );
+
+    @Query("SELECT p FROM Place p WHERE p.address.roadAddress IN :addressList")
+    List<Place> findExistingPlaceByAddress(@Param("addressList") List<String> addressList);
+
+    Optional<Place> findByNameAndAddressRoadAddress(String name, String roadAddress);
+
 }

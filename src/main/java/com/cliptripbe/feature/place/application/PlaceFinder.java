@@ -42,4 +42,10 @@ public class PlaceFinder {
     ) {
         return placeRepository.findExistingPlaceByAddressAndName(addressList, placeNameList);
     }
+
+    public Optional<Place> findByNameAndRoadAddress(String name, String roadAddress) {
+        return placeRepository.findByNameAndAddressRoadAddress(
+            name,
+            roadAddress);
+    }
 }

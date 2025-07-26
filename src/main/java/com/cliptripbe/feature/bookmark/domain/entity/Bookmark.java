@@ -10,8 +10,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +35,7 @@ public class Bookmark {
     private User user;
 
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BookmarkPlace> bookmarkPlaces = new ArrayList<>();
+    private Set<BookmarkPlace> bookmarkPlaces = new LinkedHashSet<>();
 
     @Column
     private boolean isDefault;

@@ -18,6 +18,7 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -98,10 +99,9 @@ public class BookmarkService {
             Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
             return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
         }
-        Bookmark bookmark = bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId)
-            .orElseThrow(() -> new IllegalArgumentException("Bookmark not found")); // 적절한 예외 처리
+        Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
 
-        List<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
+        Set<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
 
         List<PlaceListResponseDto> placeListResponseDtos = bookmarkPlaces.stream()
             .map(bp -> {

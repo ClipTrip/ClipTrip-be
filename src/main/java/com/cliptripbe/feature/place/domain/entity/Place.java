@@ -18,7 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,9 +43,8 @@ public class Place extends BaseTimeEntity {
     @Embedded
     private Address address;
 
-    @Column
     @Convert(converter = AccessibilityFeatureConverter.class)
-    private List<AccessibilityFeature> accessibilityFeatures;
+    private Set<AccessibilityFeature> accessibilityFeatures;
 
     @Column
     @Enumerated(value = EnumType.STRING)
@@ -63,14 +61,16 @@ public class Place extends BaseTimeEntity {
         String name,
         String phoneNumber,
         Address address,
-        List<AccessibilityFeature> accessibilityFeatures,
+        Set<AccessibilityFeature> accessibilityFeatures,
         PlaceType placeType,
         String imageUrl
     ) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.accessibilityFeatures = accessibilityFeatures;
+        this.accessibilityFeatures = accessibilityFeatures != null
+            ? new HashSet<>(accessibilityFeatures)
+            : new HashSet<>();
         this.placeType = placeType;
         this.imageUrl = imageUrl;
     }
@@ -90,4 +90,14 @@ public class Place extends BaseTimeEntity {
         placeTranslations.add(translation);
         translation.addPlace(this);
     }
+
+    public void addAccessibilityFeatures(Set<AccessibilityFeature> accessibilityFeatures) {
+        if (accessibilityFeatures != null) {
+            if (this.accessibilityFeatures == null) {
+                this.accessibilityFeatures = new HashSet<>();
+            }
+            this.accessibilityFeatures.addAll(accessibilityFeatures);
+        }
+    }
+
 }

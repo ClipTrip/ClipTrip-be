@@ -55,6 +55,7 @@ public class ScheduleService {
 
         Integer placeOrder = 0;
         for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
+            //todo in절로 변경
             Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)

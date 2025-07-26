@@ -18,12 +18,15 @@ public class BookmarkFinder {
 
     public Bookmark findById(Long bookmarkId) {
         return bookmarkRepository.findByIdWithBookmarkPlaces(bookmarkId)
-            .orElseThrow(() -> new CustomException(
-                ErrorType.ENTITY_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
     }
 
     public List<Bookmark> getDefaultBookmarksExcludingStorageSeoul() {
         return bookmarkRepository.findDefaultBookmarksExcludingName(STORAGE_SEOUL.getName());
     }
 
+    public Bookmark findByIdWithPlacesAndTranslations(Long bookmarkId) {
+        return bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId)
+            .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
+    }
 }
