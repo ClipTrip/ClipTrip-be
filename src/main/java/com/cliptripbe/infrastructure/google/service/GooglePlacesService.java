@@ -6,16 +6,13 @@ import com.cliptripbe.global.config.RestClientConfig;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.google.dto.GooglePlacesSearchResponse;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
 
 @Component
 @RequiredArgsConstructor
@@ -43,7 +40,8 @@ public class GooglePlacesService {
             .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
 
-        GooglePlacesSearchResponse.PhotoDto photoDto = Optional.ofNullable(results.getFirst().photos())
+        GooglePlacesSearchResponse.PhotoDto photoDto = Optional.ofNullable(
+                results.getFirst().photos())
             .filter(list -> !list.isEmpty())
             .map(List::getFirst)
             .orElseThrow(() -> new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
