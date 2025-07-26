@@ -44,8 +44,6 @@ public class PlaceFinder {
     }
 
     public Optional<Place> findByNameAndRoadAddress(String name, String roadAddress) {
-        return placeRepository.findByNameAndAddressRoadAddress(
-            name,
-            roadAddress);
+        return placeRepository.findByNameAndAddressRoadAddress(name, roadAddress);
     }
 }

@@ -30,6 +30,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
@@ -151,13 +152,13 @@ public class PlaceService {
             placeNameList
         );
 
-        Set<String> existingAddresses = existsPlaceList.stream()
-            .map(place -> place.getAddress().roadAddress())
+        Set<Pair<String, String>> existingPairs = existsPlaceList.stream()
+            .map(place -> Pair.of(place.getAddress().roadAddress(), place.getName()))
             .collect(Collectors.toSet());
 
         List<Place> placeList = placeDtoList.stream()
-            .filter(dto -> !existingAddresses.contains(dto.roadAddress()))
-            .filter(distinctByKey(PlaceDto::roadAddress))
+            .filter(dto -> !existingPairs.contains(Pair.of(dto.roadAddress(), dto.placeName())))
+            .filter(distinctByKey(dto -> Pair.of(dto.roadAddress(), dto.placeName())))
             .map(PlaceDto::toPlace)
             .toList();
 
