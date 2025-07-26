@@ -68,12 +68,6 @@ public class VideoPlaceExtractFacade {
             .blockOptional()
             .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
-        String extractPlacesText1 = chatGPTService.askPlaceExtraction(requestPlacePrompt)
-            .subscribeOn(Schedulers.boundedElastic())
-//            .map(ChatGPTUtils::extractPlaces)
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
-
         // 자막 요약
         String summaryKo = chatGPTService.ask(requestSummaryPrompt)
             .subscribeOn(Schedulers.boundedElastic())
