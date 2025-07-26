@@ -54,17 +54,11 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2', 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
-    // webFlux
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-
     // jackson
     implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // youtube parsing
     implementation 'org.jsoup:jsoup:1.15.3'
-
-    // macOS용 네이티브 DNS 모듈
-    implementation "io.netty:netty-resolver-dns-native-macos:4.1.94.Final:osx-aarch_64"
 
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
