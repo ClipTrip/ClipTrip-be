@@ -29,4 +29,16 @@ public record ScheduleResponse(
             )
             .build();
     }
+
+    public static ScheduleResponse of(
+        Schedule schedule,
+        List<PlaceListResponseDto> placeListResponseDtos
+    ) {
+        return ScheduleResponse.builder()
+            .scheduleId(schedule.getId())
+            .scheduleName(schedule.getName())
+            .description(schedule.getDescription())
+            .placeList(placeListResponseDtos)
+            .build();
+    }
 }

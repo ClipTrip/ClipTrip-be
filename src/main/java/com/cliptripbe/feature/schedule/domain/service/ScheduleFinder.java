@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.schedule.domain.impl;
+package com.cliptripbe.feature.schedule.domain.service;
 
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;

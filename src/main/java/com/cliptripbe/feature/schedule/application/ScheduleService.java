@@ -6,12 +6,12 @@ import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
-import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
+import com.cliptripbe.feature.schedule.domain.service.ScheduleFinder;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -71,7 +71,7 @@ public class ScheduleService {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
         return scheduleList
             .stream()
-            .map(SchedulePlaceMapper::mapScheduleListResponseDto)
+            .map(ScheduleListResponseDto::fromSchedule)
             .toList();
     }
 
@@ -105,7 +105,7 @@ public class ScheduleService {
             })
             .toList();
 
-        return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
+        return ScheduleResponse.of(schedule, placeListResponseDtos);
     }
 
 
