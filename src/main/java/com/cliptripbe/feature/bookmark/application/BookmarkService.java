@@ -4,8 +4,8 @@ import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
-import com.cliptripbe.feature.bookmark.domain.serrvice.BookmarkFinder;
-import com.cliptripbe.feature.bookmark.domain.serrvice.BookmarkMapper;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkMapper;
 import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;

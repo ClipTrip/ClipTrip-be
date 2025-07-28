@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.bookmark.domain.serrvice;
+package com.cliptripbe.feature.bookmark.domain.service;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
