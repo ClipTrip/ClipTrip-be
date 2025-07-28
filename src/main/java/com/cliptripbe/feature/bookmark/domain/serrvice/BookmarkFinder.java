@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.bookmark.application;
+package com.cliptripbe.feature.bookmark.domain.serrvice;
 
 import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
 

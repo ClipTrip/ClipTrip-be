@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.bookmark.api.dto.request;
+package com.cliptripbe.feature.bookmark.dto.request;
 
 public record CreateBookmarkRequestDto(
     String bookmarkName,

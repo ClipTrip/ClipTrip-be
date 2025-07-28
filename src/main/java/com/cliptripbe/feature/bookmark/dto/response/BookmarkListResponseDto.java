@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.bookmark.api.dto.response;
+package com.cliptripbe.feature.bookmark.dto.response;
 
 import lombok.Builder;
 

@@ -9,7 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface BookmarkRepository extends JpaRepository<Bookmark, Long> {
+public interface
+BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     List<Bookmark> findAllByUser(User user);
 
