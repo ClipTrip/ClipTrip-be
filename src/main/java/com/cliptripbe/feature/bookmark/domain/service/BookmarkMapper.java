@@ -3,7 +3,7 @@ package com.cliptripbe.feature.bookmark.domain.service;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import java.util.List;
 
 public class BookmarkMapper {

@@ -1,8 +1,8 @@
 package com.cliptripbe.infrastructure.kakao.service;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequestDto;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.cliptripbe.feature.place.application;
+package com.cliptripbe.feature.place.domain.service;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;

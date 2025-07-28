@@ -1,10 +1,12 @@
-package com.cliptripbe.feature.place.api.dto.response;
+package com.cliptripbe.feature.place.dto.response;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.Builder;
 
 @Builder
@@ -77,6 +79,22 @@ public record PlaceListResponseDto(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
+            .build();
+    }
+
+    public static List<PlaceListResponseDto> fromList(List<Place> places) {
+        return places.stream()
+            .map(PlaceListResponseDto::fromPlace)
+            .collect(Collectors.toList());
+    }
+
+    public static PlaceListResponseDto fromPlace(Place place) {
+        return PlaceListResponseDto.builder()
+            .placeId(place.getId())
+            .placeName(place.getName())
+            .latitude(place.getAddress().latitude())
+            .longitude(place.getAddress().longitude())
+            .roadAddress(place.getAddress().roadAddress())
             .build();
     }
 }

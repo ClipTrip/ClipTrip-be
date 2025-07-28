@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.dto.response;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;

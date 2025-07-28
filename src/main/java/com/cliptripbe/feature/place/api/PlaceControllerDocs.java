@@ -1,10 +1,10 @@
 package com.cliptripbe.feature.place.api;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;

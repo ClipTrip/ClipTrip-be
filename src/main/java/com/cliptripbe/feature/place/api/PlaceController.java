@@ -2,12 +2,12 @@ package com.cliptripbe.feature.place.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;

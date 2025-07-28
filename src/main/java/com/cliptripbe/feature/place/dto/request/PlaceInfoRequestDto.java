@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.api.dto;
+package com.cliptripbe.feature.place.dto.request;
 
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;

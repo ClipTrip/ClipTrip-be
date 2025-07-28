@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.bookmark.dto.response;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import java.util.List;
 import lombok.Builder;
 

@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.dto.request;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
 import java.util.List;
 
 public record UpdateScheduleRequestDto(
@@ -8,4 +8,5 @@ public record UpdateScheduleRequestDto(
     String description,
     List<PlaceInfoRequestDto> placeInfoRequestDtos
 ) {
+
 }

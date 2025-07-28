@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.application;
+package com.cliptripbe.feature.place.domain.service;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.vo.Address;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 public class PlaceClassifier {
 
     private static final Double EARTH_RADIUS = 6371000.0; // 단위: meters;
+    private static final Integer CLASSIFY_RANGE = 2000; // 2km 이내
 
     public List<Place> getLuggagePlacesByRange(
         LuggageStorageRequestDto luggageStorageRequestDto,
@@ -27,7 +28,7 @@ public class PlaceClassifier {
 
             double distance = haversineDistance(latitude, longitude, targetLat, targetLon);
 
-            if (distance <= 2000) { // 2km 이내
+            if (distance <= CLASSIFY_RANGE) {
                 luggagePlaces.add(place);
             }
         }

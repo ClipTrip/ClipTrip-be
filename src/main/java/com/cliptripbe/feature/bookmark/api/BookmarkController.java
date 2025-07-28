@@ -8,7 +8,7 @@ import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequestDto;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
 import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;

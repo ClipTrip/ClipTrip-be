@@ -6,18 +6,21 @@ import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONS
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.domain.service.PlaceClassifier;
+import com.cliptripbe.feature.place.domain.service.PlaceFinder;
+import com.cliptripbe.feature.place.domain.service.PlaceRegister;
+import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -46,12 +49,10 @@ public class PlaceService {
 
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
-    private final PlaceRepository placeRepository;
 
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
-    private final PlaceDtoMapper placeDtoMapper;
 
     private final KakaoMapService kakaoMapService;
     private final S3Service s3Service;
@@ -177,7 +178,7 @@ public class PlaceService {
             luggageStorageRequestDto,
             luggageStoragePlaces
         );
-        return placeDtoMapper.toDtoList(placesInRange);
+        return PlaceListResponseDto.fromList(placesInRange);
     }
 
     public List<Place> findOrCreatePlacesByPlaceInfos(

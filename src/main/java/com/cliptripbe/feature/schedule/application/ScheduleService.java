@@ -2,16 +2,16 @@ package com.cliptripbe.feature.schedule.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.global.response.exception.CustomException;

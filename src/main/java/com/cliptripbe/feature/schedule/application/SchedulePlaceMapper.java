@@ -1,12 +1,13 @@
 package com.cliptripbe.feature.schedule.application;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import java.util.List;
 
 public class SchedulePlaceMapper {
+
     public static ScheduleResponse mapScheduleInfoResponseDto(
         Schedule schedule,
         List<PlaceListResponseDto> placeListResponseDtos

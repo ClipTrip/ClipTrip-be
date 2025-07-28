@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.api.dto.response;
+package com.cliptripbe.feature.place.dto.response;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;

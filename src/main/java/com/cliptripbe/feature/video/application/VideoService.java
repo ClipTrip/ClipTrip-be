@@ -1,41 +1,19 @@
 package com.cliptripbe.feature.video.application;
 
-import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
-import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
-
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.application.PlaceRegister;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
-import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.schedule.application.ScheduleRegister;
-import com.cliptripbe.feature.schedule.domain.entity.Schedule;
-import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
-import com.cliptripbe.feature.user.domain.User;
-import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.feature.video.domain.service.VideoRegister;
-import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
-import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.feature.video.domain.entity.Video;
+import com.cliptripbe.feature.video.domain.service.VideoRegister;
 import com.cliptripbe.feature.video.repository.VideoRepository;
-import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
-import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
 import com.cliptripbe.infrastructure.caption.service.CaptionService;
-import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
-import com.cliptripbe.infrastructure.openai.prompt.type.PromptConstants;
-import com.cliptripbe.global.util.ChatGPTUtils;
-import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @Service

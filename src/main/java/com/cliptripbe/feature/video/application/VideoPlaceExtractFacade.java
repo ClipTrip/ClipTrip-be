@@ -3,7 +3,7 @@ package com.cliptripbe.feature.video.application;
 import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
 import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;
@@ -13,7 +13,6 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
-import com.cliptripbe.feature.video.dto.response.VideoResponse;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.util.ChatGPTUtils;
@@ -27,7 +26,6 @@ import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import reactor.core.scheduler.Schedulers;
 
 @Service
