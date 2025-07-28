@@ -179,4 +179,10 @@ public class PlaceService {
         );
         return placeDtoMapper.toDtoList(placesInRange);
     }
+
+    public List<Place> findOrCreatePlacesByPlaceInfos(
+        List<PlaceInfoRequestDto> placeInfoRequestDtos
+    ) {
+        return placeFinder.findExistingPlaceByAddress(placeInfoRequestDtos);
+    }
 }

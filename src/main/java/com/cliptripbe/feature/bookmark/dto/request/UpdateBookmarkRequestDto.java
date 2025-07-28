@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.bookmark.api.dto.request;
+package com.cliptripbe.feature.bookmark.dto.request;
 
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import java.util.List;

@@ -3,11 +3,11 @@ package com.cliptripbe.feature.bookmark.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.bookmark.api.dto.request.CreateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.api.dto.request.UpdateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkInfoResponseDto;
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.application.BookmarkService;
+import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequestDto;
+import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequestDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;

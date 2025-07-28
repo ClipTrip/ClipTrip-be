@@ -2,12 +2,14 @@ package com.cliptripbe.feature.bookmark.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 
-import com.cliptripbe.feature.bookmark.api.dto.request.CreateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.api.dto.request.UpdateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkInfoResponseDto;
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkMapper;
+import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequestDto;
+import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequestDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;

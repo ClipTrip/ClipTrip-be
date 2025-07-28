@@ -1,8 +1,8 @@
-package com.cliptripbe.feature.bookmark.application;
+package com.cliptripbe.feature.bookmark.domain.service;
 
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkInfoResponseDto;
-import com.cliptripbe.feature.bookmark.api.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import java.util.List;
 
