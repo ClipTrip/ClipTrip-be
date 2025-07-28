@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.place.application;
 
+import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
@@ -45,5 +46,12 @@ public class PlaceFinder {
 
     public Optional<Place> findByNameAndRoadAddress(String name, String roadAddress) {
         return placeRepository.findByNameAndAddressRoadAddress(name, roadAddress);
+    }
+
+    public List<Place> findExistingPlaceByAddress(List<PlaceInfoRequestDto> placeInfoRequestDtos) {
+        List<String> addresses = placeInfoRequestDtos.stream()
+            .map(PlaceInfoRequestDto::roadAddress)
+            .toList();
+        return placeRepository.findExistingPlaceByAddress(addresses);
     }
 }

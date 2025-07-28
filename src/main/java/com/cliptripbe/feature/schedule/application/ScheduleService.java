@@ -2,7 +2,6 @@ package com.cliptripbe.feature.schedule.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
@@ -54,9 +53,9 @@ public class ScheduleService {
         schedule.clear();
 
         Integer placeOrder = 0;
-        for (PlaceInfoRequestDto placeInfoRequestDto : updateSchedule.placeInfoRequestDtos()) {
-            //todo in절로 변경
-            Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
+        List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(
+            updateSchedule.placeInfoRequestDtos());
+        for (Place place : places) {
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)
                 .schedule(schedule)
