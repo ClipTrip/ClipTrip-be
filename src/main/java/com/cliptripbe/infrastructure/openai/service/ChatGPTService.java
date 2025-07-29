@@ -1,25 +1,30 @@
 package com.cliptripbe.infrastructure.openai.service;
 
+import static com.cliptripbe.global.response.type.ErrorType.CHAT_GPT_NO_RESPONSE;
+
+import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTRequest;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
+import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse.Choice;
 import com.cliptripbe.infrastructure.openai.dto.Message;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class ChatGPTService {
 
-    @Qualifier("openAIWebClient")
-    private final WebClient openAIWebClient;
+    @Qualifier("openAIRestClient")
+    private final RestClient openAIRestClient;
 
-    public Mono<String> askPlaceExtraction(String userMessage) {
+    public String askPlaceExtraction(String userMessage) {
         Message message = Message.builder()
             .role("user")
             .content(userMessage)
@@ -35,21 +40,27 @@ public class ChatGPTService {
 
         long start = System.currentTimeMillis();
 
-        return openAIWebClient.post()
+        ChatGPTResponse response = openAIRestClient.post()
             .uri("/chat/completions")
-            .bodyValue(request)
+            .body(request)
             .retrieve()
-            .bodyToMono(ChatGPTResponse.class)
-            .map(resp -> {
-                return resp.getChoices().get(0).getMessage().getContent();
-            })
-            .doOnSuccess(result -> {
-                long elapsed = System.currentTimeMillis() - start;
-                log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
-            });
+            .body(ChatGPTResponse.class);
+
+        String result = Optional.ofNullable(response)
+            .map(ChatGPTResponse::getChoices)
+            .filter(choices -> !choices.isEmpty())
+            .map(List::getFirst)
+            .map(Choice::getMessage)
+            .map(Message::getContent)
+            .orElseThrow(() -> new CustomException(CHAT_GPT_NO_RESPONSE));
+
+        long elapsed = System.currentTimeMillis() - start;
+        log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
+
+        return result;
     }
 
-    public Mono<String> ask(String userMessage) {
+    public String ask(String userMessage) {
         Message message = Message.builder()
             .role("user")
             .content(userMessage)
@@ -65,18 +76,24 @@ public class ChatGPTService {
 
         long start = System.currentTimeMillis();
 
-        return openAIWebClient.post()
+        ChatGPTResponse response = openAIRestClient.post()
             .uri("/chat/completions")
-            .bodyValue(request)
+            .body(request)
             .retrieve()
-            .bodyToMono(ChatGPTResponse.class)
-            .map(resp -> {
-                return resp.getChoices().get(0).getMessage().getContent();
-            })
-            .doOnSuccess(result -> {
-                long elapsed = System.currentTimeMillis() - start;
-                log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
-            });
+            .body(ChatGPTResponse.class);
+
+        String result = Optional.ofNullable(response)
+            .map(ChatGPTResponse::getChoices)
+            .filter(choices -> !choices.isEmpty())
+            .map(List::getFirst)
+            .map(Choice::getMessage)
+            .map(Message::getContent)
+            .orElseThrow(() -> new CustomException(CHAT_GPT_NO_RESPONSE));
+
+        long elapsed = System.currentTimeMillis() - start;
+        log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
+
+        return result;
     }
 
 }

@@ -13,9 +13,7 @@ import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
-import com.cliptripbe.feature.video.dto.response.VideoResponse;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
-import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
 import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
@@ -27,8 +25,6 @@ import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import reactor.core.scheduler.Schedulers;
 
 @Service
 @RequiredArgsConstructor
@@ -61,19 +57,12 @@ public class VideoPlaceExtractFacade {
         String requestSummaryPrompt = promptFactory.build(PromptType.SUMMARY_KO,
             caption.captions());
 
-        // 장소 추출
-        List<String> extractPlacesText = chatGPTService.askPlaceExtraction(requestPlacePrompt)
-            .subscribeOn(Schedulers.boundedElastic())
-            .map(ChatGPTUtils::extractPlaces)
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+        String gptPlaceResponse = chatGPTService.askPlaceExtraction(requestPlacePrompt);
+        List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
 
         // 자막 요약
-        String summaryKo = chatGPTService.ask(requestSummaryPrompt)
-            .subscribeOn(Schedulers.boundedElastic())
-            .map(ChatGPTUtils::removeLiteralNewlines)
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+        String gptSummaryResponse = chatGPTService.ask(requestSummaryPrompt);
+        String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
         // 자막 요약 영어
         String summaryTranslated = null;
@@ -81,14 +70,10 @@ public class VideoPlaceExtractFacade {
             String requestSummaryEnPrompt = promptFactory.build(PromptType.SUMMARY_EN,
                 caption.captions());
 
-            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt)
-                .subscribeOn(Schedulers.boundedElastic())
-                .map(ChatGPTUtils::removeLiteralNewlines)
-                .blockOptional()
-                .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
+            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt);
         }
 
-        List<PlaceDto> places = kakaoMapService.searchFirstPlacesAsync(extractPlacesText)
+        List<PlaceDto> places = kakaoMapService.searchFirstPlacesAsync(extractPlacesText);
 
         List<Place> placeList = placeService.createPlaceAll(places);
         if (user.getLanguage() == Language.ENGLISH) {

@@ -45,7 +45,7 @@ public class PlaceTranslationService {
             place.getName(),
             place.getAddress().roadAddress()
         );
-        String response = chatGPTService.ask(prompt).block();
+        String response = chatGPTService.ask(prompt);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(response, TranslationInfo.class);
