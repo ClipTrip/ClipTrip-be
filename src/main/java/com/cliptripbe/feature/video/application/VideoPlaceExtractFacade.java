@@ -88,10 +88,7 @@ public class VideoPlaceExtractFacade {
                 .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
         }
 
-        List<PlaceDto> places = kakaoMapService.searchFirstPlaces(extractPlacesText)
-            .subscribeOn(Schedulers.boundedElastic())
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
+        List<PlaceDto> places = kakaoMapService.searchFirstPlacesAsync(extractPlacesText)
 
         List<Place> placeList = placeService.createPlaceAll(places);
         if (user.getLanguage() == Language.ENGLISH) {
