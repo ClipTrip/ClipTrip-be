@@ -6,6 +6,7 @@ import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestD
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +112,7 @@ public class KakaoMapService {
 
         return futures.stream()
             .map(CompletableFuture::join)
+            .filter(Objects::nonNull)
             .toList();
     }
 }
