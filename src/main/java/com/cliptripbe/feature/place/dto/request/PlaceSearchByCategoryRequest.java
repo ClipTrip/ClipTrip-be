@@ -2,7 +2,7 @@ package com.cliptripbe.feature.place.dto.request;
 
 import jakarta.validation.constraints.Max;
 
-public record PlaceSearchByCategoryRequestDto(
+public record PlaceSearchByCategoryRequest(
     String categoryCode,
     String x,
     String y,

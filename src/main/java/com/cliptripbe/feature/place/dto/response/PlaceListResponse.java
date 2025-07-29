@@ -1,9 +1,9 @@
 package com.cliptripbe.feature.place.dto.response;
 
-import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record PlaceListResponseDto(
+public record PlaceListResponse(
     Long placeId,
     String placeName,
     String roadAddress,
@@ -22,8 +22,8 @@ public record PlaceListResponseDto(
     Integer placeOrder
 ) {
 
-    public static PlaceListResponseDto ofDto(PlaceDto placeDto, PlaceType type) {
-        return PlaceListResponseDto.builder()
+    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type) {
+        return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
@@ -33,8 +33,8 @@ public record PlaceListResponseDto(
             .build();
     }
 
-    public static PlaceListResponseDto fromDto(PlaceDto placeDto) {
-        return PlaceListResponseDto.builder()
+    public static PlaceListResponse fromDto(PlaceDto placeDto) {
+        return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
@@ -44,8 +44,8 @@ public record PlaceListResponseDto(
             .build();
     }
 
-    public static PlaceListResponseDto fromEntity(Place place, Integer placeOrder) {
-        return PlaceListResponseDto.builder()
+    public static PlaceListResponse fromEntity(Place place, Integer placeOrder) {
+        return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
@@ -57,7 +57,7 @@ public record PlaceListResponseDto(
             .build();
     }
 
-    public static PlaceListResponseDto of(
+    public static PlaceListResponse of(
         Place place,
         PlaceTranslation placeTranslation,
         Integer placeOrder
@@ -70,7 +70,7 @@ public record PlaceListResponseDto(
             ? placeTranslation.getRoadAddress()
             : place.getAddress().roadAddress();
 
-        return PlaceListResponseDto.builder()
+        return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(placeName)
             .roadAddress(roadAddress)
@@ -82,14 +82,14 @@ public record PlaceListResponseDto(
             .build();
     }
 
-    public static List<PlaceListResponseDto> fromList(List<Place> places) {
+    public static List<PlaceListResponse> fromList(List<Place> places) {
         return places.stream()
-            .map(PlaceListResponseDto::fromPlace)
+            .map(PlaceListResponse::fromPlace)
             .collect(Collectors.toList());
     }
 
-    public static PlaceListResponseDto fromPlace(Place place) {
-        return PlaceListResponseDto.builder()
+    public static PlaceListResponse fromPlace(Place place) {
+        return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
             .latitude(place.getAddress().latitude())

@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.place.domain.service;
 
-import com.cliptripbe.feature.place.dto.request.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +19,12 @@ public class PlaceRegister {
         return placeRepository.saveAll(placeList);
     }
 
-    public Place createPlaceFromInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+    public Place createPlaceFromInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = Place.builder()
-            .name(placeInfoRequestDto.placeName())
-            .phoneNumber(placeInfoRequestDto.phoneNumber())
-            .address(placeInfoRequestDto.getAddress())
-            .placeType(placeInfoRequestDto.type())
+            .name(placeInfoRequest.placeName())
+            .phoneNumber(placeInfoRequest.phoneNumber())
+            .address(placeInfoRequest.getAddress())
+            .placeType(placeInfoRequest.type())
             .build();
         placeRepository.save(place);
         return place;

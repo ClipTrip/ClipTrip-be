@@ -2,10 +2,10 @@ package com.cliptripbe.feature.schedule.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -42,7 +42,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     public ApiResponse<?> updateSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long scheduleId,
-        @RequestBody UpdateScheduleRequestDto updateSchedule
+        @RequestBody UpdateScheduleRequest updateSchedule
     ) {
         scheduleService.updateSchedule(customerDetails.getUser(), scheduleId, updateSchedule);
         return ApiResponse.success(SuccessType.SUCCESS);
@@ -53,7 +53,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     public ApiResponse<?> getUserScheduleList(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<ScheduleListResponseDto> list = scheduleService.getUserScheduleList(
+        List<ScheduleListResponse> list = scheduleService.getUserScheduleList(
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.SUCCESS, list);
     }

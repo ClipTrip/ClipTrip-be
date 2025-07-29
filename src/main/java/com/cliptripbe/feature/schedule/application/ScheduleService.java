@@ -2,15 +2,15 @@ package com.cliptripbe.feature.schedule.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 
-import com.cliptripbe.feature.place.dto.response.PlaceListResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
 import com.cliptripbe.feature.user.domain.User;
@@ -41,7 +41,7 @@ public class ScheduleService {
     public void updateSchedule(
         User user,
         Long scheduleId,
-        UpdateScheduleRequestDto updateSchedule
+        UpdateScheduleRequest updateSchedule
     ) {
         Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
@@ -54,7 +54,7 @@ public class ScheduleService {
 
         Integer placeOrder = 0;
         List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(
-            updateSchedule.placeInfoRequestDtos());
+            updateSchedule.placeInfoRequests());
         for (Place place : places) {
             SchedulePlace newPlace = SchedulePlace.builder()
                 .place(place)
@@ -67,7 +67,7 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<ScheduleListResponseDto> getUserScheduleList(User user) {
+    public List<ScheduleListResponse> getUserScheduleList(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
         return scheduleList
             .stream()
@@ -96,16 +96,16 @@ public class ScheduleService {
         }
         Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
 
-        List<PlaceListResponseDto> placeListResponseDtos = schedule.getSchedulePlaceList().stream()
+        List<PlaceListResponse> placeListResponses = schedule.getSchedulePlaceList().stream()
             .map(sp -> {
                 Place place = sp.getPlace();
                 Integer placeOrder = sp.getPlaceOrder();
                 PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
-                return PlaceListResponseDto.of(place, translation, placeOrder);
+                return PlaceListResponse.of(place, translation, placeOrder);
             })
             .toList();
 
-        return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponseDtos);
+        return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponses);
     }
 
 

@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.dto.request;
 
-public record DeleteSchedulePlaceRequestDto(
+public record DeleteSchedulePlaceRequest(
     Long placeId
 ) {
 

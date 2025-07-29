@@ -5,7 +5,7 @@ import com.cliptripbe.feature.place.domain.vo.Address;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.Pattern;
 
-public record PlaceInfoRequestDto(
+public record PlaceInfoRequest(
     double latitude,
     double longitude,
     String roadAddress,
