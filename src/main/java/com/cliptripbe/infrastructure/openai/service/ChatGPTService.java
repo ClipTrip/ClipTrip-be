@@ -1,14 +1,12 @@
 package com.cliptripbe.infrastructure.openai.service;
 
-import static com.cliptripbe.global.response.type.ErrorType.CHAT_GPT_NO_RESPONSE;
-
+import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTRequest;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
 import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse.Choice;
 import com.cliptripbe.infrastructure.openai.dto.Message;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,7 +50,7 @@ public class ChatGPTService {
             .map(List::getFirst)
             .map(Choice::getMessage)
             .map(Message::getContent)
-            .orElseThrow(() -> new CustomException(CHAT_GPT_NO_RESPONSE));
+            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("chatGPT 성공 레이턴시: {} ms", elapsed);
@@ -88,7 +86,7 @@ public class ChatGPTService {
             .map(List::getFirst)
             .map(Choice::getMessage)
             .map(Message::getContent)
-            .orElseThrow(() -> new CustomException(CHAT_GPT_NO_RESPONSE));
+            .orElseThrow(() -> new CustomException(CHATGPT_NO_RESPONSE));
 
         long elapsed = System.currentTimeMillis() - start;
         log.info("chatGPT 성공 레이턴시: {} ms", elapsed);

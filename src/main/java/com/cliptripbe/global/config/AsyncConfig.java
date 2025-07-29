@@ -16,7 +16,7 @@ public class AsyncConfig {
         exec.setCorePoolSize(10);
         exec.setMaxPoolSize(20);
         exec.setQueueCapacity(50);
-        exec.setThreadNamePrefix("kakaoPlace-exec-");
+        exec.setThreadNamePrefix("async-exec-");
         exec.initialize();
         return exec;
     }
