@@ -2,10 +2,10 @@ package com.cliptripbe.feature.schedule.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
-import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponseDto;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -45,7 +45,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         @RequestBody UpdateScheduleRequestDto updateSchedule
     ) {
         scheduleService.updateSchedule(customerDetails.getUser(), scheduleId, updateSchedule);
-        return ApiResponse.success(SuccessType.SUCCESS);
+        return ApiResponse.success(SuccessType.OK);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     ) {
         List<ScheduleListResponseDto> list = scheduleService.getUserScheduleList(
             customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, list);
+        return ApiResponse.success(SuccessType.OK, list);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         ScheduleResponse scheduleResponse = scheduleService.getScheduleById(
             customerDetails.getUser(),
             scheduleId);
-        return ApiResponse.success(SuccessType.SUCCESS, scheduleResponse);
+        return ApiResponse.success(SuccessType.OK, scheduleResponse);
     }
 
     @Override
@@ -76,6 +76,6 @@ public class ScheduleController implements ScheduleControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId) {
         scheduleService.deleteSchedule(customerDetails.getUser(), scheduleId);
-        return ApiResponse.success(SuccessType.SUCCESS, scheduleId);
+        return ApiResponse.success(SuccessType.OK, scheduleId);
     }
 }
