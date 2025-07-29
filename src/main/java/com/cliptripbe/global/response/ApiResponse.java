@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import org.springframework.http.HttpStatusCode;
 
 @Builder
 @Schema(description = "응답 객체")
@@ -15,7 +16,7 @@ public record ApiResponse<T>(
     @Schema(description = "응답 타입", example = "SUCCESS")
     ResultType resultType,
     @Schema(description = "응답 코드", example = "200")
-    int httpStatusCode,
+    HttpStatusCode httpStatusCode,
     @Schema(description = "응답 내용", example = "요청에 성공하였습니다.")
     String message,
     @JsonInclude(JsonInclude.Include.NON_NULL)
