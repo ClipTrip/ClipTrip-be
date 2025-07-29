@@ -38,12 +38,12 @@ public class UserController implements UserControllerDocs {
         @RequestBody UserSignInRequestDto userSignInRequestDto
     ) {
         UserLoginResponse userLoginResponse = userService.userSignIn(userSignInRequestDto);
-        return ApiResponse.success(SuccessType.SUCCESS, userLoginResponse);
+        return ApiResponse.success(SuccessType.OK, userLoginResponse);
     }
 
     @Override
     @GetMapping
     public ApiResponse<List<UserInfoResponse>> retrieveAllStudent() {
-        return ApiResponse.success(SuccessType.SUCCESS, userService.getAllUserInfo());
+        return ApiResponse.success(SuccessType.OK, userService.getAllUserInfo());
     }
 }
