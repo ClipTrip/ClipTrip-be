@@ -45,7 +45,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         @RequestBody UpdateScheduleRequest updateSchedule
     ) {
         scheduleService.updateSchedule(customerDetails.getUser(), scheduleId, updateSchedule);
-        return ApiResponse.success(SuccessType.SUCCESS);
+        return ApiResponse.success(SuccessType.OK);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ScheduleController implements ScheduleControllerDocs {
     ) {
         List<ScheduleListResponse> list = scheduleService.getUserScheduleList(
             customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, list);
+        return ApiResponse.success(SuccessType.OK, list);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class ScheduleController implements ScheduleControllerDocs {
         ScheduleResponse scheduleResponse = scheduleService.getScheduleById(
             customerDetails.getUser(),
             scheduleId);
-        return ApiResponse.success(SuccessType.SUCCESS, scheduleResponse);
+        return ApiResponse.success(SuccessType.OK, scheduleResponse);
     }
 
     @Override
@@ -76,6 +76,6 @@ public class ScheduleController implements ScheduleControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId) {
         scheduleService.deleteSchedule(customerDetails.getUser(), scheduleId);
-        return ApiResponse.success(SuccessType.SUCCESS, scheduleId);
+        return ApiResponse.success(SuccessType.OK, scheduleId);
     }
 }

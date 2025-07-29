@@ -40,7 +40,7 @@ public class BookmarkController implements BookmarkControllerDocs {
         Long bookmarkId = bookmarkService.createBookmark(
             customerDetails.getUser(),
             createBookmarkRequest);
-        return ApiResponse.success(SuccessType.SUCCESS, bookmarkId);
+        return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class BookmarkController implements BookmarkControllerDocs {
             bookmarkId,
             updateBookmarkRequest
         );
-        return ApiResponse.success(SuccessType.SUCCESS, bookmarkId);
+        return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BookmarkController implements BookmarkControllerDocs {
             bookmarkId,
             placeInfoRequest
         );
-        return ApiResponse.success(SuccessType.SUCCESS, bookmarkId);
+        return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 
 
@@ -79,7 +79,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     ) {
         List<BookmarkListResponse> list = bookmarkService.getUserBookmark(
             customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, list);
+        return ApiResponse.success(SuccessType.OK, list);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     ) {
         BookmarkInfoResponse responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
             customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, responseDto);
+        return ApiResponse.success(SuccessType.OK, responseDto);
     }
 
     @Override
@@ -100,7 +100,7 @@ public class BookmarkController implements BookmarkControllerDocs {
         @PathVariable Long bookmarkId
     ) {
         bookmarkService.deleteBookmark(customerDetails.getUser(), bookmarkId);
-        return ApiResponse.success(SuccessType.SUCCESS);
+        return ApiResponse.success(SuccessType.OK);
     }
 
 //    @GetMapping("/default")
