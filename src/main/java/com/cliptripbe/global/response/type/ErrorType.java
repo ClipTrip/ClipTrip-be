@@ -33,7 +33,7 @@ public enum ErrorType {
     // google api
     GOOGLE_PLACES_EMPTY_RESPONSE(HttpStatus.NOT_FOUND, "해당 주소로 검색된 장소 또는 사진이 없습니다."),
     GOOGLE_PLACES_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "google places로부터 응답을 받지 못했습니다."),
-    ;
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
 
     private final HttpStatus httpStatusCode;
     private final String message;
