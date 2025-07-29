@@ -37,7 +37,7 @@ public class PlaceController implements PlaceControllerDocs {
         @ModelAttribute PlaceInfoRequest placeInfoRequest
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceAccessibilityInfo(
-            placeInfoRequestDto);
+            placeInfoRequest);
         return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
     }
 
@@ -47,7 +47,7 @@ public class PlaceController implements PlaceControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(
-            placeInfoRequestDto, customerDetails.getUser());
+            placeInfoRequest, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
     }
 
@@ -56,7 +56,7 @@ public class PlaceController implements PlaceControllerDocs {
         @PathVariable(value = "placeId") Long placeId,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        PlaceResponseDto place = placeService.getPlaceById(placeId, customerDetails.getUser());
+        PlaceResponse place = placeService.getPlaceById(placeId, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, place);
     }
 
@@ -64,14 +64,14 @@ public class PlaceController implements PlaceControllerDocs {
     public ApiResponse<List<PlaceListResponse>> getPlacesByCategory(
         @ModelAttribute @Valid PlaceSearchByCategoryRequest request
     ) {
-        List<PlaceListResponseDto> places = placeService.getPlacesByCategory(request);
+        List<PlaceListResponse> places = placeService.getPlacesByCategory(request);
         return ApiResponse.success(SuccessType.OK, places);
     }
 
     @GetMapping("/keyword")
-    public ApiResponse<List<PlaceListResponseDto>> getPlacesByKeyword(
-        @ModelAttribute @Valid PlaceSearchByKeywordRequestDto request) {
-        List<PlaceListResponseDto> places = placeService.getPlacesByKeyword(request);
+    public ApiResponse<List<PlaceListResponse>> getPlacesByKeyword(
+        @ModelAttribute @Valid PlaceSearchByKeywordRequest request) {
+        List<PlaceListResponse> places = placeService.getPlacesByKeyword(request);
         return ApiResponse.success(SuccessType.OK, places);
     }
 
