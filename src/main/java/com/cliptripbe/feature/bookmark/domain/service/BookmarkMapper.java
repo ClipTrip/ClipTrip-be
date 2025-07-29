@@ -1,47 +1,47 @@
 package com.cliptripbe.feature.bookmark.domain.service;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
-import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
-import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponse;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import java.util.List;
 
 public class BookmarkMapper {
 
-    public static BookmarkListResponseDto mapBookmarkListResponseDto(Bookmark bookmark) {
-        return BookmarkListResponseDto.builder()
+    public static BookmarkListResponse mapBookmarkListResponseDto(Bookmark bookmark) {
+        return BookmarkListResponse.builder()
             .bookmarkId(bookmark.getId())
             .name(bookmark.getName())
             .description(bookmark.getDescription())
             .build();
     }
 
-    public static BookmarkInfoResponseDto mapBookmarkInfoResponse(
+    public static BookmarkInfoResponse mapBookmarkInfoResponse(
         Bookmark bookmark
     ) {
-        return BookmarkInfoResponseDto.builder()
+        return BookmarkInfoResponse.builder()
             .id(bookmark.getId())
             .name(bookmark.getName())
             .description(bookmark.getDescription())
             .placeList(
                 bookmark.getPlaces().stream()
                     .limit(10)
-                    .map(place -> PlaceListResponseDto.fromEntity(place, -1))
+                    .map(place -> PlaceListResponse.fromEntity(place, -1))
                     .toList()
             )
             .build();
     }
 
-    public static BookmarkInfoResponseDto mapBookmarkInfoResponse(
+    public static BookmarkInfoResponse mapBookmarkInfoResponse(
         Bookmark bookmark,
-        List<PlaceListResponseDto> placeListResponseDtos
+        List<PlaceListResponse> placeListResponses
     ) {
-        return BookmarkInfoResponseDto.builder()
+        return BookmarkInfoResponse.builder()
             .id(bookmark.getId())
             .name(bookmark.getName())
             .description(bookmark.getDescription())
             .placeList(
-                placeListResponseDtos
+                placeListResponses
             )
             .build();
     }

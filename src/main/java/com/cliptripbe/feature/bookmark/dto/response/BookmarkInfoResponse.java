@@ -1,15 +1,15 @@
 package com.cliptripbe.feature.bookmark.dto.response;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record BookmarkInfoResponseDto(
+public record BookmarkInfoResponse(
     Long id,
     String name,
     String description,
-    List<PlaceListResponseDto> placeList
+    List<PlaceListResponse> placeList
 ) {
 
 }

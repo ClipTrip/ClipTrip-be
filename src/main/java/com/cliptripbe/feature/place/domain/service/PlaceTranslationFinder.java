@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.application;
+package com.cliptripbe.feature.place.domain.service;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;

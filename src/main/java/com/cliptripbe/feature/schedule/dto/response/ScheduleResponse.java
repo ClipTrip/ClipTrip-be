@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.dto.response;
 
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;
@@ -11,7 +11,7 @@ public record ScheduleResponse(
     Long scheduleId,
     String scheduleName,
     String description,
-    List<PlaceListResponseDto> placeList
+    List<PlaceListResponse> placeList
 ) {
 
     public static ScheduleResponse of(Schedule schedule, Language language) {
@@ -21,7 +21,7 @@ public record ScheduleResponse(
             .description(schedule.getDescription())
             .placeList(
                 schedule.getSchedulePlaceList().stream()
-                    .map(schedulePlace -> PlaceListResponseDto.fromEntity(
+                    .map(schedulePlace -> PlaceListResponse.fromEntity(
                         schedulePlace.getPlace(),
                         schedulePlace.getPlaceOrder())
                     )

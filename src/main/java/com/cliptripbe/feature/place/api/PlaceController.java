@@ -2,14 +2,14 @@ package com.cliptripbe.feature.place.api;
 
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
+import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -34,7 +34,7 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping("/accessInfo")
     public ApiResponse<?> getPlaceAccessibilityInfo(
-        @ModelAttribute PlaceInfoRequestDto placeInfoRequestDto
+        @ModelAttribute PlaceInfoRequest placeInfoRequest
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceAccessibilityInfo(
             placeInfoRequestDto);
@@ -43,7 +43,7 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping
     public ApiResponse<?> getPlaceById(
-        @ModelAttribute PlaceInfoRequestDto placeInfoRequestDto,
+        @ModelAttribute PlaceInfoRequest placeInfoRequest,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(
@@ -52,7 +52,7 @@ public class PlaceController implements PlaceControllerDocs {
     }
 
     @GetMapping("/{placeId}")
-    public ApiResponse<PlaceResponseDto> getPlaceById(
+    public ApiResponse<PlaceResponse> getPlaceById(
         @PathVariable(value = "placeId") Long placeId,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
@@ -61,8 +61,8 @@ public class PlaceController implements PlaceControllerDocs {
     }
 
     @GetMapping("/category")
-    public ApiResponse<List<PlaceListResponseDto>> getPlacesByCategory(
-        @ModelAttribute @Valid PlaceSearchByCategoryRequestDto request
+    public ApiResponse<List<PlaceListResponse>> getPlacesByCategory(
+        @ModelAttribute @Valid PlaceSearchByCategoryRequest request
     ) {
         List<PlaceListResponseDto> places = placeService.getPlacesByCategory(request);
         return ApiResponse.success(SuccessType.OK, places);
@@ -77,10 +77,10 @@ public class PlaceController implements PlaceControllerDocs {
 
     @Override
     @GetMapping("/luggage-storages")
-    public ApiResponse<List<PlaceListResponseDto>> getLuggageStorages(
+    public ApiResponse<List<PlaceListResponse>> getLuggageStorages(
         @ModelAttribute @Valid LuggageStorageRequestDto luggageStorageRequestDto
     ) {
-        List<PlaceListResponseDto> places = placeService.getLuggageStorage(
+        List<PlaceListResponse> places = placeService.getLuggageStorage(
             luggageStorageRequestDto);
         return ApiResponse.success(SuccessType.OK, places);
     }

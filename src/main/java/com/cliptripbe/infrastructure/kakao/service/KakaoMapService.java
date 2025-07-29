@@ -1,8 +1,8 @@
 package com.cliptripbe.infrastructure.kakao.service;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class KakaoMapService {
     @Qualifier("kakaoWebClient")
     private final WebClient kakaoWebClient;
 
-    public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequestDto req) {
+    public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequest req) {
         long start = System.currentTimeMillis();
         return kakaoWebClient.get()
             .uri(uri -> uri
@@ -46,7 +46,7 @@ public class KakaoMapService {
 
     }
 
-    public Mono<List<PlaceDto>> searchPlaces(PlaceSearchByKeywordRequestDto req) {
+    public Mono<List<PlaceDto>> searchPlaces(PlaceSearchByKeywordRequest req) {
         long start = System.currentTimeMillis();
         return kakaoWebClient.get()
             .uri(uriBuilder -> uriBuilder

@@ -1,8 +1,8 @@
-package com.cliptripbe.feature.place.api.dto.request;
+package com.cliptripbe.feature.place.dto.request;
 
 import jakarta.validation.constraints.Max;
 
-public record PlaceSearchByKeywordRequestDto(
+public record PlaceSearchByKeywordRequest(
     String query,
     String x,
     String y,

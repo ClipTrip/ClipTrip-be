@@ -1,16 +1,9 @@
-package com.cliptripbe.feature.place.application;
+package com.cliptripbe.feature.place.domain.service;
 
-import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
-
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +19,12 @@ public class PlaceRegister {
         return placeRepository.saveAll(placeList);
     }
 
-    public Place createPlaceFromInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+    public Place createPlaceFromInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = Place.builder()
-            .name(placeInfoRequestDto.placeName())
-            .phoneNumber(placeInfoRequestDto.phoneNumber())
-            .address(placeInfoRequestDto.getAddress())
-            .placeType(placeInfoRequestDto.type())
+            .name(placeInfoRequest.placeName())
+            .phoneNumber(placeInfoRequest.phoneNumber())
+            .address(placeInfoRequest.getAddress())
+            .placeType(placeInfoRequest.type())
             .build();
         placeRepository.save(place);
         return place;

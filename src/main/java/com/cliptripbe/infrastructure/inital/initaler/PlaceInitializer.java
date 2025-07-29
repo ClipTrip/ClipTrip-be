@@ -1,8 +1,8 @@
 package com.cliptripbe.infrastructure.inital.initaler;
 
 
-import com.cliptripbe.feature.place.application.PlaceFinder;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceCsvMapper;
 import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceMapper;

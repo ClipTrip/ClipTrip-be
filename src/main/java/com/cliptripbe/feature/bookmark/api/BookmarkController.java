@@ -4,11 +4,11 @@ package com.cliptripbe.feature.bookmark.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.bookmark.application.BookmarkService;
-import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequestDto;
-import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponseDto;
-import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponseDto;
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
+import com.cliptripbe.feature.bookmark.dto.request.CreateBookmarkRequest;
+import com.cliptripbe.feature.bookmark.dto.request.UpdateBookmarkRequest;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkInfoResponse;
+import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponse;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -35,11 +35,11 @@ public class BookmarkController implements BookmarkControllerDocs {
     @PostMapping
     public ApiResponse<Long> createBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
-        @RequestBody CreateBookmarkRequestDto createBookmarkRequestDto
+        @RequestBody CreateBookmarkRequest createBookmarkRequest
     ) {
         Long bookmarkId = bookmarkService.createBookmark(
             customerDetails.getUser(),
-            createBookmarkRequestDto);
+            createBookmarkRequest);
         return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 
@@ -47,11 +47,11 @@ public class BookmarkController implements BookmarkControllerDocs {
     @PutMapping("/{bookmarkId}")
     public ApiResponse<Long> updateBookmark(
         @PathVariable(value = "bookmarkId") Long bookmarkId,
-        @RequestBody UpdateBookmarkRequestDto updateBookmarkRequestDto
+        @RequestBody UpdateBookmarkRequest updateBookmarkRequest
     ) {
         bookmarkService.updateBookmark(
             bookmarkId,
-            updateBookmarkRequestDto
+            updateBookmarkRequest
         );
         return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
@@ -61,12 +61,12 @@ public class BookmarkController implements BookmarkControllerDocs {
     public ApiResponse<Long> addBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId,
-        @RequestBody PlaceInfoRequestDto placeInfoRequestDto
+        @RequestBody PlaceInfoRequest placeInfoRequest
     ) {
         bookmarkService.addBookmark(
             customerDetails.getUser(),
             bookmarkId,
-            placeInfoRequestDto
+            placeInfoRequest
         );
         return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
@@ -74,21 +74,21 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @GetMapping
-    public ApiResponse<List<BookmarkListResponseDto>> getUserBookmark(
+    public ApiResponse<List<BookmarkListResponse>> getUserBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<BookmarkListResponseDto> list = bookmarkService.getUserBookmark(
+        List<BookmarkListResponse> list = bookmarkService.getUserBookmark(
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, list);
     }
 
     @Override
     @GetMapping("/{bookmarkId}")
-    public ApiResponse<BookmarkInfoResponseDto> getBookmarkInfo(
+    public ApiResponse<BookmarkInfoResponse> getBookmarkInfo(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId
     ) {
-        BookmarkInfoResponseDto responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
+        BookmarkInfoResponse responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
             customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, responseDto);
     }
