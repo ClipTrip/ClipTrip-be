@@ -38,7 +38,7 @@ public class PlaceController implements PlaceControllerDocs {
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceAccessibilityInfo(
             placeInfoRequestDto);
-        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
+        return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
     }
 
     @GetMapping
@@ -48,7 +48,7 @@ public class PlaceController implements PlaceControllerDocs {
     ) {
         PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(
             placeInfoRequestDto, customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, placeAccessibilityInfo);
+        return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
     }
 
     @GetMapping("/{placeId}")
@@ -57,7 +57,7 @@ public class PlaceController implements PlaceControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         PlaceResponseDto place = placeService.getPlaceById(placeId, customerDetails.getUser());
-        return ApiResponse.success(SuccessType.SUCCESS, place);
+        return ApiResponse.success(SuccessType.OK, place);
     }
 
     @GetMapping("/category")
@@ -65,14 +65,14 @@ public class PlaceController implements PlaceControllerDocs {
         @ModelAttribute @Valid PlaceSearchByCategoryRequestDto request
     ) {
         List<PlaceListResponseDto> places = placeService.getPlacesByCategory(request);
-        return ApiResponse.success(SuccessType.SUCCESS, places);
+        return ApiResponse.success(SuccessType.OK, places);
     }
 
     @GetMapping("/keyword")
     public ApiResponse<List<PlaceListResponseDto>> getPlacesByKeyword(
         @ModelAttribute @Valid PlaceSearchByKeywordRequestDto request) {
         List<PlaceListResponseDto> places = placeService.getPlacesByKeyword(request);
-        return ApiResponse.success(SuccessType.SUCCESS, places);
+        return ApiResponse.success(SuccessType.OK, places);
     }
 
     @Override
@@ -82,6 +82,6 @@ public class PlaceController implements PlaceControllerDocs {
     ) {
         List<PlaceListResponseDto> places = placeService.getLuggageStorage(
             luggageStorageRequestDto);
-        return ApiResponse.success(SuccessType.SUCCESS, places);
+        return ApiResponse.success(SuccessType.OK, places);
     }
 }
