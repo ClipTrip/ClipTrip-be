@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.api;
 
-import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequestDto;
+import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +20,7 @@ public interface ScheduleControllerDocs {
     ApiResponse<?> updateSchedule(
         CustomerDetails customerDetails,
         Long scheduleId,
-        UpdateScheduleRequestDto updateSchedule
+        UpdateScheduleRequest updateSchedule
     );
 
 //    @Operation(summary = "일정안에 있는 장소 삭제, 지울 장소는 리스트로 ")

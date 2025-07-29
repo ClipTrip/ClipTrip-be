@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.video.application;
 
-import com.cliptripbe.feature.place.application.PlaceRegister;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
+import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.schedule.application.ScheduleRegister;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.video.domain.service.VideoRegister;

@@ -1,8 +1,8 @@
 package com.cliptripbe.infrastructure.kakao.service;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +25,7 @@ public class KakaoMapService {
     @Qualifier("kakaoRestClient")
     private final RestClient kakaoRestClient;
 
-    public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequestDto req) {
+    public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequest req) {
         long start = System.currentTimeMillis();
 
         KakaoMapResponse resp = kakaoRestClient.get()
@@ -52,7 +52,7 @@ public class KakaoMapService {
         return places;
     }
 
-    public List<PlaceDto> searchPlaces(PlaceSearchByKeywordRequestDto req) {
+    public List<PlaceDto> searchPlaces(PlaceSearchByKeywordRequest req) {
         long start = System.currentTimeMillis();
 
         KakaoMapResponse resp = kakaoRestClient.get()

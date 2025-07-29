@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ApiResponse<?> handleException(Exception e) {
         log.warn(e.getMessage(), e);
-        return ApiResponse.error(ErrorType.BAD_REQUEST);
+        return ApiResponse.error(ErrorType.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

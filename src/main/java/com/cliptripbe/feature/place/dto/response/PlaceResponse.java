@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.api.dto.response;
+package com.cliptripbe.feature.place.dto.response;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
@@ -7,7 +7,7 @@ import java.util.Set;
 import lombok.Builder;
 
 @Builder
-public record PlaceResponseDto(
+public record PlaceResponse(
     Long placeId,
     String placeName,
     String roadAddress,
@@ -20,8 +20,8 @@ public record PlaceResponseDto(
     String imageUrl
 ) {
 
-    public static PlaceResponseDto of(Place place, Boolean bookmarked) {
-        return PlaceResponseDto.builder()
+    public static PlaceResponse of(Place place, Boolean bookmarked) {
+        return PlaceResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
@@ -35,12 +35,12 @@ public record PlaceResponseDto(
             .build();
     }
 
-    public static PlaceResponseDto of(
+    public static PlaceResponse of(
         Place place,
         Boolean bookmarked,
         PlaceTranslation placeTranslation
     ) {
-        return PlaceResponseDto.builder()
+        return PlaceResponse.builder()
             .placeId(place.getId())
             .placeName(placeTranslation.getName())
             .roadAddress(placeTranslation.getRoadAddress())

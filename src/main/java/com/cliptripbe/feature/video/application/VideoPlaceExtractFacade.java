@@ -3,7 +3,7 @@ package com.cliptripbe.feature.video.application;
 import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
 import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;

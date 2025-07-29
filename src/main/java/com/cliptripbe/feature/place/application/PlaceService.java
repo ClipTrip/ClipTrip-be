@@ -4,18 +4,21 @@ package com.cliptripbe.feature.place.application;
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
-import com.cliptripbe.feature.place.api.dto.PlaceDto;
-import com.cliptripbe.feature.place.api.dto.PlaceInfoRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByCategoryRequestDto;
-import com.cliptripbe.feature.place.api.dto.request.PlaceSearchByKeywordRequestDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceAccessibilityInfoResponse;
-import com.cliptripbe.feature.place.api.dto.response.PlaceListResponseDto;
-import com.cliptripbe.feature.place.api.dto.response.PlaceResponseDto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.domain.service.PlaceClassifier;
+import com.cliptripbe.feature.place.domain.service.PlaceFinder;
+import com.cliptripbe.feature.place.domain.service.PlaceRegister;
+import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
+import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
+import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -44,33 +47,31 @@ public class PlaceService {
 
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
-    private final PlaceRepository placeRepository;
 
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
-    private final PlaceDtoMapper placeDtoMapper;
 
     private final KakaoMapService kakaoMapService;
     private final S3Service s3Service;
     private final GooglePlacesService googlePlacesService;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
-        PlaceInfoRequestDto placeInfoRequestDto
+        PlaceInfoRequest placeInfoRequest
     ) {
-        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
-    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto,
+    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest placeInfoRequest,
         User user) {
-        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequestDto);
+        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
     }
 
-    public PlaceResponseDto getPlaceById(Long placeId, User user) {
+    public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
@@ -83,31 +84,31 @@ public class PlaceService {
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponseDto.of(place, bookmarked);
+            return PlaceResponse.of(place, bookmarked);
         }
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponseDto.of(place, bookmarked, placeTranslation);
+        return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
 
 
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequestDto placeInfoRequestDto) {
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = placeFinder.getOptionPlaceByPlaceInfo(
-            placeInfoRequestDto.placeName(),
-            placeInfoRequestDto.roadAddress()
-        ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequestDto));
+            placeInfoRequest.placeName(),
+            placeInfoRequest.roadAddress()
+        ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequest));
 
         placeTranslationService.registerPlace(place);
         return place;
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceListResponseDto> getPlacesByCategory(PlaceSearchByCategoryRequestDto request) {
+    public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
         List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->
-                PlaceListResponseDto.ofDto(
+                PlaceListResponse.ofDto(
                     placeDto,
                     PlaceType.findByCode(request.categoryCode()))
             )
@@ -115,11 +116,11 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceListResponseDto> getPlacesByKeyword(PlaceSearchByKeywordRequestDto request) {
+    public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
         List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request);
 
         return keywordPlaces.stream()
-            .map(PlaceListResponseDto::fromDto)
+            .map(PlaceListResponse::fromDto)
             .toList();
     }
 
@@ -161,7 +162,7 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public List<PlaceListResponseDto> getLuggageStorage(
+    public List<PlaceListResponse> getLuggageStorage(
         LuggageStorageRequestDto luggageStorageRequestDto
     ) {
         List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
@@ -170,6 +171,12 @@ public class PlaceService {
             luggageStorageRequestDto,
             luggageStoragePlaces
         );
-        return placeDtoMapper.toDtoList(placesInRange);
+        return PlaceListResponse.fromList(placesInRange);
+    }
+
+    public List<Place> findOrCreatePlacesByPlaceInfos(
+        List<PlaceInfoRequest> placeInfoRequests
+    ) {
+        return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
 }

@@ -1,9 +1,9 @@
-package com.cliptripbe.feature.bookmark.api.dto.response;
+package com.cliptripbe.feature.bookmark.dto.response;
 
 import lombok.Builder;
 
 @Builder
-public record BookmarkListResponseDto(
+public record BookmarkListResponse(
     Long bookmarkId,
     String name,
     String description

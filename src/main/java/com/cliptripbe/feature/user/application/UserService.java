@@ -1,8 +1,8 @@
 package com.cliptripbe.feature.user.application;
 
-import com.cliptripbe.feature.bookmark.application.BookmarkFinder;
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
 import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
