@@ -136,7 +136,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
             PlaceDto place = documents.stream()
                 .map(PlaceDto::from)
                 .findFirst()
-                .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
+                .orElse(null);
 
             log.info("[{}] 개별 호출 레이턴시: {} ms", keyword, System.currentTimeMillis() - start);
             return CompletableFuture.completedFuture(place);
