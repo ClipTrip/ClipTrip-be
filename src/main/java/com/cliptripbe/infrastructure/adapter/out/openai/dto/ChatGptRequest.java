@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ChatGPTRequest {
+public class ChatGptRequest {
 
     private String model;
 

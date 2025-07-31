@@ -13,12 +13,11 @@ import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
-import com.cliptripbe.infrastructure.adapter.out.caption.CaptionAdapter;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.adapter.out.openai.prompt.PromptFactory;
-import com.cliptripbe.infrastructure.adapter.out.openai.prompt.type.PromptType;
-import com.cliptripbe.infrastructure.adapter.out.openai.service.ChatGPTService;
+import com.cliptripbe.global.util.prompt.PromptUtils;
+import com.cliptripbe.global.util.prompt.type.PromptType;
 import com.cliptripbe.infrastructure.port.caption.CaptionPort;
+import com.cliptripbe.infrastructure.port.openai.ChatGptPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,9 +32,8 @@ public class VideoPlaceExtractFacade {
     private final PlaceTranslationService placeTranslationService;
 
     private final CaptionPort captionPort;
-    private final ChatGPTService chatGPTService;
+    private final ChatGptPort chatGptPort;
     private final KakaoMapService kakaoMapService;
-    private final PromptFactory promptFactory;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         // 1. url로 자막을 추출한다 - 외부 api(fastAPI)
@@ -47,25 +45,25 @@ public class VideoPlaceExtractFacade {
 
         CaptionResponse caption = captionPort.getCaptions(request.youtubeUrl());
 
-        String requestPlacePrompt = promptFactory.build(PromptType.PLACE, caption.captions());
+        String requestPlacePrompt = PromptUtils.build(PromptType.PLACE, caption.captions());
 
-        String requestSummaryPrompt = promptFactory.build(PromptType.SUMMARY_KO,
+        String requestSummaryPrompt = PromptUtils.build(PromptType.SUMMARY_KO,
             caption.captions());
 
-        String gptPlaceResponse = chatGPTService.askPlaceExtraction(requestPlacePrompt);
+        String gptPlaceResponse = chatGptPort.askPlaceExtraction(requestPlacePrompt);
         List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
 
         // 자막 요약
-        String gptSummaryResponse = chatGPTService.ask(requestSummaryPrompt);
+        String gptSummaryResponse = chatGptPort.ask(requestSummaryPrompt);
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
         // 자막 요약 영어
         String summaryTranslated = null;
         if (user.getLanguage() == Language.ENGLISH) {
-            String requestSummaryEnPrompt = promptFactory.build(PromptType.SUMMARY_EN,
+            String requestSummaryEnPrompt = PromptUtils.build(PromptType.SUMMARY_EN,
                 caption.captions());
 
-            summaryTranslated = chatGPTService.ask(requestSummaryEnPrompt);
+            summaryTranslated = chatGptPort.ask(requestSummaryEnPrompt);
         }
 
         List<PlaceDto> places = kakaoMapService.searchFirstPlacesAsync(extractPlacesText);

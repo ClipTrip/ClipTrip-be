@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatGPTResponse {
+public class ChatGptResponse {
 
     private List<Choice> choices;
 

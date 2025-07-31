@@ -9,7 +9,7 @@ import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.repository.VideoRepository;
 import com.cliptripbe.infrastructure.adapter.out.caption.CaptionAdapter;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.adapter.out.openai.service.ChatGPTService;
+import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final PlaceTranslationService placeTranslationService;
 
-    private final ChatGPTService chatGPTService;
+    private final ChatGptAdapter chatGptAdapter;
     private final KakaoMapService kakaoMapService;
     private final CaptionAdapter captionAdapter;
 

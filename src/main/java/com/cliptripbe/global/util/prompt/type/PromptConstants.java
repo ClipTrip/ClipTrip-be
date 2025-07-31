@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.adapter.out.openai.prompt.type;
+package com.cliptripbe.global.util.prompt.type;
 
 public class PromptConstants {
 
