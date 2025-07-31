@@ -21,10 +21,9 @@ import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.infrastructure.adapter.out.google.GooglePlacesAdapter;
 import com.cliptripbe.infrastructure.port.google.GooglePlacesPort;
 import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
-import com.cliptripbe.infrastructure.s3.S3Service;
+import com.cliptripbe.infrastructure.port.s3.S3Port;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +52,7 @@ public class PlaceService {
     private final PlaceClassifier placeClassifier;
 
     private final KakaoMapPort kakaoMapPort;
-    private final S3Service s3Service;
+    private final S3Port s3Port;
     private final GooglePlacesPort googlePlacesPort;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
@@ -77,7 +76,7 @@ public class PlaceService {
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
             byte[] imageBytes = googlePlacesPort.getPhotoByAddress(searchKeyWord);
-            String imageUrl = s3Service.upload(S3_PLACE_PREFIX, imageBytes);
+            String imageUrl = s3Port.upload(S3_PLACE_PREFIX, imageBytes);
             place.addImageUrl(imageUrl);
         }
 

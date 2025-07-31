@@ -1,5 +1,6 @@
-package com.cliptripbe.infrastructure.s3;
+package com.cliptripbe.infrastructure.adapter.out.s3;
 
+import com.cliptripbe.infrastructure.port.s3.S3Port;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -13,13 +14,12 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 
 @Component
 @RequiredArgsConstructor
-public class S3Service {
+public class S3Adapter implements S3Port {
 
     private final S3Client s3Client;
     private final Region awsRegion;
@@ -27,6 +27,7 @@ public class S3Service {
     @Value("${s3.bucket}")
     private String bucket;
 
+    @Override
     public BufferedReader readCsv(String key) {
         GetObjectRequest request = GetObjectRequest.builder()
             .bucket(bucket)
@@ -37,6 +38,7 @@ public class S3Service {
         return new BufferedReader(new InputStreamReader(s3Stream, StandardCharsets.UTF_8));
     }
 
+    @Override
     public String upload(String key, byte[] data) {
         String filename = UUID.randomUUID().toString() + ".png";
         String fullKey = key + filename;
