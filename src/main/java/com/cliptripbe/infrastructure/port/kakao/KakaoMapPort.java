@@ -11,5 +11,5 @@ public interface KakaoMapPort {
 
     List<PlaceDto> searchPlacesByKeyWord(PlaceSearchByKeywordRequest request);
 
-    List<PlaceDto> searchFirstPlacesAsync(List<String> keywords);
+    List<PlaceDto> searchFirstPlacesInParallel(List<String> keywords);
 }

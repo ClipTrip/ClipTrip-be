@@ -66,7 +66,7 @@ public class VideoPlaceExtractFacade {
             summaryTranslated = chatGptPort.ask(requestSummaryEnPrompt);
         }
 
-        List<PlaceDto> places = kakaoMapPort.searchFirstPlacesAsync(extractPlacesText);
+        List<PlaceDto> places = kakaoMapPort.searchFirstPlacesInParallel(extractPlacesText);
 
         List<Place> placeList = placeService.createPlaceAll(places);
         if (user.getLanguage() == Language.ENGLISH) {
