@@ -1,10 +1,11 @@
-package com.cliptripbe.infrastructure.google.service;
+package com.cliptripbe.infrastructure.adapter.out.google;
 
 import static com.cliptripbe.global.response.type.ErrorType.GOOGLE_PLACES_EMPTY_RESPONSE;
 
 import com.cliptripbe.global.config.RestClientConfig;
 import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.infrastructure.google.dto.GooglePlacesSearchResponse;
+import com.cliptripbe.infrastructure.adapter.out.google.dto.GooglePlacesSearchResponse;
+import com.cliptripbe.infrastructure.port.google.GooglePlacesPort;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class GooglePlacesService {
+public class GooglePlacesAdapter implements GooglePlacesPort {
 
     @Qualifier("googleMapsRestClient")
     private final RestClient googleMapsRestClient;

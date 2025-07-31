@@ -13,7 +13,7 @@ import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
-import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
+import com.cliptripbe.infrastructure.adapter.out.google.GooglePlacesAdapter;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController implements PlaceControllerDocs {
 
     private final PlaceService placeService;
-    private final GooglePlacesService googlePlacesService;
+    private final GooglePlacesAdapter googlePlacesAdapter;
 
     @GetMapping("/accessInfo")
     public ApiResponse<?> getPlaceAccessibilityInfo(

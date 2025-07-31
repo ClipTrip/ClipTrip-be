@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.google.dto;
+package com.cliptripbe.infrastructure.adapter.out.google.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
