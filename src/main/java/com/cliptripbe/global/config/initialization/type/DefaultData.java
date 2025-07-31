@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.inital.type;
+package com.cliptripbe.global.config.initialization.type;
 
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import lombok.Getter;

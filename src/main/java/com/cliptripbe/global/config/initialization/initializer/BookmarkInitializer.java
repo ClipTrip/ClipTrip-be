@@ -1,10 +1,10 @@
-package com.cliptripbe.infrastructure.inital.initaler;
+package com.cliptripbe.global.config.initialization.initializer;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.infrastructure.inital.type.DefaultData;
+import com.cliptripbe.global.config.initialization.type.DefaultData;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

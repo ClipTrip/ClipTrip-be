@@ -1,13 +1,12 @@
-package com.cliptripbe.infrastructure.inital.initaler;
+package com.cliptripbe.global.config.initialization.initializer;
 
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
-import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceCsvMapper;
-import com.cliptripbe.infrastructure.inital.initaler.mapper.PlaceMapper;
-import com.cliptripbe.infrastructure.inital.type.DefaultData;
-import com.cliptripbe.infrastructure.adapter.out.s3.S3Adapter;
+import com.cliptripbe.global.config.initialization.mapper.PlaceCsvMapper;
+import com.cliptripbe.global.config.initialization.mapper.PlaceMapper;
+import com.cliptripbe.global.config.initialization.type.DefaultData;
 import com.cliptripbe.infrastructure.port.s3.S3Port;
 import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;

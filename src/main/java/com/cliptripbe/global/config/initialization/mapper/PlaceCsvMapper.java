@@ -1,8 +1,8 @@
-package com.cliptripbe.infrastructure.inital.initaler.mapper;
+package com.cliptripbe.global.config.initialization.mapper;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
-import com.cliptripbe.infrastructure.inital.type.DefaultData;
+import com.cliptripbe.global.config.initialization.type.DefaultData;
 
 public interface PlaceCsvMapper {
 

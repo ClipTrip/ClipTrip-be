@@ -1,9 +1,9 @@
-package com.cliptripbe.infrastructure.inital.initaler.mapper;
+package com.cliptripbe.global.config.initialization.mapper;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
-import com.cliptripbe.infrastructure.inital.type.DefaultData;
+import com.cliptripbe.global.config.initialization.type.DefaultData;
 import org.springframework.stereotype.Component;
 
 @Component
