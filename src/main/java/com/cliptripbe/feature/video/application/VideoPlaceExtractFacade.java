@@ -1,9 +1,9 @@
 package com.cliptripbe.feature.video.application;
 
-import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.user.domain.entity.User;
