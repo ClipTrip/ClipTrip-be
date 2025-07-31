@@ -1,11 +1,11 @@
-package com.cliptripbe.feature.user.api.dto.request;
+package com.cliptripbe.feature.user.dto.request;
 
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.AgeGroup;
 import com.cliptripbe.feature.user.domain.type.Gender;
 import com.cliptripbe.feature.user.domain.type.Language;
 
-public record UserSignUpRequestDto(
+public record UserSignUpRequest(
     String email,
     String password,
     Gender gender,

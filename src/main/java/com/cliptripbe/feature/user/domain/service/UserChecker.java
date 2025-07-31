@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.user.application;
+package com.cliptripbe.feature.user.domain.service;
 
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import com.cliptripbe.global.response.exception.CustomException;

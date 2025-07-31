@@ -4,11 +4,13 @@ import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
-import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
-import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
-import com.cliptripbe.feature.user.api.dto.response.UserInfoResponse;
-import com.cliptripbe.feature.user.api.dto.response.UserLoginResponse;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.service.UserChecker;
+import com.cliptripbe.feature.user.domain.service.UserLoader;
+import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
+import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
+import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
+import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import com.cliptripbe.global.auth.AuthService;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;
@@ -34,7 +36,7 @@ public class UserService {
     private final BookmarkRepository bookmarkRepository;
 
     @Transactional
-    public UserInfoResponse signUp(UserSignUpRequestDto signUpDto) {
+    public UserInfoResponse signUp(UserSignUpRequest signUpDto) {
         userChecker.checkExistUserEmail(signUpDto.email());
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
@@ -66,11 +68,11 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
 
-    public UserLoginResponse userSignIn(UserSignInRequestDto userSignInRequestDto) {
+    public UserLoginResponse userSignIn(UserSignInRequest userSignInRequest) {
         JwtToken tokens = authService.createAuthenticationToken(
-            userSignInRequestDto.email(),
-            userSignInRequestDto.password());
-        User user = userLoader.findByEmail(userSignInRequestDto.email());
+            userSignInRequest.email(),
+            userSignInRequest.password());
+        User user = userLoader.findByEmail(userSignInRequest.email());
 
         return UserLoginResponse.of(tokens, user.getLanguage());
     }

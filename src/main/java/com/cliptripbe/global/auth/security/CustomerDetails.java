@@ -1,7 +1,7 @@
 package com.cliptripbe.global.auth.security;
 
 
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
