@@ -1,19 +1,18 @@
 package com.cliptripbe.global.config;
 
+
 import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestClient;
 
-@Slf4j
+
 @Configuration
-public class WebClientConfig {
+public class RestClientConfig {
 
     @Value("${openai.api.base-url:https://api.openai.com/v1}")
     private String openaiBaseUrl;
@@ -38,8 +37,8 @@ public class WebClientConfig {
     private String googleApiKey;
 
     @Bean
-    @Qualifier("openAIWebClient")
-    public WebClient openAIWebClient(WebClient.Builder builder) {
+    @Qualifier("openAIRestClient")
+    public RestClient openAIRestClient(RestClient.Builder builder) {
         return builder
             .baseUrl(openaiBaseUrl)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -48,8 +47,8 @@ public class WebClientConfig {
     }
 
     @Bean
-    @Qualifier("kakaoWebClient")
-    public WebClient kakaoWebClient(WebClient.Builder builder) {
+    @Qualifier("kakaoRestClient")
+    public RestClient kakaoRestClient(RestClient.Builder builder) {
         return builder
             .baseUrl(kakaoBaseUrl)
             .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
@@ -57,8 +56,8 @@ public class WebClientConfig {
     }
 
     @Bean
-    @Qualifier("googleWebClient")
-    public WebClient googleMapsWebClient(WebClient.Builder builder) {
+    @Qualifier("googleMapsRestClient")
+    public RestClient googleMapsRestClient(RestClient.Builder builder) {
         return builder
             .baseUrl(googleBaseUrl)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -66,8 +65,8 @@ public class WebClientConfig {
     }
 
     @Bean
-    @Qualifier("captionWebClient")
-    public WebClient captionsWebClient(WebClient.Builder builder) {
+    @Qualifier("captionsRestClient")
+    public RestClient captionsRestClient(RestClient.Builder builder) {
         return builder
             .baseUrl(captionsBaseUrl)
             .build();

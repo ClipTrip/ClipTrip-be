@@ -1,8 +1,6 @@
 package com.cliptripbe.feature.place.application;
 
 
-import static com.cliptripbe.global.response.type.ErrorType.GOOGLE_PLACES_NO_RESPONSE;
-import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
@@ -36,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.scheduler.Schedulers;
+
 
 @Service
 @Transactional
@@ -78,9 +76,7 @@ public class PlaceService {
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
-            byte[] imageBytes = googlePlacesService.getPhotoByAddress(searchKeyWord)
-                .blockOptional()
-                .orElseThrow(() -> new CustomException(GOOGLE_PLACES_NO_RESPONSE));
+            byte[] imageBytes = googlePlacesService.getPhotoByAddress(searchKeyWord);
             String imageUrl = s3Service.upload(S3_PLACE_PREFIX, imageBytes);
             place.addImageUrl(imageUrl);
         }
@@ -121,10 +117,7 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
-        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request)
-            .subscribeOn(Schedulers.boundedElastic())
-            .blockOptional()
-            .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE));
+        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request);
 
         return keywordPlaces.stream()
             .map(PlaceListResponse::fromDto)

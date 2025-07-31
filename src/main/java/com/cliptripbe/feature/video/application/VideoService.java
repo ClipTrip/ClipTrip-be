@@ -4,16 +4,18 @@ import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.schedule.application.ScheduleRegister;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
-import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.domain.service.VideoRegister;
+import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.repository.VideoRepository;
 import com.cliptripbe.infrastructure.caption.service.CaptionService;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
 import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 @Slf4j
 @Service
