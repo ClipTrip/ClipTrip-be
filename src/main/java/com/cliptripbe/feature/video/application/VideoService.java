@@ -1,15 +1,7 @@
 package com.cliptripbe.feature.video.application;
 
-import com.cliptripbe.feature.place.application.PlaceTranslationService;
-import com.cliptripbe.feature.place.domain.service.PlaceRegister;
-import com.cliptripbe.feature.schedule.application.ScheduleRegister;
-import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.video.domain.service.VideoRegister;
 import com.cliptripbe.feature.video.domain.entity.Video;
-import com.cliptripbe.feature.video.repository.VideoRepository;
-import com.cliptripbe.infrastructure.adapter.out.caption.CaptionAdapter;
-import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class VideoService {
 
-    private final ScheduleRegister scheduleRegister;
-    private final ScheduleFinder scheduleFinder;
-    private final PlaceRegister placeRegister;
-    private final VideoRepository videoRepository;
-    private final PlaceTranslationService placeTranslationService;
-
-    private final ChatGptAdapter chatGptAdapter;
-    private final KakaoMapService kakaoMapService;
-    private final CaptionAdapter captionAdapter;
+//    private final ScheduleRegister scheduleRegister;
+//    private final ScheduleFinder scheduleFinder;
+//    private final PlaceRegister placeRegister;
+//    private final VideoRepository videoRepository;
+//    private final PlaceTranslationService placeTranslationService;
+//
+//    private final ChatGptAdapter chatGptAdapter;
+//    private final KakaoMapService kakaoMapService;
+//    private final CaptionAdapter captionAdapter;
 
 
     private final VideoRegister videoRegister;

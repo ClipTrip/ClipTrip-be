@@ -13,7 +13,7 @@ import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
-import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
+import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
 import com.cliptripbe.global.util.prompt.PromptUtils;
 import com.cliptripbe.global.util.prompt.type.PromptType;
 import com.cliptripbe.infrastructure.port.caption.CaptionPort;
@@ -33,7 +33,7 @@ public class VideoPlaceExtractFacade {
 
     private final CaptionPort captionPort;
     private final ChatGptPort chatGptPort;
-    private final KakaoMapService kakaoMapService;
+    private final KakaoMapPort kakaoMapPort;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         // 1. url로 자막을 추출한다 - 외부 api(fastAPI)
@@ -66,7 +66,7 @@ public class VideoPlaceExtractFacade {
             summaryTranslated = chatGptPort.ask(requestSummaryEnPrompt);
         }
 
-        List<PlaceDto> places = kakaoMapService.searchFirstPlacesAsync(extractPlacesText);
+        List<PlaceDto> places = kakaoMapPort.searchFirstPlacesAsync(extractPlacesText);
 
         List<Place> placeList = placeService.createPlaceAll(places);
         if (user.getLanguage() == Language.ENGLISH) {

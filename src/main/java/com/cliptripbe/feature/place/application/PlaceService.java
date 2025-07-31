@@ -21,9 +21,8 @@ import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.user.domain.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
-import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
+import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
 import com.cliptripbe.infrastructure.s3.S3Service;
 import java.util.Collections;
 import java.util.List;
@@ -52,7 +51,7 @@ public class PlaceService {
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
 
-    private final KakaoMapService kakaoMapService;
+    private final KakaoMapPort kakaoMapPort;
     private final S3Service s3Service;
     private final GooglePlacesService googlePlacesService;
 
@@ -105,7 +104,7 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
-        List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
+        List<PlaceDto> categoryPlaces = kakaoMapPort.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->
                 PlaceListResponse.ofDto(
@@ -117,7 +116,7 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
-        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request);
+        List<PlaceDto> keywordPlaces = kakaoMapPort.searchPlacesByKeyWord(request);
 
         return keywordPlaces.stream()
             .map(PlaceListResponse::fromDto)
