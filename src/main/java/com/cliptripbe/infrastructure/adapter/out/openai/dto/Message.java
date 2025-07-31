@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.openai.dto;
+package com.cliptripbe.infrastructure.adapter.out.openai.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
-package com.cliptripbe.infrastructure.caption.service;
+package com.cliptripbe.infrastructure.adapter.out.caption;
 
-import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
-import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
+import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
+import com.cliptripbe.infrastructure.port.caption.CaptionPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,19 +12,20 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaptionService {
+public class CaptionAdapter implements CaptionPort {
 
     @Qualifier("captionsRestClient")
     private final RestClient captionsRestClient;
 
-    public CaptionResponse getCaptions(CaptionRequest request) {
+    @Override
+    public CaptionResponse getCaptions(String youtubeUrl) {
         long start = System.currentTimeMillis();
 
         CaptionResponse captionResponse = captionsRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/captions")
-                .queryParam("video_url", request.youtubeUrl())
-                .queryParam("langs", request.langs())
+                .queryParam("video_url", youtubeUrl)
+                .queryParam("langs", "ko,en")
                 .build())
             .retrieve()
             .body(CaptionResponse.class);

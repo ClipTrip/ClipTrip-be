@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.openai.prompt.type;
+package com.cliptripbe.infrastructure.adapter.out.openai.prompt.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

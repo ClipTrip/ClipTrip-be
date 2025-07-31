@@ -1,8 +1,5 @@
 package com.cliptripbe.feature.video.application;
 
-import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
-import static com.cliptripbe.global.response.type.ErrorType.KAKAO_MAP_NO_RESPONSE;
-
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.application.PlaceTranslationService;
@@ -15,13 +12,13 @@ import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.util.ChatGPTUtils;
-import com.cliptripbe.infrastructure.caption.dto.CaptionRequest;
-import com.cliptripbe.infrastructure.caption.dto.CaptionResponse;
-import com.cliptripbe.infrastructure.caption.service.CaptionService;
+import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
+import com.cliptripbe.infrastructure.adapter.out.caption.CaptionAdapter;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.openai.prompt.PromptFactory;
-import com.cliptripbe.infrastructure.openai.prompt.type.PromptType;
-import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
+import com.cliptripbe.infrastructure.adapter.out.openai.prompt.PromptFactory;
+import com.cliptripbe.infrastructure.adapter.out.openai.prompt.type.PromptType;
+import com.cliptripbe.infrastructure.adapter.out.openai.service.ChatGPTService;
+import com.cliptripbe.infrastructure.port.caption.CaptionPort;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -35,7 +32,7 @@ public class VideoPlaceExtractFacade {
     private final VideoService videoService;
     private final PlaceTranslationService placeTranslationService;
 
-    private final CaptionService captionService;
+    private final CaptionPort captionPort;
     private final ChatGPTService chatGPTService;
     private final KakaoMapService kakaoMapService;
     private final PromptFactory promptFactory;
@@ -48,9 +45,7 @@ public class VideoPlaceExtractFacade {
         // 4. video, place, schedule 엔티티를 생성 후 저장한다.
         // 5. 추출된 엔티티를 바탕으로 사용자에게 응답해준다.
 
-        CaptionResponse caption = captionService.getCaptions(
-            CaptionRequest.of(request.youtubeUrl())
-        );
+        CaptionResponse caption = captionPort.getCaptions(request.youtubeUrl());
 
         String requestPlacePrompt = promptFactory.build(PromptType.PLACE, caption.captions());
 

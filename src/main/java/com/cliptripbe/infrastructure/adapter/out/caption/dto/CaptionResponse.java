@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.caption.dto;
+package com.cliptripbe.infrastructure.adapter.out.caption.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

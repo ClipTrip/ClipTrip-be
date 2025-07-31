@@ -1,4 +1,4 @@
-package com.cliptripbe.infrastructure.caption.utils;
+package com.cliptripbe.global.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -7,9 +7,9 @@ import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
 import com.cliptripbe.feature.video.domain.service.VideoRegister;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.repository.VideoRepository;
-import com.cliptripbe.infrastructure.caption.service.CaptionService;
+import com.cliptripbe.infrastructure.adapter.out.caption.CaptionAdapter;
 import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
+import com.cliptripbe.infrastructure.adapter.out.openai.service.ChatGPTService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ public class VideoService {
 
     private final ChatGPTService chatGPTService;
     private final KakaoMapService kakaoMapService;
-    private final CaptionService captionService;
+    private final CaptionAdapter captionAdapter;
 
 
     private final VideoRegister videoRegister;

@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.video.dto.request;
 
 import com.cliptripbe.feature.video.domain.entity.Video;
-import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
+import com.cliptripbe.global.util.CaptionUtils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 

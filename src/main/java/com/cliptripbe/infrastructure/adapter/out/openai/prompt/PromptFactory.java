@@ -1,6 +1,6 @@
-package com.cliptripbe.infrastructure.openai.prompt;
+package com.cliptripbe.infrastructure.adapter.out.openai.prompt;
 
-import com.cliptripbe.infrastructure.openai.prompt.type.PromptType;
+import com.cliptripbe.infrastructure.adapter.out.openai.prompt.type.PromptType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

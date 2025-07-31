@@ -1,11 +1,11 @@
-package com.cliptripbe.infrastructure.openai.service;
+package com.cliptripbe.infrastructure.adapter.out.openai.service;
 
 import static com.cliptripbe.global.response.type.ErrorType.CHATGPT_NO_RESPONSE;
 import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.infrastructure.openai.dto.ChatGPTRequest;
-import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse;
-import com.cliptripbe.infrastructure.openai.dto.ChatGPTResponse.Choice;
-import com.cliptripbe.infrastructure.openai.dto.Message;
+import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGPTRequest;
+import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGPTResponse;
+import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGPTResponse.Choice;
+import com.cliptripbe.infrastructure.adapter.out.openai.dto.Message;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
