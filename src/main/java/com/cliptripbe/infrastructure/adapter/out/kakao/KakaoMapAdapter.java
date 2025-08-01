@@ -8,7 +8,6 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.adapter.out.kakao.dto.KakaoMapResponse;
 import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
@@ -28,6 +26,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
 
     @Qualifier("kakaoRestClient")
     private final RestClient kakaoRestClient;
+    private final KakaoMapAsyncAdapter asyncService;
 
     @Override
     public List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequest request) {
@@ -105,7 +104,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
         log.debug("Searching first places async for keywords: {}", keywords);
 
         List<CompletableFuture<PlaceDto>> futures = keywords.stream()
-            .map(this::searchFirstPlaceAsync)
+            .map(asyncService::searchFirstPlaceAsync)
             .toList();
 
         CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
@@ -114,36 +113,5 @@ public class KakaoMapAdapter implements KakaoMapPort {
             .map(CompletableFuture::join)
             .filter(Objects::nonNull)
             .toList();
-    }
-
-    @Async("threadPoolTaskExecutor")
-    public CompletableFuture<PlaceDto> searchFirstPlaceAsync(String keyword) {
-        try {
-            long start = System.currentTimeMillis();
-
-            KakaoMapResponse response = kakaoRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                    .path("/v2/local/search/keyword.json")
-                    .queryParam("query", keyword)
-                    .build())
-                .retrieve()
-                .body(KakaoMapResponse.class);
-
-            List<KakaoMapResponse.Document> documents = Optional.ofNullable(response)
-                .map(KakaoMapResponse::documents)
-                .orElseGet(Collections::emptyList);
-
-            PlaceDto place = documents.stream()
-                .map(PlaceDto::from)
-                .findFirst()
-                .orElse(null);
-
-            log.info("[{}] 개별 호출 레이턴시: {} ms", keyword, System.currentTimeMillis() - start);
-            return CompletableFuture.completedFuture(place);
-
-        } catch (RestClientException e) {
-            log.error("카카오 API 호출 실패: {}", e.getMessage());
-            throw new CustomException(KAKAO_MAP_NO_RESPONSE);
-        }
     }
 }
