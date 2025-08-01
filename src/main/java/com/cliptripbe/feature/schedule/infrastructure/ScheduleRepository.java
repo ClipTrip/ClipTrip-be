@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.schedule.infrastructure;
 
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;

@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.user.domain;
+package com.cliptripbe.feature.user.domain.entity;
 
 import com.cliptripbe.feature.user.domain.type.AgeGroup;
 import com.cliptripbe.feature.user.domain.type.Gender;

@@ -6,7 +6,7 @@ import com.cliptripbe.feature.place.application.PlaceTranslationService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
@@ -36,13 +36,6 @@ public class VideoPlaceExtractFacade {
     private final KakaoMapPort kakaoMapPort;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
-        // 1. url로 자막을 추출한다 - 외부 api(fastAPI)
-        // 2-1. 추출된 자막을 통해 장소를 요약한다 - 외부 api(gpt)
-        // 2-2. 추출된 자막을 통해 장소를 추출한다 - 외부 api(gpt)
-        // 3. 추출된 장소를 통해 실제 장소 정보를 가져온다 - 외부 api(kakao)
-        // 4. video, place, schedule 엔티티를 생성 후 저장한다.
-        // 5. 추출된 엔티티를 바탕으로 사용자에게 응답해준다.
-
         CaptionResponse caption = captionPort.getCaptions(request.youtubeUrl());
 
         String requestPlacePrompt = PromptUtils.build(PromptType.PLACE, caption.captions());

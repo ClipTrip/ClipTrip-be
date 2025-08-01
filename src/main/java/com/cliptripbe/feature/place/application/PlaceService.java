@@ -19,7 +19,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.port.google.GooglePlacesPort;
 import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;

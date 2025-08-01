@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.user.api.dto.response;
+package com.cliptripbe.feature.user.dto.response;
 
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;

@@ -13,7 +13,7 @@ import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;

@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,7 +13,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import java.util.ArrayList;
 import java.util.List;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
