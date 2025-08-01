@@ -12,6 +12,7 @@ import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.util.ChatGPTUtils;
+import com.cliptripbe.global.util.YoutubeUtils;
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
 import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
 import com.cliptripbe.global.util.prompt.PromptUtils;
@@ -46,11 +47,9 @@ public class VideoPlaceExtractFacade {
         String gptPlaceResponse = chatGptPort.askPlaceExtraction(requestPlacePrompt);
         List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
 
-        // 자막 요약
         String gptSummaryResponse = chatGptPort.ask(requestSummaryPrompt);
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
-        // 자막 요약 영어
         String summaryTranslated = null;
         if (user.getLanguage() == Language.ENGLISH) {
             String requestSummaryEnPrompt = PromptUtils.build(PromptType.SUMMARY_EN,
