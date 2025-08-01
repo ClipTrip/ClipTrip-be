@@ -1,8 +1,8 @@
 package com.cliptripbe.feature.user.api;
 
-import com.cliptripbe.feature.user.api.dto.request.UserSignInRequestDto;
-import com.cliptripbe.feature.user.api.dto.request.UserSignUpRequestDto;
-import com.cliptripbe.feature.user.api.dto.response.UserLoginResponse;
+import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
+import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
+import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -11,10 +11,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface UserControllerDocs {
 
     @Operation(summary = "회원가입 API")
-    ApiResponse<?> signUp(UserSignUpRequestDto signUpDto);
+    ApiResponse<?> signUp(UserSignUpRequest signUpDto);
 
     @Operation(summary = "로그인 API")
-    ApiResponse<UserLoginResponse> signIn(UserSignInRequestDto userSignInRequestDto);
+    ApiResponse<UserLoginResponse> signIn(UserSignInRequest userSignInRequest);
 
     @Operation(summary = "유저 전체 조회 API")
     ApiResponse<?> retrieveAllStudent();

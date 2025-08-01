@@ -1,6 +1,6 @@
-package com.cliptripbe.feature.user.api.dto.response;
+package com.cliptripbe.feature.user.dto.response;
 
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import lombok.Builder;
 
 @Builder

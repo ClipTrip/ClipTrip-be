@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.bookmark.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

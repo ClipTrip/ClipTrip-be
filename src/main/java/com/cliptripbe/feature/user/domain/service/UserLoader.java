@@ -1,6 +1,6 @@
-package com.cliptripbe.feature.user.application;
+package com.cliptripbe.feature.user.domain.service;
 
-import com.cliptripbe.feature.user.domain.User;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
