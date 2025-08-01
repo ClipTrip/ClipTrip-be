@@ -1,11 +1,17 @@
 package com.cliptripbe.global.auth.jwt;
 
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
+
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
+import com.cliptripbe.global.auth.jwt.entity.TokenType;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -28,23 +34,61 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         @NonNull HttpServletResponse servletResponse,
         FilterChain filterChain) throws ServletException, IOException {
         try {
-            String token = resolveToken(servletRequest);
-            if (jwtTokenProvider.checkValidToken(token)) {
-                Authentication authentication = jwtTokenProvider.getAuthentication(token);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+            authenticateWithAccessToken(servletRequest);
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (CustomException e) {
-
-//            if (e.getErrorType() == ErrorType.EXPIRED_ACCESS_TOKEN) {
-//                e.printStackTrace();
-            // 엑세스 토큰이 만료되었을 경우
-//            } else {
-            handleException(servletResponse, e);
-//            }
+            if (e.getErrorType() == ErrorType.EXPIRED_ACCESS_TOKEN) {
+                log.info("Access token expired, attempting refresh");
+                attemptTokenRefresh(servletRequest, servletResponse);
+                filterChain.doFilter(servletRequest, servletResponse);
+            } else {
+                handleException(servletResponse, e);
+            }
             // 예외 처리 로직
 //            e.printStackTrace();
         }
+    }
+
+    private void attemptTokenRefresh(
+        HttpServletRequest servletRequest,
+        HttpServletResponse servletResponse
+    ) {
+        String refreshToken = extractTokenFromCookies(servletRequest, REFRESH_TOKEN);
+        if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
+            // 재발급
+            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
+                refreshToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            // 새 accessToken 재발급 & 쿠키로 설정
+            String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
+
+            Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN.getName(), newAccessToken);
+            newAccessTokenCookie.setHttpOnly(true);
+            newAccessTokenCookie.setPath("/");
+            newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / 1000);
+
+            servletResponse.addCookie(newAccessTokenCookie);
+        }
+    }
+
+    private void authenticateWithAccessToken(HttpServletRequest servletRequest) {
+        String accessToken = extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
+        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+    }
+
+    private String extractTokenFromCookies(HttpServletRequest request, TokenType tokenType) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (tokenType.getName().equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 
     private void handleException(HttpServletResponse response, CustomException e)
