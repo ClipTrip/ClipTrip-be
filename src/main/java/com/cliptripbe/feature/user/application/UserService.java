@@ -12,8 +12,8 @@ import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
 import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
 import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.feature.user.infrastructure.UserRepository;
-import com.cliptripbe.global.auth.AuthService;
-import com.cliptripbe.global.auth.jwt.entity.JwtToken;
+import com.cliptripbe.global.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,13 +68,18 @@ public class UserService {
         return UserInfoResponse.from(user);
     }
 
-    public UserLoginResponse userSignIn(UserSignInRequest userSignInRequest) {
-        JwtToken tokens = authService.createAuthenticationToken(
+    public UserLoginResponse userSignIn(
+        UserSignInRequest userSignInRequest,
+        HttpServletResponse response
+    ) {
+        authService.createCookieAndAppend(
             userSignInRequest.email(),
-            userSignInRequest.password());
-        User user = userLoader.findByEmail(userSignInRequest.email());
+            userSignInRequest.password(),
+            response
+        );
 
-        return UserLoginResponse.of(tokens, user.getLanguage());
+        User user = userLoader.findByEmail(userSignInRequest.email());
+        return UserLoginResponse.of(user.getLanguage());
     }
 
     public List<UserInfoResponse> getAllUserInfo() {
