@@ -21,9 +21,9 @@ import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.infrastructure.google.service.GooglePlacesService;
-import com.cliptripbe.infrastructure.kakao.service.KakaoMapService;
-import com.cliptripbe.infrastructure.s3.S3Service;
+import com.cliptripbe.infrastructure.port.google.GooglePlacesPort;
+import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
+import com.cliptripbe.infrastructure.port.s3.S3Port;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -51,9 +51,9 @@ public class PlaceService {
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
 
-    private final KakaoMapService kakaoMapService;
-    private final S3Service s3Service;
-    private final GooglePlacesService googlePlacesService;
+    private final KakaoMapPort kakaoMapPort;
+    private final S3Port s3Port;
+    private final GooglePlacesPort googlePlacesPort;
 
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequest placeInfoRequest
@@ -75,8 +75,8 @@ public class PlaceService {
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
-            byte[] imageBytes = googlePlacesService.getPhotoByAddress(searchKeyWord);
-            String imageUrl = s3Service.upload(S3_PLACE_PREFIX, imageBytes);
+            byte[] imageBytes = googlePlacesPort.getPhotoByAddress(searchKeyWord);
+            String imageUrl = s3Port.upload(S3_PLACE_PREFIX, imageBytes);
             place.addImageUrl(imageUrl);
         }
 
@@ -104,7 +104,7 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
-        List<PlaceDto> categoryPlaces = kakaoMapService.searchPlacesByCategory(request);
+        List<PlaceDto> categoryPlaces = kakaoMapPort.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->
                 PlaceListResponse.ofDto(
@@ -116,7 +116,7 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
-        List<PlaceDto> keywordPlaces = kakaoMapService.searchPlaces(request);
+        List<PlaceDto> keywordPlaces = kakaoMapPort.searchPlacesByKeyWord(request);
 
         return keywordPlaces.stream()
             .map(PlaceListResponse::fromDto)
