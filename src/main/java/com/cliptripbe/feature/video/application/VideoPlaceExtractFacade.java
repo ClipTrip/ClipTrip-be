@@ -12,7 +12,6 @@ import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
 import com.cliptripbe.global.util.ChatGPTUtils;
-import com.cliptripbe.global.util.YoutubeUtils;
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
 import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
 import com.cliptripbe.global.util.prompt.PromptUtils;
