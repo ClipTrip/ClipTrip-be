@@ -9,6 +9,7 @@ import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
 import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,10 +36,18 @@ public class UserController implements UserControllerDocs {
     @Override
     @PostMapping("/sign-in")
     public ApiResponse<UserLoginResponse> signIn(
-        @RequestBody UserSignInRequest userSignInRequest
+        @RequestBody UserSignInRequest userSignInRequest,
+        HttpServletResponse response
     ) {
-        UserLoginResponse userLoginResponse = userService.userSignIn(userSignInRequest);
+        UserLoginResponse userLoginResponse = userService.userSignIn(userSignInRequest, response);
         return ApiResponse.success(SuccessType.OK, userLoginResponse);
+    }
+
+    @Override
+    @PostMapping("/logout")
+    public ApiResponse<?> logout(HttpServletResponse response) {
+        userService.logout(response);
+        return ApiResponse.success(SuccessType.OK);
     }
 
     @Override
