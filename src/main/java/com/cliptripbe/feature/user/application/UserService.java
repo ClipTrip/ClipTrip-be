@@ -88,4 +88,8 @@ public class UserService {
             .map(UserInfoResponse::from)
             .collect(Collectors.toList());
     }
+
+    public void logout(HttpServletResponse response) {
+        authService.logout(response);
+    }
 }

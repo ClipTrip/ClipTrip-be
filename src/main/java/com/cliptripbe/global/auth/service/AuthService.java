@@ -1,5 +1,8 @@
 package com.cliptripbe.global.auth.service;
 
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
+
 import com.cliptripbe.global.auth.jwt.component.CookieProvider;
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;
@@ -38,14 +41,27 @@ public class AuthService {
         }
 
         Cookie accessTokenCookie = cookieProvider.createTokenCookie(
-            TokenType.ACCESS_TOKEN,
+            ACCESS_TOKEN,
             jwtToken.getAccessToken());
         Cookie refreshTokenCookie = cookieProvider.createTokenCookie(
-            TokenType.REFRESH_TOKEN,
+            REFRESH_TOKEN,
             jwtToken.getRefreshToken()
         );
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
     }
+
+    public void logout(HttpServletResponse response) {
+        expireCookie(response, ACCESS_TOKEN);
+        expireCookie(response, REFRESH_TOKEN);
+    }
+
+    private void expireCookie(HttpServletResponse response, TokenType tokenType) {
+        Cookie cookie = new Cookie(tokenType.getName(), null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
 }
 

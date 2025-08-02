@@ -44,6 +44,13 @@ public class UserController implements UserControllerDocs {
     }
 
     @Override
+    @PostMapping("/logout")
+    public ApiResponse<?> logout(HttpServletResponse response) {
+        userService.logout(response);
+        return ApiResponse.success(SuccessType.OK);
+    }
+
+    @Override
     @GetMapping
     public ApiResponse<List<UserInfoResponse>> retrieveAllStudent() {
         return ApiResponse.success(SuccessType.OK, userService.getAllUserInfo());

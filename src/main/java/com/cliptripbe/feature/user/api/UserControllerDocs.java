@@ -20,6 +20,10 @@ public interface UserControllerDocs {
         HttpServletResponse response
     );
 
+    @Operation(summary = "로그아웃 API")
+    ApiResponse<?> logout(HttpServletResponse response);
+
+
     @Operation(summary = "유저 전체 조회 API")
     ApiResponse<?> retrieveAllStudent();
 }
