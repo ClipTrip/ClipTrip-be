@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum TokenType {
     ACCESS_TOKEN("accessToken", 1_800_000L), // 30분
-    REFRESH_TOKEN("refreshToken", 21_209_600_000L); // 2주
+    REFRESH_TOKEN("refreshToken", 1_209_600_000L); // 2주
 
     private final String name;
     private final Long validTime;
