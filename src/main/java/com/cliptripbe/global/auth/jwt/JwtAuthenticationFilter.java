@@ -4,7 +4,6 @@ import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
-import com.cliptripbe.global.auth.jwt.entity.TokenType;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
@@ -18,9 +17,9 @@ import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -28,6 +27,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    @Value("${cookie.secure}")
+    private boolean secureCookie;
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
@@ -45,7 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 handleException(servletResponse, e);
             }
             // 예외 처리 로직
-//            e.printStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -53,7 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         HttpServletRequest servletRequest,
         HttpServletResponse servletResponse
     ) {
-        String refreshToken = extractTokenFromCookies(servletRequest, REFRESH_TOKEN);
+        String refreshToken = jwtTokenProvider.extractTokenFromCookies(servletRequest,
+            REFRESH_TOKEN);
         if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
             // 재발급
             Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
@@ -67,29 +69,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             newAccessTokenCookie.setHttpOnly(true);
             newAccessTokenCookie.setPath("/");
             newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / 1000);
-
+            newAccessTokenCookie.setAttribute("SameSite", "Strict");
+            newAccessTokenCookie.setSecure(secureCookie);
             servletResponse.addCookie(newAccessTokenCookie);
         }
     }
 
     private void authenticateWithAccessToken(HttpServletRequest servletRequest) {
-        String accessToken = extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
+        String accessToken = jwtTokenProvider.extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
         if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
     }
 
-    private String extractTokenFromCookies(HttpServletRequest request, TokenType tokenType) {
-        if (request.getCookies() != null) {
-            for (Cookie cookie : request.getCookies()) {
-                if (tokenType.getName().equals(cookie.getName())) {
-                    return cookie.getValue();
-                }
-            }
-        }
-        return null;
-    }
 
     private void handleException(HttpServletResponse response, CustomException e)
         throws IOException {
@@ -103,13 +96,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             response.getWriter().write("{\"error\": \"An unexpected error occurred.\"}");
         }
-    }
-
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
     }
 }
