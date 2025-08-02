@@ -1,6 +1,6 @@
 package com.cliptripbe.feature.bookmark.domain.service;
 
-import static com.cliptripbe.infrastructure.inital.type.DefaultData.STORAGE_SEOUL;
+import static com.cliptripbe.global.config.initialization.type.DefaultData.STORAGE_SEOUL;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;

@@ -1,7 +1,7 @@
 package com.cliptripbe.feature.video.dto.request;
 
 import com.cliptripbe.feature.video.domain.entity.Video;
-import com.cliptripbe.infrastructure.caption.utils.CaptionUtils;
+import com.cliptripbe.global.util.YoutubeUtils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 
@@ -18,7 +18,7 @@ public record ExtractPlaceRequest(
         if (summaryTranslated != null) {
             return Video.builder()
                 .url(youtubeUrl)
-                .youtubeVideoId(CaptionUtils.extractVideoId(youtubeUrl))
+                .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
                 .summaryKo(summaryKo)
                 .summaryTranslated(summaryTranslated)
                 .translatedLang("ENGLISH")
@@ -26,7 +26,7 @@ public record ExtractPlaceRequest(
         }
         return Video.builder()
             .url(youtubeUrl)
-            .youtubeVideoId(CaptionUtils.extractVideoId(youtubeUrl))
+            .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
             .summaryKo(summaryKo)
             .build();
     }

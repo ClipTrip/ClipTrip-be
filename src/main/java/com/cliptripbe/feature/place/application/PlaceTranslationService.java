@@ -7,8 +7,8 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.infrastructure.openai.prompt.type.PromptConstants;
-import com.cliptripbe.infrastructure.openai.service.ChatGPTService;
+import com.cliptripbe.global.util.prompt.type.PromptConstants;
+import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceTranslationService {
 
-    private final ChatGPTService chatGPTService;
+    private final ChatGptAdapter chatGptAdapter;
     private final PlaceTranslationRepository placeTranslationRepository;
 
     @Transactional
@@ -45,7 +45,7 @@ public class PlaceTranslationService {
             place.getName(),
             place.getAddress().roadAddress()
         );
-        String response = chatGPTService.ask(prompt);
+        String response = chatGptAdapter.ask(prompt);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(response, TranslationInfo.class);

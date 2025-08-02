@@ -3,7 +3,7 @@ package com.cliptripbe.feature.place.dto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
-import com.cliptripbe.infrastructure.kakao.dto.KakaoMapResponse;
+import com.cliptripbe.infrastructure.adapter.out.kakao.dto.KakaoMapResponse;
 import lombok.Builder;
 
 @Builder
