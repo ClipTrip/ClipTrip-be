@@ -1,7 +1,9 @@
 package com.cliptripbe.infrastructure.adapter.out.kakao.dto;
 
 import java.util.List;
+import lombok.Builder;
 
+@Builder
 public record WaypointsDirectionsRequest(
     Location origin,
     Location destination,
@@ -14,6 +16,7 @@ public record WaypointsDirectionsRequest(
     boolean summary
 ) {
 
+    @Builder
     public record Location(
         String name,
         double x,
