@@ -46,11 +46,9 @@ public class VideoPlaceExtractFacade {
         String gptPlaceResponse = chatGptPort.askPlaceExtraction(requestPlacePrompt);
         List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
 
-        // 자막 요약
         String gptSummaryResponse = chatGptPort.ask(requestSummaryPrompt);
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
-        // 자막 요약 영어
         String summaryTranslated = null;
         if (user.getLanguage() == Language.ENGLISH) {
             String requestSummaryEnPrompt = PromptUtils.build(PromptType.SUMMARY_EN,

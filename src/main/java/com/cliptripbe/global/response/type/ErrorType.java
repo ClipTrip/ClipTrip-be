@@ -10,6 +10,7 @@ public enum ErrorType {
 
     //common
     ENUM_RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 이넘 값을 찾을 수 없습니다."),
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."),
 
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     ENTITY_NOT_FOUND(HttpStatus.BAD_REQUEST, "요청한 정보로 엔터티를 찾을 수 없습니다."),
@@ -29,12 +30,14 @@ public enum ErrorType {
     // video
     CHATGPT_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "ChatGPT로부터 응답을 받지 못했습니다."),
     KAKAO_MAP_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "kakaoMap으로부터 응답을 받지 못했습니다."),
+    CAPTION_DISABLED(HttpStatus.FORBIDDEN, "동영상의 자막이 비활성화 되어있습니다. 다른 영상을 넣어주세요."),
+    CAPTION_SERVER_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "Caption 추출 서버로부터 응답을 받지 못했습니다."),
 
     // google api
     GOOGLE_PLACES_EMPTY_RESPONSE(HttpStatus.NOT_FOUND, "해당 주소로 검색된 장소 또는 사진이 없습니다."),
     GOOGLE_PLACES_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "google places로부터 응답을 받지 못했습니다."),
 
-    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다.");
+    ;
 
     private final HttpStatus httpStatusCode;
     private final String message;
