@@ -24,8 +24,8 @@ import org.springframework.web.client.RestClientException;
 @RequiredArgsConstructor
 public class KakaoMapAdapter implements KakaoMapPort {
 
-    @Qualifier("kakaoRestClient")
-    private final RestClient kakaoRestClient;
+    @Qualifier("kakaoMapRestClient")
+    private final RestClient kakaoMapRestClient;
     private final KakaoMapAsyncAdapter asyncService;
 
     @Override
@@ -34,7 +34,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
         try {
             long start = System.currentTimeMillis();
 
-            KakaoMapResponse response = kakaoRestClient.get()
+            KakaoMapResponse response = kakaoMapRestClient.get()
                 .uri(uri -> uri
                     .path("/v2/local/search/category.json")
                     .queryParam("category_group_code", request.categoryCode())
@@ -69,7 +69,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
         try {
             long start = System.currentTimeMillis();
 
-            KakaoMapResponse response = kakaoRestClient.get()
+            KakaoMapResponse response = kakaoMapRestClient.get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/v2/local/search/keyword.json")
                     .queryParam("query", request.query())

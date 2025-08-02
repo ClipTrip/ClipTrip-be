@@ -17,14 +17,17 @@ public class RestClientConfig {
     @Value("${openai.api.base-url:https://api.openai.com/v1}")
     private String openaiBaseUrl;
 
-    @Value("${kakao.api.base-url:https://dapi.kakao.com}")
-    private String kakaoBaseUrl;
+    @Value("${kakaoMap.api.base-url:https://dapi.kakao.com}")
+    private String kakaoMapBaseUrl;
 
     @Value("${google.api.base-url:https://maps.googleapis.com}")
     private String googleBaseUrl;
 
     @Value("${captions.service.base-url}")
     private String captionsBaseUrl;
+
+    @Value("${kakaoMobility.api.base-url:https://apis-navi.kakaomobility.com}")
+    private String kakaoMobilityBaseUrl;
 
     @Value("${openai.api.key}")
     private String openAiApiKey;
@@ -47,10 +50,10 @@ public class RestClientConfig {
     }
 
     @Bean
-    @Qualifier("kakaoRestClient")
-    public RestClient kakaoRestClient(RestClient.Builder builder) {
+    @Qualifier("kakaoMapRestClient")
+    public RestClient kakaoMapRestClient(RestClient.Builder builder) {
         return builder
-            .baseUrl(kakaoBaseUrl)
+            .baseUrl(kakaoMapBaseUrl)
             .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
             .build();
     }
@@ -71,4 +74,15 @@ public class RestClientConfig {
             .baseUrl(captionsBaseUrl)
             .build();
     }
+
+    @Bean
+    @Qualifier("kakaoMobilityRestClient")
+    public RestClient kakaoMobilityRestClient(RestClient.Builder builder) {
+        return builder
+            .baseUrl(kakaoMobilityBaseUrl)
+            .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + kakaoApiKey)
+            .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+            .build();
+    }
+
 }

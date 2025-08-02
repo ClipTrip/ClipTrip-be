@@ -22,15 +22,15 @@ import org.springframework.web.client.RestClientException;
 @Slf4j
 public class KakaoMapAsyncAdapter {
     
-    @Qualifier("kakaoRestClient")
-    private final RestClient kakaoRestClient;
+    @Qualifier("kakaoMapRestClient")
+    private final RestClient kakaoMapRestClient;
     
     @Async("threadPoolTaskExecutor")
     public CompletableFuture<PlaceDto> searchFirstPlaceAsync(String keyword) {
         try {
             long start = System.currentTimeMillis();
 
-            KakaoMapResponse response = kakaoRestClient.get()
+            KakaoMapResponse response = kakaoMapRestClient.get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/v2/local/search/keyword.json")
                     .queryParam("query", keyword)
