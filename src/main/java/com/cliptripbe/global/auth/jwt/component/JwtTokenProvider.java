@@ -18,6 +18,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,18 +69,6 @@ public class JwtTokenProvider {
             createToken(userId, role, REFRESH_TOKEN));
     }
 
-    private String createToken(String email, String authorities, TokenType type) {
-        long now = new Date().getTime();
-        long validTime = type.getValidTime();
-        return Jwts.builder()
-            .setSubject(email)
-            .claim("auth", authorities)
-            .claim("type", type.getName())
-            .setExpiration(new Date(now + validTime))
-            .signWith(key, SignatureAlgorithm.HS256)
-            .compact();
-    }
-
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
@@ -122,20 +112,6 @@ public class JwtTokenProvider {
             userDetails.getAuthorities());
     }
 
-
-    private Claims parseClaims(String token) {
-        try {
-            return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        }
-    }
-
-
     public Authentication getAuthenticationFromRefreshToken(String refreshToken) {
         Claims claims = parseClaims(refreshToken);
 
@@ -148,5 +124,40 @@ public class JwtTokenProvider {
             claims.getSubject());
 
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    public String extractTokenFromCookies(HttpServletRequest request, TokenType tokenType) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if (tokenType.getName().equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    private String createToken(String email, String authorities, TokenType type) {
+        long now = new Date().getTime();
+        long validTime = type.getValidTime();
+        return Jwts.builder()
+            .setSubject(email)
+            .claim("auth", authorities)
+            .claim("type", type.getName())
+            .setExpiration(new Date(now + validTime))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    private Claims parseClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims();
+        }
     }
 }
