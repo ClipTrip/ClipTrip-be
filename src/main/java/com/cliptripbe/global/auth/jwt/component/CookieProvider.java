@@ -2,10 +2,14 @@ package com.cliptripbe.global.auth.jwt.component;
 
 import com.cliptripbe.global.auth.jwt.entity.TokenType;
 import jakarta.servlet.http.Cookie;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class CookieProvider {
+
+    @Value("${cookie.secure}")
+    private boolean secureCookie;
 
     public Cookie createTokenCookie(TokenType tokenType, String token) {
         return createCookie(tokenType.getName(), token, tokenType.getValidTime());
@@ -16,7 +20,7 @@ public class CookieProvider {
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge((int) maxAge);
-        // cookie.setSecure(true); // HTTPS에서만 전송 나중에 풀도록 하기
+        cookie.setSecure(secureCookie);
         return cookie;
     }
 }
