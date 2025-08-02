@@ -24,6 +24,7 @@ public class PlaceTranslationService {
 
     @Transactional
     public void registerPlace(Place place) {
+        //**TODO 여러 장소를 받자.
         placeTranslationRepository.findByPlaceAndLanguage(place, ENGLISH)
             .orElseGet(() -> {
                 TranslationInfo translationInfo = translatePlaceInfo(place, ENGLISH);
