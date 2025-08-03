@@ -65,8 +65,7 @@ public record DirectionsResponse(
         int distance,
         int duration,
         Bound bound,
-        List<Road> roads,
-        List<Guide> guides
+        List<Road> roads
     ) {
 
         @Builder
@@ -91,19 +90,6 @@ public record DirectionsResponse(
 
         }
 
-        @Builder
-        public record Guide(
-            String name,
-            double x,
-            double y,
-            int distance,
-            int duration,
-            int type,
-            String guidance,
-            int roadIndex
-        ) {
-
-        }
     }
 
     public static DirectionsResponse from(WaypointsDirectionsResponse response) {
@@ -177,21 +163,6 @@ public record DirectionsResponse(
                                     .trafficSpeed(rd.traffic_speed())
                                     .trafficState(rd.traffic_state())
                                     .vertexes(rd.vertexes())
-                                    .build()
-                                )
-                                .toList()
-                        )
-                        .guides(
-                            s.guides().stream()
-                                .map(g -> Section.Guide.builder()
-                                    .name(g.name())
-                                    .x(g.x())
-                                    .y(g.y())
-                                    .distance(g.distance())
-                                    .duration(g.duration())
-                                    .type(g.type())
-                                    .guidance(g.guidance())
-                                    .roadIndex(g.road_index())
                                     .build()
                                 )
                                 .toList()
