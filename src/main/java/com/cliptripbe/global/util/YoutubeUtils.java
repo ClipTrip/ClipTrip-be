@@ -8,7 +8,8 @@ public class YoutubeUtils {
     private static final Pattern YT_PATTERN = Pattern.compile(
         "(?:https?://)?(?:www\\.)?" +
             "(?:youtube\\.com/(?:(?:watch\\?v=)|(?:embed/)|(?:shorts/))|youtu\\.be/)" +
-            "([A-Za-z0-9_-]{11})"
+            "([A-Za-z0-9_-]{11})" +
+            "(?:\\?.*)?"
     );
 
     public static String extractVideoId(String url) {

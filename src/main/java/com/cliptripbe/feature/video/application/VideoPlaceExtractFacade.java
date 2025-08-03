@@ -40,8 +40,7 @@ public class VideoPlaceExtractFacade {
 
         String requestPlacePrompt = PromptUtils.build(PromptType.PLACE, caption.captions());
 
-        String requestSummaryPrompt = PromptUtils.build(PromptType.SUMMARY_KO,
-            caption.captions());
+        String requestSummaryPrompt = PromptUtils.build(PromptType.SUMMARY_KO, caption.captions());
 
         String gptPlaceResponse = aiTextProcessorPort.askPlaceExtraction(requestPlacePrompt);
         List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
