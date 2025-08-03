@@ -5,7 +5,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import java.util.List;
 
-public interface KakaoMapPort {
+public interface PlaceSearchPort {
 
     List<PlaceDto> searchPlacesByCategory(PlaceSearchByCategoryRequest request);
 

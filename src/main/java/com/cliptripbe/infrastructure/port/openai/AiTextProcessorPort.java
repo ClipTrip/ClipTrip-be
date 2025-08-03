@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.port.openai;
 
-public interface ChatGptPort {
+public interface AiTextProcessorPort {
 
     String askPlaceExtraction(String userMessage);
 

@@ -1,7 +1,7 @@
 package com.cliptripbe.infrastructure.adapter.out.caption;
 
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
-import com.cliptripbe.infrastructure.port.caption.CaptionPort;
+import com.cliptripbe.infrastructure.port.caption.VideoContentExtractPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -12,7 +12,7 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaptionAdapter implements CaptionPort {
+public class CaptionAdapter implements VideoContentExtractPort {
 
     @Qualifier("captionsRestClient")
     private final RestClient captionsRestClient;

@@ -7,7 +7,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.adapter.out.kakao.dto.KakaoMapResponse;
-import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
+import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +22,7 @@ import org.springframework.web.client.RestClientException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KakaoMapAdapter implements KakaoMapPort {
+public class KakaoMapAdapter implements PlaceSearchPort {
 
     @Qualifier("kakaoMapRestClient")
     private final RestClient kakaoMapRestClient;

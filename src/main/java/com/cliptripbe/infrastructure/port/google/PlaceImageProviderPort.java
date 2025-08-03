@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.port.google;
 
-public interface GooglePlacesPort {
+public interface PlaceImageProviderPort {
 
     byte[] getPhotoByAddress(String address);
 }

@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.adapter.out.s3;
 
-import com.cliptripbe.infrastructure.port.s3.S3Port;
+import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -19,7 +19,7 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Component
 @RequiredArgsConstructor
-public class S3Adapter implements S3Port {
+public class S3Adapter implements FileStoragePort {
 
     private final S3Client s3Client;
     private final Region awsRegion;

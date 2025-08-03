@@ -7,7 +7,7 @@ import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGptRequest;
 import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGptResponse;
 import com.cliptripbe.infrastructure.adapter.out.openai.dto.ChatGptResponse.Choice;
 import com.cliptripbe.infrastructure.adapter.out.openai.dto.Message;
-import com.cliptripbe.infrastructure.port.openai.ChatGptPort;
+import com.cliptripbe.infrastructure.port.openai.AiTextProcessorPort;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ChatGptAdapter implements ChatGptPort {
+public class ChatGptAdapter implements AiTextProcessorPort {
 
     @Qualifier("openAIRestClient")
     private final RestClient openAIRestClient;
