@@ -31,9 +31,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private boolean secureCookie;
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
+    protected void doFilterInternal(
+        @NonNull HttpServletRequest servletRequest,
         @NonNull HttpServletResponse servletResponse,
-        FilterChain filterChain) throws ServletException, IOException {
+        FilterChain filterChain
+    ) throws ServletException, IOException {
         try {
             authenticateWithAccessToken(servletRequest);
         } catch (CustomException e) {

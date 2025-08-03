@@ -27,8 +27,11 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
 
-    public void createCookieAndAppend(String userId, String password,
-        HttpServletResponse response) {
+    public void createCookieAndAppend(
+        String userId,
+        String password,
+        HttpServletResponse response
+    ) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             userId, password);
         JwtToken jwtToken;
