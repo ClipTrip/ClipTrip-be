@@ -7,7 +7,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.adapter.out.kakao.dto.KakaoMapResponse;
-import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
+import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,10 +22,10 @@ import org.springframework.web.client.RestClientException;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KakaoMapAdapter implements KakaoMapPort {
+public class KakaoMapAdapter implements PlaceSearchPort {
 
-    @Qualifier("kakaoRestClient")
-    private final RestClient kakaoRestClient;
+    @Qualifier("kakaoMapRestClient")
+    private final RestClient kakaoMapRestClient;
     private final KakaoMapAsyncAdapter asyncService;
 
     @Override
@@ -34,7 +34,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
         try {
             long start = System.currentTimeMillis();
 
-            KakaoMapResponse response = kakaoRestClient.get()
+            KakaoMapResponse response = kakaoMapRestClient.get()
                 .uri(uri -> uri
                     .path("/v2/local/search/category.json")
                     .queryParam("category_group_code", request.categoryCode())
@@ -69,7 +69,7 @@ public class KakaoMapAdapter implements KakaoMapPort {
         try {
             long start = System.currentTimeMillis();
 
-            KakaoMapResponse response = kakaoRestClient.get()
+            KakaoMapResponse response = kakaoMapRestClient.get()
                 .uri(uriBuilder -> uriBuilder
                     .path("/v2/local/search/keyword.json")
                     .queryParam("query", request.query())

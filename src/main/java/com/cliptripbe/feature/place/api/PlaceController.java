@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController implements PlaceControllerDocs {
 
     private final PlaceService placeService;
-    private final GooglePlacesAdapter googlePlacesAdapter;
 
     @GetMapping("/accessInfo")
     public ApiResponse<?> getPlaceAccessibilityInfo(

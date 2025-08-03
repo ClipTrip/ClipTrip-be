@@ -7,7 +7,7 @@ import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.global.config.initialization.mapper.PlaceCsvMapper;
 import com.cliptripbe.global.config.initialization.mapper.PlaceMapper;
 import com.cliptripbe.global.config.initialization.type.DefaultData;
-import com.cliptripbe.infrastructure.port.s3.S3Port;
+import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import jakarta.annotation.PostConstruct;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 public class PlaceInitializer {
 
     private final PlaceRepository placeRepository;
-    private final S3Port s3Port;
+    private final FileStoragePort fileStoragePort;
     private final PlaceMapper placeMapper;
     private final PlaceFinder placeFinder;
 
@@ -47,7 +47,7 @@ public class PlaceInitializer {
         List<Place> placeList = new ArrayList<>();
         Set<String> uniquePlaceKeys = new HashSet<>();
 
-        try (BufferedReader br = s3Port.readCsv(defaultData.getFileName())) {
+        try (BufferedReader br = fileStoragePort.readCsv(defaultData.getFileName())) {
             PlaceCsvMapper placeCsvMapper = mapperMap.get(defaultData);
             String line;
             br.readLine();
@@ -72,7 +72,7 @@ public class PlaceInitializer {
 
     public List<Place> registerFourCoulmn(DefaultData defaultData) {
         List<Place> placeList = new ArrayList<>();
-        try (BufferedReader br = s3Port.readCsv(
+        try (BufferedReader br = fileStoragePort.readCsv(
             defaultData.getFileName())) {
             String line;
             br.readLine();
