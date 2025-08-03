@@ -37,6 +37,9 @@ public enum ErrorType {
     GOOGLE_PLACES_EMPTY_RESPONSE(HttpStatus.NOT_FOUND, "해당 주소로 검색된 장소 또는 사진이 없습니다."),
     GOOGLE_PLACES_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "google places로부터 응답을 받지 못했습니다."),
 
+    // kakaoMobility
+    KAKAO_MOBILITY_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "kakaoMobility로부터 응답을 받지 못했습니다."),
+    FAIL_KAKAO_MOBILITY(HttpStatus.BAD_GATEWAY, "kakaoMobility 서비스 호출 실패"),
     ;
 
     private final HttpStatus httpStatusCode;
