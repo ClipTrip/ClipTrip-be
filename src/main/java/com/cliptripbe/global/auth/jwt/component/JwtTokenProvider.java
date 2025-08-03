@@ -83,6 +83,7 @@ public class JwtTokenProvider {
             log.info("잘못된 토큰입니다.", e);
         } catch (ExpiredJwtException e) {
             Claims claims = e.getClaims();
+
             // 토큰 타입 확인 (예: "type" 클레임에 저장된 값을 확인)
             String tokenType = claims.get("type", String.class);
             if (ACCESS_TOKEN.getName().equals(tokenType)) {
