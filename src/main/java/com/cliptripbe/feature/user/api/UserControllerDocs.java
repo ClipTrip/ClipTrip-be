@@ -6,6 +6,7 @@ import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Tag(name = "User 관련 API")
 public interface UserControllerDocs {
@@ -14,7 +15,14 @@ public interface UserControllerDocs {
     ApiResponse<?> signUp(UserSignUpRequest signUpDto);
 
     @Operation(summary = "로그인 API")
-    ApiResponse<UserLoginResponse> signIn(UserSignInRequest userSignInRequest);
+    ApiResponse<UserLoginResponse> signIn(
+        UserSignInRequest userSignInRequest,
+        HttpServletResponse response
+    );
+
+    @Operation(summary = "로그아웃 API")
+    ApiResponse<?> logout(HttpServletResponse response);
+
 
     @Operation(summary = "유저 전체 조회 API")
     ApiResponse<?> retrieveAllStudent();

@@ -3,7 +3,7 @@ package com.cliptripbe.global.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CaptionUtils {
+public class YoutubeUtils {
 
     private static final Pattern YT_PATTERN = Pattern.compile(
         "(?:https?://)?(?:www\\.)?" +
@@ -17,5 +17,9 @@ public class CaptionUtils {
             return matcher.group(1);
         }
         throw new IllegalArgumentException("유효한 YouTube URL이 아닙니다: " + url);
+    }
+
+    public static String getThumbnailUrl(String videoId) {
+        return String.format("https://img.youtube.com/vi/%s/hqdefault.jpg", videoId);
     }
 }
