@@ -2,6 +2,7 @@ package com.cliptripbe.feature.auth.application;
 
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
+import static com.cliptripbe.global.constant.Constant.MILLIS_PER_SECOND;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
@@ -153,7 +154,7 @@ public class AuthService {
         newAccessTokenCookie.setHttpOnly(true);
         newAccessTokenCookie.setPath("/");
         newAccessTokenCookie.setSecure(secureCookie);
-        newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / 1000);
+        newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / MILLIS_PER_SECOND);
         response.addCookie(newAccessTokenCookie);
     }
 }
