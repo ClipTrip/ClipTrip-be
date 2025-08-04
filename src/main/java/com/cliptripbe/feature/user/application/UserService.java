@@ -15,7 +15,6 @@ public class UserService {
 
     private final UserLoader userLoader;
 
-
     public List<UserInfoResponse> getAllUserInfo() {
         return userLoader.getAllUser()
             .stream()

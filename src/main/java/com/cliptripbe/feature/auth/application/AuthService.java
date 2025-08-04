@@ -4,10 +4,6 @@ import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 import static com.cliptripbe.global.constant.Constant.MILLIS_PER_SECOND;
 
-import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
-import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
-import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
-import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.service.UserChecker;
 import com.cliptripbe.feature.user.domain.service.UserLoader;
@@ -25,8 +21,6 @@ import com.cliptripbe.global.response.type.ErrorType;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,8 +39,6 @@ public class AuthService {
     private final UserChecker userChecker;
     private final UserRepository userRepository;
     private final UserLoader userLoader;
-    private final BookmarkFinder bookmarkFinder;
-    private final BookmarkRepository bookmarkRepository;
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
@@ -61,30 +53,6 @@ public class AuthService {
         String encodePassword = passwordEncoder.encode(signUpDto.password());
         User user = signUpDto.toEntity(encodePassword);
         userRepository.save(user);
-
-        List<Bookmark> defaultBookmarks = bookmarkFinder.getDefaultBookmarksExcludingStorageSeoul();
-
-        List<Bookmark> newUserBookmarks = new ArrayList<>();
-
-        for (Bookmark bm : defaultBookmarks) {
-            Bookmark copiedBookmark = Bookmark
-                .builder()
-                .name(bm.getName())
-                .user(user)
-                .description(bm.getDescription())
-                .build();
-            if (bm.getBookmarkPlaces() != null) {
-                for (BookmarkPlace originalBp : bm.getBookmarkPlaces()) {
-                    BookmarkPlace newBookmarkPlace = BookmarkPlace.builder()
-                        .bookmark(copiedBookmark)
-                        .place(originalBp.getPlace())
-                        .build();
-                    copiedBookmark.addBookmarkPlace(newBookmarkPlace);
-                }
-            }
-            newUserBookmarks.add(copiedBookmark); // Add the fully constructed copied bookmark
-        }
-        bookmarkRepository.saveAll(newUserBookmarks);
         return UserInfoResponse.from(user);
     }
 
