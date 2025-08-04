@@ -66,9 +66,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 refreshToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
-            // 새 accessToken 재발급 & 쿠키로 설정
+            // 새 accessToken 재발급
             String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
 
+            // 쿠키로 설정
             Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN.getName(), newAccessToken);
             newAccessTokenCookie.setHttpOnly(true);
             newAccessTokenCookie.setPath("/");
