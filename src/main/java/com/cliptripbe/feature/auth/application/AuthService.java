@@ -1,0 +1,160 @@
+package com.cliptripbe.feature.auth.application;
+
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
+import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
+
+import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
+import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
+import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
+import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.feature.user.domain.service.UserChecker;
+import com.cliptripbe.feature.user.domain.service.UserLoader;
+import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
+import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
+import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
+import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
+import com.cliptripbe.feature.user.infrastructure.UserRepository;
+import com.cliptripbe.global.auth.jwt.component.CookieProvider;
+import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
+import com.cliptripbe.global.auth.jwt.entity.JwtToken;
+import com.cliptripbe.global.auth.jwt.entity.TokenType;
+import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@Transactional(readOnly = true)
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final PasswordEncoder passwordEncoder;
+    private final UserChecker userChecker;
+    private final UserRepository userRepository;
+    private final UserLoader userLoader;
+    private final BookmarkFinder bookmarkFinder;
+    private final BookmarkRepository bookmarkRepository;
+
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final CookieProvider cookieProvider;
+
+    @Value("${cookie.secure}")
+    private boolean secureCookie;
+
+    @Transactional
+    public UserInfoResponse signUp(UserSignUpRequest signUpDto) {
+        userChecker.checkExistUserEmail(signUpDto.email());
+        String encodePassword = passwordEncoder.encode(signUpDto.password());
+        User user = signUpDto.toEntity(encodePassword);
+        userRepository.save(user);
+
+        List<Bookmark> defaultBookmarks = bookmarkFinder.getDefaultBookmarksExcludingStorageSeoul();
+
+        List<Bookmark> newUserBookmarks = new ArrayList<>();
+
+        for (Bookmark bm : defaultBookmarks) {
+            Bookmark copiedBookmark = Bookmark
+                .builder()
+                .name(bm.getName())
+                .user(user)
+                .description(bm.getDescription())
+                .build();
+            if (bm.getBookmarkPlaces() != null) {
+                for (BookmarkPlace originalBp : bm.getBookmarkPlaces()) {
+                    BookmarkPlace newBookmarkPlace = BookmarkPlace.builder()
+                        .bookmark(copiedBookmark)
+                        .place(originalBp.getPlace())
+                        .build();
+                    copiedBookmark.addBookmarkPlace(newBookmarkPlace);
+                }
+            }
+            newUserBookmarks.add(copiedBookmark); // Add the fully constructed copied bookmark
+        }
+        bookmarkRepository.saveAll(newUserBookmarks);
+        return UserInfoResponse.from(user);
+    }
+
+    public UserLoginResponse userSignIn(
+        UserSignInRequest userSignInRequest,
+        HttpServletResponse response
+    ) {
+        createCookieAndAppend(
+            userSignInRequest.email(),
+            userSignInRequest.password(),
+            response
+        );
+
+        User user = userLoader.findByEmail(userSignInRequest.email());
+        return UserLoginResponse.of(user.getLanguage());
+    }
+
+    private void createCookieAndAppend(String userId, String password,
+        HttpServletResponse response) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+            userId, password);
+        JwtToken jwtToken;
+        try {
+            Authentication authentication = authenticationManagerBuilder.getObject()
+                .authenticate(authenticationToken);
+            jwtToken = jwtTokenProvider.generateToken(authentication);
+        } catch (Exception e) {
+            throw new CustomException(ErrorType.FAIL_AUTHENTICATION);
+        }
+
+        Cookie accessTokenCookie = cookieProvider.createTokenCookie(
+            ACCESS_TOKEN,
+            jwtToken.getAccessToken());
+        Cookie refreshTokenCookie = cookieProvider.createTokenCookie(
+            REFRESH_TOKEN,
+            jwtToken.getRefreshToken()
+        );
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+    }
+
+    public void logout(HttpServletResponse response) {
+        expireCookie(response, ACCESS_TOKEN);
+        expireCookie(response, REFRESH_TOKEN);
+    }
+
+    private void expireCookie(HttpServletResponse response, TokenType tokenType) {
+        Cookie cookie = new Cookie(tokenType.getName(), null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtTokenProvider.extractTokenFromCookies(request, REFRESH_TOKEN);
+
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
+            refreshToken);
+
+        String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
+
+        Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN.getName(), newAccessToken);
+        newAccessTokenCookie.setHttpOnly(true);
+        newAccessTokenCookie.setPath("/");
+        newAccessTokenCookie.setSecure(secureCookie);
+        newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / 1000);
+        response.addCookie(newAccessTokenCookie);
+    }
+}
+
