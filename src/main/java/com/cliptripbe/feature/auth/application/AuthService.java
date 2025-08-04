@@ -122,6 +122,7 @@ public class AuthService {
         newAccessTokenCookie.setHttpOnly(true);
         newAccessTokenCookie.setPath("/");
         newAccessTokenCookie.setSecure(secureCookie);
+        newAccessTokenCookie.setAttribute("SameSite", "Strict");
         newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / MILLIS_PER_SECOND);
         response.addCookie(newAccessTokenCookie);
     }
