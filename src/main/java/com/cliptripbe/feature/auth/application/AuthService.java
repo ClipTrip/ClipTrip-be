@@ -2,7 +2,6 @@ package com.cliptripbe.feature.auth.application;
 
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
-import static com.cliptripbe.global.constant.Constant.MILLIS_PER_SECOND;
 
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.service.UserChecker;
@@ -22,7 +21,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -43,9 +41,6 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
-
-    @Value("${cookie.secure}")
-    private boolean secureCookie;
 
     @Transactional
     public UserInfoResponse signUp(UserSignUpRequest signUpDto) {
@@ -118,12 +113,9 @@ public class AuthService {
 
         String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
 
-        Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN.getName(), newAccessToken);
-        newAccessTokenCookie.setHttpOnly(true);
-        newAccessTokenCookie.setPath("/");
-        newAccessTokenCookie.setSecure(secureCookie);
-        newAccessTokenCookie.setAttribute("SameSite", "Strict");
-        newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / MILLIS_PER_SECOND);
+        Cookie newAccessTokenCookie = cookieProvider.createTokenCookie(ACCESS_TOKEN,
+            newAccessToken);
+
         response.addCookie(newAccessTokenCookie);
     }
 }
