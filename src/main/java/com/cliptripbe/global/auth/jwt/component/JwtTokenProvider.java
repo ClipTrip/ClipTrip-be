@@ -1,6 +1,5 @@
 package com.cliptripbe.global.auth.jwt.component;
 
-
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
@@ -50,7 +49,6 @@ public class JwtTokenProvider {
     }
 
     public JwtToken generateToken(Authentication authentication) {
-        // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority).collect(
                 Collectors.joining(","));
@@ -77,19 +75,11 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
             return true;
+        } catch (ExpiredJwtException e) {
+            log.info("토큰이 만료되었습니다.", e);
+            throw new CustomException(ErrorType.EXPIRED_ACCESS_TOKEN);
         } catch (SecurityException | MalformedJwtException e) {
             log.info("잘못된 토큰입니다.", e);
-        } catch (ExpiredJwtException e) {
-            Claims claims = e.getClaims();
-            // 토큰 타입 확인 (예: "type" 클레임에 저장된 값을 확인)
-            String tokenType = claims.get("type", String.class);
-            if (ACCESS_TOKEN.getName().equals(tokenType)) {
-                throw new CustomException(ErrorType.EXPIRED_ACCESS_TOKEN);
-            } else if (REFRESH_TOKEN.getName().equals(tokenType)) {
-                throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
-            } else {
-                log.info("알 수 없는 토큰 타입입니다.");
-            }
         } catch (UnsupportedJwtException e) {
             log.info("지원하지 않은 토큰입니다.", e);
         } catch (IllegalArgumentException e) {
@@ -160,4 +150,5 @@ public class JwtTokenProvider {
             return e.getClaims();
         }
     }
+
 }
