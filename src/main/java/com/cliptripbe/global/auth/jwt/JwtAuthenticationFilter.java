@@ -36,20 +36,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         FilterChain filterChain) throws ServletException, IOException {
         try {
             authenticateWithAccessToken(servletRequest);
+            filterChain.doFilter(servletRequest, servletResponse);
         } catch (CustomException e) {
             if (e.getErrorType() == ErrorType.EXPIRED_ACCESS_TOKEN) {
                 try {
                     attemptTokenRefresh(servletRequest, servletResponse);
+                    filterChain.doFilter(servletRequest, servletResponse);
                 } catch (CustomException refreshException) {
                     handleException(servletResponse, refreshException);
-                    return;
                 }
             } else {
                 handleException(servletResponse, e);
-                return;
             }
         }
-        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     private void attemptTokenRefresh(
