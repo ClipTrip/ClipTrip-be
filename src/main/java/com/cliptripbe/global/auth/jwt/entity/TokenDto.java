@@ -8,5 +8,4 @@ public record TokenDto(
     String refreshToken
 ) {
 
-
 }

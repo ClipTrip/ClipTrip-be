@@ -3,10 +3,11 @@ package com.cliptripbe.feature.auth.application;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
+import com.cliptripbe.feature.auth.dto.TokenVerifyResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.service.UserLoader;
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
-import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
+import com.cliptripbe.feature.auth.dto.UserLoginResponse;
 import com.cliptripbe.global.auth.jwt.component.CookieProvider;
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;
@@ -17,7 +18,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -49,6 +49,41 @@ public class AuthService {
         return UserLoginResponse.of(user.getLanguage());
     }
 
+
+    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = jwtTokenProvider.extractTokenFromCookies(request, REFRESH_TOKEN);
+
+        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
+            throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
+        }
+
+        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
+            refreshToken);
+
+        String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
+
+        Cookie newAccessTokenCookie = cookieProvider.createTokenCookie(ACCESS_TOKEN,
+            newAccessToken);
+
+        response.addCookie(newAccessTokenCookie);
+    }
+
+    public void logout(HttpServletResponse response) {
+        expireCookie(response, ACCESS_TOKEN);
+        expireCookie(response, REFRESH_TOKEN);
+    }
+
+
+    public TokenVerifyResponse verifyAccessToken(HttpServletRequest request) {
+        String accessToken = jwtTokenProvider.extractTokenFromCookies(request, ACCESS_TOKEN);
+
+        if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
+            return TokenVerifyResponse.of(true);
+        }
+
+        return TokenVerifyResponse.of(false);
+    }
+
     private void createCookieAndAppend(String userId, String password,
         HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -70,32 +105,10 @@ public class AuthService {
         response.addCookie(refreshTokenCookie);
     }
 
-    public void logout(HttpServletResponse response) {
-        expireCookie(response, ACCESS_TOKEN);
-        expireCookie(response, REFRESH_TOKEN);
-    }
 
     private void expireCookie(HttpServletResponse response, TokenType tokenType) {
         Cookie cookie = cookieProvider.createExpireCookie(tokenType);
         response.addCookie(cookie);
-    }
-
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = jwtTokenProvider.extractTokenFromCookies(request, REFRESH_TOKEN);
-
-        if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
-            throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
-        }
-
-        Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
-            refreshToken);
-
-        String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
-
-        Cookie newAccessTokenCookie = cookieProvider.createTokenCookie(ACCESS_TOKEN,
-            newAccessToken);
-
-        response.addCookie(newAccessTokenCookie);
     }
 }
 
