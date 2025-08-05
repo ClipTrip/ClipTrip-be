@@ -50,24 +50,26 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void updateBookmark(
-        Long bookmarkId,
-        UpdateBookmarkRequest updateBookmarkRequest
-    ) {
+    public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
-        bookmark.modifyInfo(updateBookmarkRequest.bookmarkName(),
-            updateBookmarkRequest.description());
-        bookmark.cleanBookmarkPlace();
+        if (request.bookmarkName() != null) {
+            bookmark.modifyInfo(request.bookmarkName(), bookmark.getDescription());
+        }
 
-        for (PlaceInfoRequest placeInfoRequest : updateBookmarkRequest.placeInfoRequests()) {
-            Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
-            BookmarkPlace bookmarkPlace = BookmarkPlace
-                .builder()
-                .bookmark(bookmark)
-                .place(place)
-                .build();
-            bookmark.addBookmarkPlace(bookmarkPlace);
+        if (request.description() != null) {
+            bookmark.modifyInfo(bookmark.getName(), request.description());
+        }
+        if (request.placeInfoRequests() != null) {
+            bookmark.cleanBookmarkPlace();
+            for (PlaceInfoRequest placeInfoRequest : request.placeInfoRequests()) {
+                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
+                BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
+                    .bookmark(bookmark)
+                    .place(place)
+                    .build();
+                bookmark.addBookmarkPlace(bookmarkPlace);
+            }
         }
     }
 
