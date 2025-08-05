@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.auth.api;
 
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
-import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
 import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,9 +10,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Tag(name = "인증 관련 API")
 public interface AuthControllerDocs {
-
-    @Operation(summary = "회원가입 API")
-    ApiResponse<?> signUp(UserSignUpRequest signUpDto);
 
     @Operation(summary = "로그인 API")
     ApiResponse<UserLoginResponse> signIn(

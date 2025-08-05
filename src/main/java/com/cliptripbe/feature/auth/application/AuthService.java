@@ -4,13 +4,9 @@ import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
 import com.cliptripbe.feature.user.domain.entity.User;
-import com.cliptripbe.feature.user.domain.service.UserChecker;
 import com.cliptripbe.feature.user.domain.service.UserLoader;
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
-import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
-import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
 import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
-import com.cliptripbe.feature.user.infrastructure.UserRepository;
 import com.cliptripbe.global.auth.jwt.component.CookieProvider;
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import com.cliptripbe.global.auth.jwt.entity.JwtToken;
@@ -24,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,23 +28,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final PasswordEncoder passwordEncoder;
-    private final UserChecker userChecker;
-    private final UserRepository userRepository;
     private final UserLoader userLoader;
-
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
     private final CookieProvider cookieProvider;
 
-    @Transactional
-    public UserInfoResponse signUp(UserSignUpRequest signUpDto) {
-        userChecker.checkExistUserEmail(signUpDto.email());
-        String encodePassword = passwordEncoder.encode(signUpDto.password());
-        User user = signUpDto.toEntity(encodePassword);
-        userRepository.save(user);
-        return UserInfoResponse.from(user);
-    }
 
     public UserLoginResponse userSignIn(
         UserSignInRequest userSignInRequest,

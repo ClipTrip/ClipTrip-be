@@ -4,8 +4,6 @@ import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.auth.application.AuthService;
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
-import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
-import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
 import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
@@ -23,14 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController implements AuthControllerDocs {
 
     private final AuthService authService;
-
-    @Override
-    @PostMapping("/sign-up")
-    public ApiResponse<?> signUp(
-        @RequestBody UserSignUpRequest signUpDto) {
-        UserInfoResponse studentSignUpResponse = authService.signUp(signUpDto);
-        return ApiResponse.success(SuccessType.CREATED, studentSignUpResponse);
-    }
 
     @Override
     @PostMapping("/sign-in")
