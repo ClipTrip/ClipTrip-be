@@ -58,7 +58,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @PostMapping("/{bookmarkId}")
-    public ApiResponse<Long> addBookmark(
+    public ApiResponse<Long> addPlaceToBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId,
         @RequestBody PlaceInfoRequest placeInfoRequest
@@ -69,6 +69,17 @@ public class BookmarkController implements BookmarkControllerDocs {
             placeInfoRequest
         );
         return ApiResponse.success(SuccessType.OK, bookmarkId);
+    }
+
+    @Override
+    @PostMapping("/{bookmarkId}/{placeId}")
+    public ApiResponse<Long> deletePlaceFromBookmark(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable(value = "bookmarkId") Long bookmarkId,
+        @PathVariable(value = "placeId") Long placeId
+    ) {
+        bookmarkService.deletePlaceFromBookmark(customerDetails.getUser(), bookmarkId, placeId);
+        return ApiResponse.success(SuccessType.OK, placeId);
     }
 
 
@@ -84,7 +95,7 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @GetMapping("/{bookmarkId}")
-    public ApiResponse<BookmarkInfoResponse> getBookmarkInfo(
+    public ApiResponse<BookmarkInfoResponse> getBookmarkById(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId
     ) {

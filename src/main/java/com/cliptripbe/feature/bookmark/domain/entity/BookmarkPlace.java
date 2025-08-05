@@ -22,11 +22,11 @@ public class BookmarkPlace {
 
     @ManyToOne
     @JoinColumn(name = "bookmark_id")
-    Bookmark bookmark;
+    private Bookmark bookmark;
 
     @ManyToOne
     @JoinColumn(name = "place_id")
-    Place place;
+    private Place place;
 
     @Builder
     public BookmarkPlace(Bookmark bookmark, Place place) {
