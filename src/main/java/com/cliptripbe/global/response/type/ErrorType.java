@@ -32,6 +32,7 @@ public enum ErrorType {
     KAKAO_MAP_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "kakaoMap으로부터 응답을 받지 못했습니다."),
     CAPTION_DISABLED(HttpStatus.FORBIDDEN, "동영상의 자막이 비활성화 되어있습니다. 다른 영상을 넣어주세요."),
     CAPTION_SERVER_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "Caption 추출 서버로부터 응답을 받지 못했습니다."),
+    INVALID_YOUTUBE_URL(HttpStatus.BAD_REQUEST, "유효한 YouTube URL이 아닙니다."),
 
     // google api
     GOOGLE_PLACES_EMPTY_RESPONSE(HttpStatus.NOT_FOUND, "해당 주소로 검색된 장소 또는 사진이 없습니다."),

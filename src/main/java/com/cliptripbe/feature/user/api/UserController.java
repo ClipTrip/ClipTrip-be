@@ -3,13 +3,10 @@ package com.cliptripbe.feature.user.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.user.application.UserService;
-import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
 import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
 import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
-import com.cliptripbe.feature.user.dto.response.UserLoginResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
-import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,23 +28,6 @@ public class UserController implements UserControllerDocs {
         @RequestBody UserSignUpRequest signUpDto) {
         UserInfoResponse studentSignUpResponse = userService.signUp(signUpDto);
         return ApiResponse.success(SuccessType.CREATED, studentSignUpResponse);
-    }
-
-    @Override
-    @PostMapping("/sign-in")
-    public ApiResponse<UserLoginResponse> signIn(
-        @RequestBody UserSignInRequest userSignInRequest,
-        HttpServletResponse response
-    ) {
-        UserLoginResponse userLoginResponse = userService.userSignIn(userSignInRequest, response);
-        return ApiResponse.success(SuccessType.OK, userLoginResponse);
-    }
-
-    @Override
-    @PostMapping("/logout")
-    public ApiResponse<?> logout(HttpServletResponse response) {
-        userService.logout(response);
-        return ApiResponse.success(SuccessType.OK);
     }
 
     @Override
