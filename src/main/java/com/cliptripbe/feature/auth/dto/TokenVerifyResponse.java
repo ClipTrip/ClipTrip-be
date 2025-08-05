@@ -7,9 +7,9 @@ public record TokenVerifyResponse(
     boolean isTokenVerified
 ) {
 
-    public static TokenVerifyResponse of(boolean expired) {
+    public static TokenVerifyResponse of(boolean isTokenVerified) {
         return TokenVerifyResponse.builder()
-            .isTokenVerified(expired)
+            .isTokenVerified(isTokenVerified)
             .build();
     }
 }
