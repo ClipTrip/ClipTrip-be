@@ -26,4 +26,9 @@ public class CookieProvider {
         cookie.setSecure(secureCookie);
         return cookie;
     }
+
+    public Cookie createExpireCookie(TokenType tokenType) {
+        return createCookie(tokenType.getName(), null, 0);
+    }
+
 }

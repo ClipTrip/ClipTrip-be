@@ -95,9 +95,7 @@ public class AuthService {
     }
 
     private void expireCookie(HttpServletResponse response, TokenType tokenType) {
-        Cookie cookie = new Cookie(tokenType.getName(), null);
-        cookie.setMaxAge(0);
-        cookie.setPath("/");
+        Cookie cookie = cookieProvider.createExpireCookie(tokenType);
         response.addCookie(cookie);
     }
 
