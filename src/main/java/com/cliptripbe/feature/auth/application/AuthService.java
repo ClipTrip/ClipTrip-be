@@ -78,10 +78,10 @@ public class AuthService {
         String accessToken = jwtTokenProvider.extractTokenFromCookies(request, ACCESS_TOKEN);
 
         if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
-            return TokenVerifyResponse.of(true);
+            return TokenVerifyResponse.of(false);
         }
 
-        return TokenVerifyResponse.of(false);
+        return TokenVerifyResponse.of(true);
     }
 
     private void createCookieAndAppend(String userId, String password,

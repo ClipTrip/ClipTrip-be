@@ -4,12 +4,12 @@ import lombok.Builder;
 
 @Builder
 public record TokenVerifyResponse(
-    boolean isExpired
+    boolean isTokenVerified
 ) {
 
     public static TokenVerifyResponse of(boolean expired) {
         return TokenVerifyResponse.builder()
-            .isExpired(expired)
+            .isTokenVerified(expired)
             .build();
     }
 }
