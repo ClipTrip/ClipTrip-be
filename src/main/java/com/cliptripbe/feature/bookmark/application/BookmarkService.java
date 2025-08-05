@@ -60,6 +60,7 @@ public class BookmarkService {
         if (request.description() != null) {
             bookmark.modifyInfo(bookmark.getName(), request.description());
         }
+
         if (request.placeInfoRequests() != null) {
             bookmark.cleanBookmarkPlace();
             for (PlaceInfoRequest placeInfoRequest : request.placeInfoRequests()) {
@@ -121,7 +122,7 @@ public class BookmarkService {
 
         if (user.getLanguage() == KOREAN) {
             Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-            return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
+            return BookmarkInfoResponse.from(bookmark);
         }
         Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
 

@@ -98,9 +98,11 @@ public class BookmarkController implements BookmarkControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId
     ) {
-        BookmarkInfoResponse responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
-            customerDetails.getUser());
-        return ApiResponse.success(SuccessType.OK, responseDto);
+        BookmarkInfoResponse response = bookmarkService.getBookmarkInfo(
+            bookmarkId,
+            customerDetails.getUser()
+        );
+        return ApiResponse.success(SuccessType.OK, response);
     }
 
     @Override

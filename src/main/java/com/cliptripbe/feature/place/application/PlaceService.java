@@ -104,7 +104,6 @@ public class PlaceService {
         return place;
     }
 
-
     public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
         return categoryPlaces.stream()
