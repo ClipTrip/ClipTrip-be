@@ -5,6 +5,7 @@ import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -37,9 +38,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
+    protected void doFilterInternal(
+        @NonNull HttpServletRequest servletRequest,
         @NonNull HttpServletResponse servletResponse,
-        FilterChain filterChain) throws ServletException, IOException {
+        FilterChain filterChain
+    ) throws ServletException, IOException {
         String accessToken = jwtTokenProvider.extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
 
         if (isAllowedUrl(servletRequest)) {
@@ -47,8 +50,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         try {
-            if (jwtTokenProvider.validateToken(accessToken)) {
+            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
                 authenticateWithAccessToken(accessToken);
+            } else {
+                throw new CustomException(ErrorType.EXPIRED_ACCESS_TOKEN);
             }
             filterChain.doFilter(servletRequest, servletResponse);
         } catch (CustomException e) {
@@ -61,14 +66,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
+
     private void handleException(HttpServletResponse response, CustomException e)
         throws IOException {
         if (e != null) {
             response.setContentType("application/json");
-            response.setStatus(400);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setCharacterEncoding("UTF-8");
             String jsonResponse = new ObjectMapper().writeValueAsString(
-                ApiResponse.error(e.getErrorType()));
+                ApiResponse.error(e.getErrorType())
+            );
             response.getWriter().write(jsonResponse);  // ApiResponse의 내용을 JSON으로 변환하여 작성
         } else {
             response.getWriter().write("{\"error\": \"An unexpected error occurred.\"}");

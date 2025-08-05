@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.user.dto.response;
+package com.cliptripbe.feature.auth.dto;
 
 import com.cliptripbe.feature.user.domain.type.Language;
 
