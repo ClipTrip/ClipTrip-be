@@ -31,6 +31,7 @@ public enum ErrorType {
 
     // place
     PLACE_NOT_FOUND(HttpStatus.BAD_REQUEST, "요청한 정보로 place를 찾을 수 없습니다"),
+    EXISTS_PLACE(HttpStatus.BAD_REQUEST, "이미 존재하는 장소 정보입니다."),
 
     // video
     CHATGPT_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "ChatGPT로부터 응답을 받지 못했습니다."),

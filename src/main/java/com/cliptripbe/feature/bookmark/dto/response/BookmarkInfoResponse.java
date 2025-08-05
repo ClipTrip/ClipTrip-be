@@ -20,7 +20,7 @@ public record BookmarkInfoResponse(
             .description(bookmark.getDescription())
             .placeList(
                 bookmark.getPlaces().stream()
-                    .limit(30)
+                    .limit(50)
                     .map(place -> PlaceListResponse.fromEntity(place, -1))
                     .toList()
             )

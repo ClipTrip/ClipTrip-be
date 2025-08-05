@@ -75,7 +75,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void addBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
+    public void addPlaceToBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
         if (!bookmark.getUser().getId().equals(user.getId())) {
@@ -84,8 +84,7 @@ public class BookmarkService {
 
         Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
 
-        BookmarkPlace bookmarkPlace = BookmarkPlace
-            .builder()
+        BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
             .bookmark(bookmark)
             .place(place)
             .build();

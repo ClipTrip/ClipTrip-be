@@ -62,7 +62,7 @@ public class BookmarkController implements BookmarkControllerDocs {
         @PathVariable Long bookmarkId,
         @RequestBody PlaceInfoRequest placeInfoRequest
     ) {
-        bookmarkService.addBookmark(
+        bookmarkService.addPlaceToBookmark(
             customerDetails.getUser(),
             bookmarkId,
             placeInfoRequest
