@@ -63,8 +63,10 @@ public class JwtTokenProvider {
     }
 
     public TokenDto createAllToken(String userId, String role) {
-        return new TokenDto(createToken(userId, role, ACCESS_TOKEN),
-            createToken(userId, role, REFRESH_TOKEN));
+        return TokenDto.builder()
+            .accessToken(createToken(userId, role, ACCESS_TOKEN))
+            .refreshToken(createToken(userId, role, REFRESH_TOKEN))
+            .build();
     }
 
     public boolean validateToken(String token) {

@@ -63,12 +63,9 @@ public class AuthService {
         }
 
         Cookie accessTokenCookie = cookieProvider.createTokenCookie(
-            ACCESS_TOKEN,
-            jwtToken.getAccessToken());
+            ACCESS_TOKEN, jwtToken.getAccessToken());
         Cookie refreshTokenCookie = cookieProvider.createTokenCookie(
-            REFRESH_TOKEN,
-            jwtToken.getRefreshToken()
-        );
+            REFRESH_TOKEN, jwtToken.getRefreshToken());
         response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
     }

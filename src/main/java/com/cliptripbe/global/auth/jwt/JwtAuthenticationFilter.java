@@ -37,9 +37,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
+    protected void doFilterInternal(
+        @NonNull HttpServletRequest servletRequest,
         @NonNull HttpServletResponse servletResponse,
-        FilterChain filterChain) throws ServletException, IOException {
+        FilterChain filterChain
+    ) throws ServletException, IOException {
         String accessToken = jwtTokenProvider.extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
 
         if (isAllowedUrl(servletRequest)) {
