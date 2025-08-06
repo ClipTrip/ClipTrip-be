@@ -53,12 +53,12 @@ public class BookmarkService {
     public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
-        if (request.bookmarkName() != null) {
-            bookmark.modifyInfo(request.bookmarkName(), bookmark.getDescription());
-        }
-
-        if (request.description() != null) {
-            bookmark.modifyInfo(bookmark.getName(), request.description());
+        String newName =
+            request.bookmarkName() != null ? request.bookmarkName() : bookmark.getName();
+        String newDescription =
+            request.description() != null ? request.description() : bookmark.getDescription();
+        if (request.bookmarkName() != null || request.description() != null) {
+            bookmark.modifyInfo(newName, newDescription);
         }
 
         if (request.placeInfoRequests() != null) {
