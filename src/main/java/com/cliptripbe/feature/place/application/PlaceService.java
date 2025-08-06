@@ -21,9 +21,9 @@ import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.infrastructure.port.google.GooglePlacesPort;
-import com.cliptripbe.infrastructure.port.kakao.KakaoMapPort;
-import com.cliptripbe.infrastructure.port.s3.S3Port;
+import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
+import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
+import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
@@ -51,10 +50,11 @@ public class PlaceService {
     private final PlaceTranslationFinder placeTranslationFinder;
     private final PlaceClassifier placeClassifier;
 
-    private final KakaoMapPort kakaoMapPort;
-    private final S3Port s3Port;
-    private final GooglePlacesPort googlePlacesPort;
+    private final PlaceSearchPort placeSearchPort;
+    private final FileStoragePort fileStoragePort;
+    private final PlaceImageProviderPort placeImageProviderPort;
 
+    @Transactional(readOnly = true)
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequest placeInfoRequest
     ) {
@@ -62,6 +62,7 @@ public class PlaceService {
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
+    @Transactional(readOnly = true)
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest placeInfoRequest,
         User user) {
         Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
@@ -70,13 +71,14 @@ public class PlaceService {
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
     }
 
+    @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
-            byte[] imageBytes = googlePlacesPort.getPhotoByAddress(searchKeyWord);
-            String imageUrl = s3Port.upload(S3_PLACE_PREFIX, imageBytes);
+            byte[] imageBytes = placeImageProviderPort.getPhotoByAddress(searchKeyWord);
+            String imageUrl = fileStoragePort.upload(S3_PLACE_PREFIX, imageBytes);
             place.addImageUrl(imageUrl);
         }
 
@@ -91,7 +93,7 @@ public class PlaceService {
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
 
-
+    @Transactional
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequest.placeName(),
@@ -102,9 +104,8 @@ public class PlaceService {
         return place;
     }
 
-    @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
-        List<PlaceDto> categoryPlaces = kakaoMapPort.searchPlacesByCategory(request);
+        List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
         return categoryPlaces.stream()
             .map((PlaceDto placeDto) ->
                 PlaceListResponse.ofDto(
@@ -114,15 +115,15 @@ public class PlaceService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
-        List<PlaceDto> keywordPlaces = kakaoMapPort.searchPlacesByKeyWord(request);
+        List<PlaceDto> keywordPlaces = placeSearchPort.searchPlacesByKeyWord(request);
 
         return keywordPlaces.stream()
             .map(PlaceListResponse::fromDto)
             .toList();
     }
 
+    @Transactional
     public List<Place> createPlaceAll(List<PlaceDto> placeDtoList) {
         if (placeDtoList.isEmpty()) {
             return Collections.emptyList();
@@ -173,9 +174,8 @@ public class PlaceService {
         return PlaceListResponse.fromList(placesInRange);
     }
 
-    public List<Place> findOrCreatePlacesByPlaceInfos(
-        List<PlaceInfoRequest> placeInfoRequests
-    ) {
+    @Transactional(readOnly = true)
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
 }

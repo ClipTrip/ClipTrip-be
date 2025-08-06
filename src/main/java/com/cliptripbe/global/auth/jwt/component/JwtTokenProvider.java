@@ -1,6 +1,5 @@
 package com.cliptripbe.global.auth.jwt.component;
 
-
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
@@ -25,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -42,15 +42,16 @@ public class JwtTokenProvider {
     private final Key key;
     private final CustomerDetailsService customerDetailsService;
 
-    public JwtTokenProvider(@Value("${jwt.secret}") String secretKey,
-        CustomerDetailsService customerDetailsService) {
+    public JwtTokenProvider(
+        @Value("${jwt.secret}") String secretKey,
+        CustomerDetailsService customerDetailsService
+    ) {
         this.customerDetailsService = customerDetailsService;
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public JwtToken generateToken(Authentication authentication) {
-        // 권한 가져오기
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority).collect(
                 Collectors.joining(","));
@@ -64,12 +65,12 @@ public class JwtTokenProvider {
             .build();
     }
 
-    public TokenDto createAllToken(String userId, String role) {
-        return new TokenDto(createToken(userId, role, ACCESS_TOKEN),
-            createToken(userId, role, REFRESH_TOKEN));
-    }
-
     public boolean validateToken(String token) {
+        if (token == null || token.trim().isEmpty()) {
+            log.info("토큰이 null이거나 비어있습니다.");
+            return false;
+        }
+
         try {
             Jwts.parserBuilder()
                 .setSigningKey(key)
@@ -77,25 +78,19 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
             return true;
+        } catch (ExpiredJwtException e) {
+            log.info("토큰이 만료되었습니다.", e);
+            return false;
         } catch (SecurityException | MalformedJwtException e) {
             log.info("잘못된 토큰입니다.", e);
-        } catch (ExpiredJwtException e) {
-            Claims claims = e.getClaims();
-            // 토큰 타입 확인 (예: "type" 클레임에 저장된 값을 확인)
-            String tokenType = claims.get("type", String.class);
-            if (ACCESS_TOKEN.getName().equals(tokenType)) {
-                throw new CustomException(ErrorType.EXPIRED_ACCESS_TOKEN);
-            } else if (REFRESH_TOKEN.getName().equals(tokenType)) {
-                throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
-            } else {
-                log.info("알 수 없는 토큰 타입입니다.");
-            }
+            return false;
         } catch (UnsupportedJwtException e) {
             log.info("지원하지 않은 토큰입니다.", e);
+            return false;
         } catch (IllegalArgumentException e) {
             log.info("JWT claims string is empty.", e);
+            return false;
         }
-        return false;
     }
 
     public Authentication getAuthentication(String token) {
@@ -135,6 +130,13 @@ public class JwtTokenProvider {
             }
         }
         return null;
+    }
+
+    private TokenDto createAllToken(String userId, String role) {
+        return TokenDto.builder()
+            .accessToken(createToken(userId, role, ACCESS_TOKEN))
+            .refreshToken(createToken(userId, role, REFRESH_TOKEN))
+            .build();
     }
 
     private String createToken(String email, String authorities, TokenType type) {

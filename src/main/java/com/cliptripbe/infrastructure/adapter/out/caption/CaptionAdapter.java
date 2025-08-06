@@ -5,7 +5,7 @@ import static com.cliptripbe.global.response.type.ErrorType.CAPTION_SERVER_NO_RE
 
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.adapter.out.caption.dto.CaptionResponse;
-import com.cliptripbe.infrastructure.port.caption.CaptionPort;
+import com.cliptripbe.infrastructure.port.caption.VideoContentExtractPort;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,8 +17,10 @@ import org.springframework.web.client.RestClient;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class CaptionAdapter implements CaptionPort {
+public class CaptionAdapter implements VideoContentExtractPort {
+
     private static final String CAPTION_DISABLED_MESSAGE = "자막이 비활성화";
+
 
     @Qualifier("captionsRestClient")
     private final RestClient captionsRestClient;

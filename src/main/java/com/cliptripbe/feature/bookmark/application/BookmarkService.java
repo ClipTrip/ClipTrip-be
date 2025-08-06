@@ -1,6 +1,8 @@
 package com.cliptripbe.feature.bookmark.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
+import static com.cliptripbe.global.response.type.ErrorType.ACCESS_DENIED_EXCEPTION;
+import static com.cliptripbe.global.response.type.ErrorType.PLACE_NOT_FOUND;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.domain.entity.BookmarkPlace;
@@ -17,6 +19,7 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
@@ -47,42 +50,61 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void updateBookmark(
-        Long bookmarkId,
-        UpdateBookmarkRequest updateBookmarkRequest
-    ) {
+    public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
-        bookmark.modifyInfo(updateBookmarkRequest.bookmarkName(),
-            updateBookmarkRequest.description());
-        bookmark.cleanBookmarkPlace();
+        String newName =
+            request.bookmarkName() != null ? request.bookmarkName() : bookmark.getName();
+        String newDescription =
+            request.description() != null ? request.description() : bookmark.getDescription();
+        if (request.bookmarkName() != null || request.description() != null) {
+            bookmark.modifyInfo(newName, newDescription);
+        }
 
-        for (PlaceInfoRequest placeInfoRequest : updateBookmarkRequest.placeInfoRequests()) {
-            Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
-            BookmarkPlace bookmarkPlace = BookmarkPlace
-                .builder()
-                .bookmark(bookmark)
-                .place(place)
-                .build();
-            bookmark.addBookmarkPlace(bookmarkPlace);
+        if (request.placeInfoRequests() != null) {
+            bookmark.cleanBookmarkPlace();
+            for (PlaceInfoRequest placeInfoRequest : request.placeInfoRequests()) {
+                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
+                BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
+                    .bookmark(bookmark)
+                    .place(place)
+                    .build();
+                bookmark.addBookmarkPlace(bookmarkPlace);
+            }
         }
     }
 
     @Transactional
-    public void addBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
+    public void addPlaceToBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
         if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+            throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
+
         Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
 
-        BookmarkPlace bookmarkPlace = BookmarkPlace
-            .builder()
+        BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
             .bookmark(bookmark)
             .place(place)
             .build();
         bookmark.addBookmarkPlace(bookmarkPlace);
+    }
+
+    @Transactional
+    public void deletePlaceFromBookmark(User user, Long bookmarkId, Long placeId) {
+        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+
+        if (!bookmark.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ACCESS_DENIED_EXCEPTION);
+        }
+
+        BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
+            .filter(bp -> bp.getPlace().getId().equals(placeId))
+            .findFirst()
+            .orElseThrow(() -> new CustomException(PLACE_NOT_FOUND));
+
+        bookmark.getBookmarkPlaces().remove(targetPlace);
     }
 
     @Transactional(readOnly = true)
@@ -99,7 +121,7 @@ public class BookmarkService {
 
         if (user.getLanguage() == KOREAN) {
             Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-            return BookmarkMapper.mapBookmarkInfoResponse(bookmark);
+            return BookmarkInfoResponse.from(bookmark);
         }
         Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
 
@@ -121,8 +143,10 @@ public class BookmarkService {
     public void deleteBookmark(User user, Long bookmarkId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
         if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+            throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
         bookmarkRepository.delete(bookmark);
     }
+
+
 }

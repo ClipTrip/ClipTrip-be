@@ -33,6 +33,6 @@ public class VideoController implements VideoControllerDocs {
             customerDetails.getUser(),
             request
         );
-        return ApiResponse.success(SuccessType.CREATED, videoScheduleResponse);
+        return ApiResponse.success(SuccessType.OK, videoScheduleResponse);
     }
 }

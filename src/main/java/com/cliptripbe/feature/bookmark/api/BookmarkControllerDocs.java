@@ -25,17 +25,24 @@ public interface BookmarkControllerDocs {
     );
 
     @Operation(summary = "북마크에 하나의 장소 추가하기, \n로그인 필요")
-    ApiResponse<Long> addBookmark(
+    ApiResponse<Long> addPlaceToBookmark(
         CustomerDetails customerDetails,
         Long bookmarkId,
         PlaceInfoRequest placeInfoRequest
     );
 
+    @Operation(summary = "북마크에 하나의 장소 삭제하기, \n로그인 필요")
+    ApiResponse<Long> deletePlaceFromBookmark(
+        CustomerDetails customerDetails,
+        Long bookmarkId,
+        Long placeId
+    );
+
     @Operation(summary = "유저 북마크 전체 조회하기, \n로그인 필요")
     ApiResponse<List<BookmarkListResponse>> getUserBookmark(CustomerDetails customerDetails);
 
-    @Operation(summary = "북마크안의 장소 리스트 조회하기, \n로그인 필요")
-    ApiResponse<BookmarkInfoResponse> getBookmarkInfo(
+    @Operation(summary = "북마크 상세 조회하기, \n로그인 필요")
+    ApiResponse<BookmarkInfoResponse> getBookmarkById(
         CustomerDetails customerDetails,
         Long bookmarkId
     );

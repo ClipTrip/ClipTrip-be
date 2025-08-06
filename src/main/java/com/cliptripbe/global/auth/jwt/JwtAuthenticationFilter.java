@@ -1,7 +1,6 @@
 package com.cliptripbe.global.auth.jwt;
 
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
-import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
 import com.cliptripbe.global.auth.jwt.component.JwtTokenProvider;
 import com.cliptripbe.global.response.ApiResponse;
@@ -10,16 +9,17 @@ import com.cliptripbe.global.response.type.ErrorType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -27,62 +27,45 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    @Value("${cookie.secure}")
-    private boolean secureCookie;
+
+    private static final List<AntPathRequestMatcher> ALLOWED_URLS = Arrays.asList(
+        new AntPathRequestMatcher("/swagger-ui/**"),
+        new AntPathRequestMatcher("/swagger-ui.html"),
+        new AntPathRequestMatcher("/v3/api-docs/**"),
+        new AntPathRequestMatcher("/webjars/**"),
+        new AntPathRequestMatcher("/swagger-resources/**"),
+        new AntPathRequestMatcher("/api/v1/auth/**"),
+        new AntPathRequestMatcher("/api/v1/users/sign-up")
+    );
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest servletRequest,
+    protected void doFilterInternal(
+        @NonNull HttpServletRequest servletRequest,
         @NonNull HttpServletResponse servletResponse,
-        FilterChain filterChain) throws ServletException, IOException {
-        try {
-            authenticateWithAccessToken(servletRequest);
-        } catch (CustomException e) {
-            if (e.getErrorType() == ErrorType.EXPIRED_ACCESS_TOKEN) {
-                try {
-                    attemptTokenRefresh(servletRequest, servletResponse);
-                } catch (CustomException refreshException) {
-                    handleException(servletResponse, refreshException);
-                    return;
-                }
-            } else {
-                handleException(servletResponse, e);
-                return;
-            }
-        }
-        filterChain.doFilter(servletRequest, servletResponse);
-    }
+        FilterChain filterChain
+    ) throws ServletException, IOException {
 
-    private void attemptTokenRefresh(
-        HttpServletRequest servletRequest,
-        HttpServletResponse servletResponse
-    ) {
-        String refreshToken = jwtTokenProvider.extractTokenFromCookies(servletRequest,
-            REFRESH_TOKEN);
-        if (refreshToken != null && jwtTokenProvider.validateToken(refreshToken)) {
-            // 재발급
-            Authentication authentication = jwtTokenProvider.getAuthenticationFromRefreshToken(
-                refreshToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-
-            // 새 accessToken 재발급 & 쿠키로 설정
-            String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
-
-            Cookie newAccessTokenCookie = new Cookie(ACCESS_TOKEN.getName(), newAccessToken);
-            newAccessTokenCookie.setHttpOnly(true);
-            newAccessTokenCookie.setPath("/");
-            newAccessTokenCookie.setMaxAge(ACCESS_TOKEN.getValidTime().intValue() / 1000);
-            newAccessTokenCookie.setAttribute("SameSite", "Strict");
-            newAccessTokenCookie.setSecure(secureCookie);
-            servletResponse.addCookie(newAccessTokenCookie);
-        }
-    }
-
-    private void authenticateWithAccessToken(HttpServletRequest servletRequest) {
         String accessToken = jwtTokenProvider.extractTokenFromCookies(servletRequest, ACCESS_TOKEN);
-        if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        if (isAllowedUrl(servletRequest)) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
         }
+        try {
+            if (accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
+                authenticateWithAccessToken(accessToken);
+            } else {
+                throw new CustomException(ErrorType.EXPIRED_ACCESS_TOKEN);
+            }
+            filterChain.doFilter(servletRequest, servletResponse);
+        } catch (CustomException e) {
+            handleException(servletResponse, e);
+        }
+    }
+
+    private void authenticateWithAccessToken(String accessToken) {
+        Authentication authentication = jwtTokenProvider.getAuthentication(accessToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 
@@ -90,13 +73,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         throws IOException {
         if (e != null) {
             response.setContentType("application/json");
-            response.setStatus(400);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setCharacterEncoding("UTF-8");
             String jsonResponse = new ObjectMapper().writeValueAsString(
-                ApiResponse.error(e.getErrorType()));
+                ApiResponse.error(e.getErrorType())
+            );
             response.getWriter().write(jsonResponse);  // ApiResponse의 내용을 JSON으로 변환하여 작성
         } else {
             response.getWriter().write("{\"error\": \"An unexpected error occurred.\"}");
         }
+    }
+
+    private boolean isAllowedUrl(HttpServletRequest request) {
+        return ALLOWED_URLS.stream().anyMatch(matcher -> matcher.matches(request));
     }
 }
