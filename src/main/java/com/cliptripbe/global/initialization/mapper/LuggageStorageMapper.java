@@ -1,10 +1,10 @@
-package com.cliptripbe.global.config.initialization.mapper;
+package com.cliptripbe.global.initialization.mapper;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
-import com.cliptripbe.global.config.initialization.type.DefaultData;
+import com.cliptripbe.global.initialization.type.DefaultData;
 import java.util.Collections;
 import java.util.Set;
 import org.springframework.stereotype.Component;
