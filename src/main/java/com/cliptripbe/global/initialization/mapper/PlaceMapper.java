@@ -1,4 +1,4 @@
-package com.cliptripbe.global.config.initialization.mapper;
+package com.cliptripbe.global.initialization.mapper;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
