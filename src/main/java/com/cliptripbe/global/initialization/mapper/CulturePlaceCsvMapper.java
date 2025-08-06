@@ -33,8 +33,8 @@ public class CulturePlaceCsvMapper implements PlaceCsvMapper {
             roadAddress = tokens[15].trim();
         }
 
-        double latitude = parseDouble(tokens[12]);
-        double longitude = parseDouble(tokens[13]);
+        double latitude = PlaceCsvMapper.parseDouble(tokens[12]);
+        double longitude = PlaceCsvMapper.parseDouble(tokens[13]);
 
         Address address = Address.builder()
             .latitude(latitude)

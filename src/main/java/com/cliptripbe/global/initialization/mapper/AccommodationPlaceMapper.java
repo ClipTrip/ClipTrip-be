@@ -19,8 +19,8 @@ public class AccommodationPlaceMapper implements PlaceCsvMapper {
 
         String name = tokens[1].trim();        // FCLTY_NM
         String roadAddress = tokens[2].trim();         // RDNMADR_NM
-        Double longitude = parseDouble(tokens[13].trim()); // FCLTY_LO
-        Double latitude = parseDouble(tokens[14].trim());  // FCLTY_LA
+        Double longitude = PlaceCsvMapper.parseDouble(tokens[13].trim()); // FCLTY_LO
+        Double latitude = PlaceCsvMapper.parseDouble(tokens[14].trim());  // FCLTY_LA
 
         Address address = Address.builder()
             .roadAddress(roadAddress)
