@@ -16,7 +16,7 @@ public interface ScheduleControllerDocs {
     @Operation(summary = "새로운 일정 만들기, 빈 일정입니다.")
     ApiResponse<?> createSchedule(CustomerDetails customerDetails);
 
-    @Operation(summary = "일정 수정하기,put 메서드")
+    @Operation(summary = "일정 수정하기, put 메서드")
     ApiResponse<?> updateSchedule(
         CustomerDetails customerDetails,
         Long scheduleId,

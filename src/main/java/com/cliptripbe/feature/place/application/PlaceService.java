@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
@@ -55,6 +54,7 @@ public class PlaceService {
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
 
+    @Transactional(readOnly = true)
     public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
         PlaceInfoRequest placeInfoRequest
     ) {
@@ -62,6 +62,7 @@ public class PlaceService {
         return PlaceAccessibilityInfoResponse.from(place);
     }
 
+    @Transactional(readOnly = true)
     public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest placeInfoRequest,
         User user) {
         Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
@@ -70,6 +71,7 @@ public class PlaceService {
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
     }
 
+    @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
@@ -91,7 +93,7 @@ public class PlaceService {
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
 
-
+    @Transactional
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = placeFinder.getOptionPlaceByPlaceInfo(
             placeInfoRequest.placeName(),
@@ -102,7 +104,6 @@ public class PlaceService {
         return place;
     }
 
-    @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
         return categoryPlaces.stream()
@@ -114,7 +115,6 @@ public class PlaceService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
         List<PlaceDto> keywordPlaces = placeSearchPort.searchPlacesByKeyWord(request);
 
@@ -123,6 +123,7 @@ public class PlaceService {
             .toList();
     }
 
+    @Transactional
     public List<Place> createPlaceAll(List<PlaceDto> placeDtoList) {
         if (placeDtoList.isEmpty()) {
             return Collections.emptyList();
@@ -173,9 +174,8 @@ public class PlaceService {
         return PlaceListResponse.fromList(placesInRange);
     }
 
-    public List<Place> findOrCreatePlacesByPlaceInfos(
-        List<PlaceInfoRequest> placeInfoRequests
-    ) {
+    @Transactional(readOnly = true)
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
 }

@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.Mapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -44,31 +46,39 @@ public class BookmarkController implements BookmarkControllerDocs {
     }
 
     @Override
-    @PutMapping("/{bookmarkId}")
+    @PatchMapping("/{bookmarkId}")
     public ApiResponse<Long> updateBookmark(
         @PathVariable(value = "bookmarkId") Long bookmarkId,
         @RequestBody UpdateBookmarkRequest updateBookmarkRequest
     ) {
-        bookmarkService.updateBookmark(
-            bookmarkId,
-            updateBookmarkRequest
-        );
+        bookmarkService.updateBookmark(bookmarkId, updateBookmarkRequest);
         return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 
     @Override
     @PostMapping("/{bookmarkId}")
-    public ApiResponse<Long> addBookmark(
+    public ApiResponse<Long> addPlaceToBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId,
         @RequestBody PlaceInfoRequest placeInfoRequest
     ) {
-        bookmarkService.addBookmark(
+        bookmarkService.addPlaceToBookmark(
             customerDetails.getUser(),
             bookmarkId,
             placeInfoRequest
         );
         return ApiResponse.success(SuccessType.OK, bookmarkId);
+    }
+
+    @Override
+    @DeleteMapping("/{bookmarkId}/{placeId}")
+    public ApiResponse<Long> deletePlaceFromBookmark(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable(value = "bookmarkId") Long bookmarkId,
+        @PathVariable(value = "placeId") Long placeId
+    ) {
+        bookmarkService.deletePlaceFromBookmark(customerDetails.getUser(), bookmarkId, placeId);
+        return ApiResponse.success(SuccessType.OK, placeId);
     }
 
 
@@ -84,13 +94,15 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @GetMapping("/{bookmarkId}")
-    public ApiResponse<BookmarkInfoResponse> getBookmarkInfo(
+    public ApiResponse<BookmarkInfoResponse> getBookmarkById(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId
     ) {
-        BookmarkInfoResponse responseDto = bookmarkService.getBookmarkInfo(bookmarkId,
-            customerDetails.getUser());
-        return ApiResponse.success(SuccessType.OK, responseDto);
+        BookmarkInfoResponse response = bookmarkService.getBookmarkInfo(
+            bookmarkId,
+            customerDetails.getUser()
+        );
+        return ApiResponse.success(SuccessType.OK, response);
     }
 
     @Override

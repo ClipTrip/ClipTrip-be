@@ -1,7 +1,10 @@
 package com.cliptripbe.feature.bookmark.domain.entity;
 
+import static com.cliptripbe.global.response.type.ErrorType.EXISTS_PLACE;
+
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.response.exception.CustomException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +39,7 @@ public class Bookmark {
     private User user;
 
     @OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC")
     private Set<BookmarkPlace> bookmarkPlaces = new LinkedHashSet<>();
 
     @Column
@@ -75,8 +80,16 @@ public class Bookmark {
     }
 
 
-    public void addBookmarkPlace(BookmarkPlace bookmarkPlace) {
-        this.bookmarkPlaces.add(bookmarkPlace);
+    public void addBookmarkPlace(BookmarkPlace newBookmarkPlace) {
+        Long newPlaceId = newBookmarkPlace.getPlace().getId();
+        boolean exists = bookmarkPlaces.stream()
+            .map(bp -> bp.getPlace().getId())
+            .anyMatch(newPlaceId::equals);
+        if (exists) {
+            throw new CustomException(EXISTS_PLACE);
+        }
+
+        bookmarkPlaces.add(newBookmarkPlace);
     }
 
     public List<Place> getPlaces() {

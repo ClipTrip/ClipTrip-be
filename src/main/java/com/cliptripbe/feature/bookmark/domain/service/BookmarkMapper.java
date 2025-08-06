@@ -17,22 +17,6 @@ public class BookmarkMapper {
     }
 
     public static BookmarkInfoResponse mapBookmarkInfoResponse(
-        Bookmark bookmark
-    ) {
-        return BookmarkInfoResponse.builder()
-            .id(bookmark.getId())
-            .name(bookmark.getName())
-            .description(bookmark.getDescription())
-            .placeList(
-                bookmark.getPlaces().stream()
-                    .limit(10)
-                    .map(place -> PlaceListResponse.fromEntity(place, -1))
-                    .toList()
-            )
-            .build();
-    }
-
-    public static BookmarkInfoResponse mapBookmarkInfoResponse(
         Bookmark bookmark,
         List<PlaceListResponse> placeListResponses
     ) {
