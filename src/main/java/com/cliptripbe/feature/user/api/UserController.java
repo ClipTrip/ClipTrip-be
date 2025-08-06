@@ -25,7 +25,8 @@ public class UserController implements UserControllerDocs {
     @Override
     @PostMapping("/sign-up")
     public ApiResponse<?> signUp(
-        @RequestBody UserSignUpRequest signUpDto) {
+        @RequestBody UserSignUpRequest signUpDto
+    ) {
         UserInfoResponse studentSignUpResponse = userService.signUp(signUpDto);
         return ApiResponse.success(SuccessType.CREATED, studentSignUpResponse);
     }

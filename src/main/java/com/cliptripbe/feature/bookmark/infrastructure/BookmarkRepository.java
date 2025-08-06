@@ -14,7 +14,7 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
 
     List<Bookmark> findAllByUser(User user);
 
-    @Query("SELECT b FROM Bookmark b WHERE b.isDefault = true AND b.name != :excludedBookmarkName")
+    @Query("SELECT b FROM Bookmark b JOIN FETCH b.bookmarkPlaces WHERE b.isDefault = true AND b.name != :excludedBookmarkName")
     List<Bookmark> findDefaultBookmarksExcludingName(
         @Param("excludedBookmarkName") String excludedBookmarkName);
 
