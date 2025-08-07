@@ -8,6 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record PlaceDto(
+    String kakaoPlaceId,
     String placeName,
     String address,
     String roadAddress,
@@ -23,6 +24,7 @@ public record PlaceDto(
             roadAddress = document.address_name();
         }
         return PlaceDto.builder()
+            .kakaoPlaceId(document.id())
             .placeName(document.place_name())
             .address(document.address_name())
             .roadAddress(roadAddress)

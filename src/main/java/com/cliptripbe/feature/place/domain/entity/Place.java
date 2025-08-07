@@ -53,6 +53,9 @@ public class Place extends BaseTimeEntity {
     @Column
     private String imageUrl;
 
+    @Column
+    private String kakaoPlaceId;
+
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
     private Set<PlaceTranslation> placeTranslations = new HashSet<>();
 
@@ -63,7 +66,8 @@ public class Place extends BaseTimeEntity {
         Address address,
         Set<AccessibilityFeature> accessibilityFeatures,
         PlaceType placeType,
-        String imageUrl
+        String imageUrl,
+        String kakaoPlaceId
     ) {
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -73,6 +77,7 @@ public class Place extends BaseTimeEntity {
             : new HashSet<>();
         this.placeType = placeType;
         this.imageUrl = imageUrl;
+        this.kakaoPlaceId = kakaoPlaceId;
     }
 
     public void addImageUrl(String imageUrl) {
