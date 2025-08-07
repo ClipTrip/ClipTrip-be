@@ -4,8 +4,8 @@ import jakarta.validation.constraints.Max;
 
 public record PlaceSearchByCategoryRequest(
     String categoryCode,
-    String x,
-    String y,
+    String longitude,
+    String latitude,
     @Max(value = 20000, message = "radius는 20000 이하이어야 합니다")
     Integer radius
 ) {
