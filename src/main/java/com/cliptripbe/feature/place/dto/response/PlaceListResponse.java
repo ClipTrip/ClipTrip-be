@@ -29,9 +29,11 @@ public record PlaceListResponse(
     String kakaoPlaceId
 ) {
 
-    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type,
+    public static PlaceListResponse ofDto(
+        PlaceDto placeDto,
         TranslationInfoWithId translatedInfo,
-        Language language) {
+        Language language
+    ) {
         Optional<String> translatedPlaceName = Optional.ofNullable(
             translatedInfo != null ? translatedInfo.translatedName() : null
         );
@@ -42,7 +44,7 @@ public record PlaceListResponse(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(type)
+            .type(PlaceType.findByCode(placeDto.categoryCode()))
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())

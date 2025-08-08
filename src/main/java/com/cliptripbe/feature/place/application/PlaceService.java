@@ -127,7 +127,8 @@ public class PlaceService {
         Language userLanguage = user.getLanguage();
 
         Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
-            userLanguage, categoryPlaces);
+            userLanguage, categoryPlaces
+        );
 
         List<PlaceListResponse> list = new ArrayList<>();
 
@@ -138,7 +139,6 @@ public class PlaceService {
 
             PlaceListResponse response = PlaceListResponse.ofDto(
                 placeDto,
-                PlaceType.findByCode(request.categoryCode()),
                 translatedInfo,
                 userLanguage
             );

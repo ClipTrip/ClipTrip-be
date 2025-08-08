@@ -61,12 +61,12 @@ public class PlaceTranslationService {
 
     @Transactional(readOnly = true)
     public Map<String, TranslationInfoWithId> getTranslatedPlacesMapIfRequired(
-        Language userLanguage, List<PlaceDto> categoryPlaces
+        Language userLanguage,
+        List<PlaceDto> categoryPlaces
     ) {
         Map<String, TranslationInfoWithId> translatedPlacesMap = Collections.emptyMap();
         if (userLanguage != Language.KOREAN) {
-            translatedPlacesMap = translatePlaceListBatch(
-                categoryPlaces, userLanguage);
+            translatedPlacesMap = translatePlaceListBatch(categoryPlaces, userLanguage);
         }
         return translatedPlacesMap;
     }
