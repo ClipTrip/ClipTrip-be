@@ -8,6 +8,7 @@ import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +38,16 @@ public class PlaceFinder {
         return placeRepository.findByPlaceType(placeType);
     }
 
-    public List<Place> findExistingPlaceByAddressAndName(
+    public List<Place> findExistingPlaceByKakaoPlaceIdOrAddressAndName(
+        List<String> kakaoPlaceIdList,
         List<String> addressList,
         List<String> placeNameList
     ) {
-        return placeRepository.findExistingPlaceByAddressAndName(addressList, placeNameList);
+        return placeRepository.findExistingPlaceByKakaoPlaceIdOrAddressAndName(
+            kakaoPlaceIdList,
+            addressList,
+            placeNameList
+        );
     }
 
     public Optional<Place> findByNameAndRoadAddress(String name, String roadAddress) {

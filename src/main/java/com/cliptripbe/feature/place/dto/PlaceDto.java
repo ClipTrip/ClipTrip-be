@@ -46,6 +46,7 @@ public record PlaceDto(
                 .build()
             )
             .placeType(PlaceType.findByCode(categoryCode))
+            .kakaoPlaceId(kakaoPlaceId)
             .build();
     }
 }

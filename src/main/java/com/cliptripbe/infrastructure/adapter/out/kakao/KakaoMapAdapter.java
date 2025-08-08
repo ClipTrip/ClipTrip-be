@@ -38,8 +38,8 @@ public class KakaoMapAdapter implements PlaceSearchPort {
                 .uri(uri -> uri
                     .path("/v2/local/search/category.json")
                     .queryParam("category_group_code", request.categoryCode())
-                    .queryParam("x", request.x())
-                    .queryParam("y", request.y())
+                    .queryParam("x", request.longitude())
+                    .queryParam("y", request.latitude())
                     .queryParam("radius", request.radius())
                     .build()
                 )
@@ -73,8 +73,8 @@ public class KakaoMapAdapter implements PlaceSearchPort {
                 .uri(uriBuilder -> uriBuilder
                     .path("/v2/local/search/keyword.json")
                     .queryParam("query", request.query())
-                    .queryParam("x", request.x())
-                    .queryParam("y", request.y())
+                    .queryParam("x", request.longitude())
+                    .queryParam("y", request.latitude())
                     .queryParam("radius", request.radius())
                     .build()
                 )

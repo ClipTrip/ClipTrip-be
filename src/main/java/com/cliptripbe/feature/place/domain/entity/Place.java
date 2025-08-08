@@ -105,4 +105,8 @@ public class Place extends BaseTimeEntity {
         }
     }
 
+    public void addKakaoPlaceId(String kakaoPlaceId) {
+        this.kakaoPlaceId = kakaoPlaceId;
+    }
+
 }

@@ -24,12 +24,16 @@ import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,9 +129,15 @@ public class PlaceService {
 
     @Transactional
     public List<Place> createPlaceAll(List<PlaceDto> placeDtoList) {
-        if (placeDtoList.isEmpty()) {
+        if (placeDtoList == null || placeDtoList.isEmpty()) {
             return Collections.emptyList();
         }
+
+        List<String> kakaoPlaceIdList = placeDtoList.stream()
+            .map(PlaceDto::kakaoPlaceId)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
 
         List<String> addressList = placeDtoList.stream()
             .map(PlaceDto::roadAddress)
@@ -141,24 +151,62 @@ public class PlaceService {
             .distinct()
             .toList();
 
-        List<Place> existsPlaceList = placeFinder.findExistingPlaceByAddressAndName(
+        List<Place> existsPlaceList = placeFinder.findExistingPlaceByKakaoPlaceIdOrAddressAndName(
+            kakaoPlaceIdList,
             addressList,
             placeNameList
         );
 
-        Set<Pair<String, String>> existingPairs = existsPlaceList.stream()
-            .map(place -> Pair.of(place.getAddress().roadAddress(), place.getName()))
-            .collect(Collectors.toSet());
+        Map<String, Place> placeByKakaoId = existsPlaceList.stream()
+            .filter(p -> p.getKakaoPlaceId() != null)
+            .collect(Collectors.toMap(Place::getKakaoPlaceId, Function.identity(),
+                (p1, p2) -> p1)); // 중복 시 하나 선택
 
-        List<Place> placeList = placeDtoList.stream()
-            .filter(dto -> !existingPairs.contains(Pair.of(dto.roadAddress(), dto.placeName())))
-            .filter(distinctByKey(dto -> Pair.of(dto.roadAddress(), dto.placeName())))
-            .map(PlaceDto::toPlace)
-            .toList();
+        Map<Pair<String, String>, Place> placeByAddressName = existsPlaceList.stream()
+            .filter(p -> p.getAddress() != null && p.getAddress().roadAddress() != null
+                && p.getName() != null)
+            .collect(Collectors.toMap(
+                p -> Pair.of(p.getAddress().roadAddress(), p.getName()),
+                Function.identity(),
+                (p1, p2) -> p1 // 중복 시 하나 선택
+            ));
 
-        List<Place> savedPlaceList = placeRegister.createAllPlaces(placeList);
-        savedPlaceList.addAll(existsPlaceList);
-        return savedPlaceList;
+        List<Place> savePlaces = new ArrayList<>();
+        List<Place> updatePlaces = new ArrayList<>();
+        List<Place> finalPlaces = new ArrayList<>();
+
+        for (PlaceDto dto : placeDtoList.stream().filter(distinctByKey(PlaceDto::kakaoPlaceId))
+            .toList()) {
+            if (placeByKakaoId.containsKey(dto.kakaoPlaceId())) {
+                finalPlaces.add(placeByKakaoId.get(dto.kakaoPlaceId()));
+                continue;
+            }
+
+            Pair<String, String> addressNameKey = Pair.of(dto.roadAddress(), dto.placeName());
+            if (placeByAddressName.containsKey(addressNameKey)) {
+                Place potentialPlace = placeByAddressName.get(addressNameKey);
+                String kakaoPlaceId = potentialPlace.getKakaoPlaceId();
+                if (kakaoPlaceId == null || kakaoPlaceId.isEmpty()) {
+                    potentialPlace.addKakaoPlaceId(dto.kakaoPlaceId());
+                    updatePlaces.add(potentialPlace);
+                } else {
+                    finalPlaces.add(potentialPlace);
+                }
+                continue;
+            }
+
+            savePlaces.add(dto.toPlace());
+        }
+
+        List<Place> placesToPersist = new ArrayList<>();
+        placesToPersist.addAll(savePlaces);
+        placesToPersist.addAll(updatePlaces);
+
+        List<Place> savedOrUpdatedPlaces = placeRegister.createAllPlaces(placesToPersist);
+
+        List<Place> result = new ArrayList<>(finalPlaces);
+        result.addAll(savedOrUpdatedPlaces);
+        return result;
     }
 
     @Transactional(readOnly = true)

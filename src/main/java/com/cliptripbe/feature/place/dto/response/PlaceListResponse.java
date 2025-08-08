@@ -48,6 +48,10 @@ public record PlaceListResponse(
     }
 
     public static PlaceListResponse fromEntity(Place place, Integer placeOrder) {
+        String kakaoPlaceId = place.getKakaoPlaceId();
+        if (kakaoPlaceId == null) {
+            kakaoPlaceId = "-1";
+        }
         return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
@@ -57,6 +61,7 @@ public record PlaceListResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
+            .kakaoPlaceId(kakaoPlaceId)
             .build();
     }
 

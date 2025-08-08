@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,10 +26,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     @Query("""
         SELECT p
           FROM Place p
-         WHERE p.address.roadAddress IN :addressList
-           AND p.name                IN :placeNameList
+         WHERE p.kakaoPlaceId IN :kakaoPlaceIdList
+            OR (p.address.roadAddress IN :addressList AND p.name IN :placeNameList)
         """)
-    List<Place> findExistingPlaceByAddressAndName(
+    List<Place> findExistingPlaceByKakaoPlaceIdOrAddressAndName(
+        @Param("kakaoPlaceIdList") List<String> kakaoPlaceIdList,
         @Param("addressList") List<String> addressList,
         @Param("placeNameList") List<String> placeNameList
     );
