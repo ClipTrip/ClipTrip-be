@@ -4,8 +4,10 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Builder;
 
@@ -19,10 +21,16 @@ public record PlaceListResponse(
     PlaceType type,
     double longitude,
     double latitude,
-    Integer placeOrder
+    Integer placeOrder,
+    Optional<String> translatedPlaceName,
+    Optional<String> translatedRoadAddress,
+    Language language
 ) {
 
-    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type) {
+    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type,
+        Optional<String> translatedPlaceName, Optional<String> translatedRoadAddress,
+        Language language
+    ) {
         return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
@@ -30,6 +38,9 @@ public record PlaceListResponse(
             .type(type)
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
+            .translatedPlaceName(translatedPlaceName)
+            .translatedRoadAddress(translatedRoadAddress)
+            .language(language)
             .build();
     }
 
