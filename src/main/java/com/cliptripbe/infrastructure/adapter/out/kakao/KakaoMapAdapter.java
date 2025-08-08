@@ -86,30 +86,36 @@ public class KakaoMapAdapter implements PlaceSearchPort {
         log.debug("Searching places by keyword: {}", request.query());
         try {
             long start = System.currentTimeMillis();
+            List<PlaceDto> allPlaces = new ArrayList<>();
+            for (int page = 1; page <= MAX_PAGE; page++) {
+                int finalPage = page;
 
-            KakaoMapResponse response = kakaoMapRestClient.get()
-                .uri(uriBuilder -> uriBuilder
-                    .path("/v2/local/search/keyword.json")
-                    .queryParam("query", request.query())
-                    .queryParam("x", request.longitude())
-                    .queryParam("y", request.latitude())
-                    .queryParam("radius", request.radius())
-                    .build()
-                )
-                .retrieve()
-                .body(KakaoMapResponse.class);
+                KakaoMapResponse response = kakaoMapRestClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                        .path("/v2/local/search/keyword.json")
+                        .queryParam("query", request.query())
+                        .queryParam("x", request.longitude())
+                        .queryParam("y", request.latitude())
+                        .queryParam("radius", request.radius())
+                        .queryParam("page", finalPage)
+                        .queryParam("size", PLACE_SIZE)
+                        .build()
+                    )
+                    .retrieve()
+                    .body(KakaoMapResponse.class);
 
-            List<PlaceDto> places = Optional.ofNullable(response)
-                .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE))
-                .documents()
-                .stream()
-                .map(PlaceDto::from)
-                .toList();
-
+                List<PlaceDto> places = Optional.ofNullable(response)
+                    .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE))
+                    .documents()
+                    .stream()
+                    .map(PlaceDto::from)
+                    .toList();
+                allPlaces.addAll(places);
+            }
             long elapsed = System.currentTimeMillis() - start;
             log.info("[{}] 개별 호출 레이턴시: {} ms", request.query(), elapsed);
 
-            return places;
+            return allPlaces;
 
         } catch (RestClientException e) {
             log.error("카카오 API 호출 실패: {}", e.getMessage());
