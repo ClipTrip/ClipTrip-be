@@ -24,9 +24,12 @@ public class ChatGPTUtils {
         return input.replace("\n", "");
     }
 
-    public static List<PlacePromptInput> buildPromptInputs(List<PlaceDto> places, int start,
+    public static List<PlacePromptInput> buildPromptInputs(
+        List<PlaceDto> places,
+        int start,
+        int end
+    ) {
         //**TODO 범용성 좋게 바꿀 예정
-        int end) {
         return IntStream.range(start, end)
             .mapToObj(i -> {
                 PlaceDto p = places.get(i);

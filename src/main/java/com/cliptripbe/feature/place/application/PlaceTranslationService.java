@@ -35,12 +35,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceTranslationService {
 
+    private static final int BATCH_SIZE = 5;
+    private static final int MAX_THREADS = 10;
+
     private final ChatGptAdapter chatGptAdapter;
     private final PlaceTranslationRepository placeTranslationRepository;
     private final JsonUtils jsonUtils;
-
-    private final int batchSize = 5;
-    private final int maxThreads = 10;
 
     @Transactional
     public void registerPlace(Place place) {
@@ -59,7 +59,6 @@ public class PlaceTranslationService {
             });
     }
 
-    @Transactional(readOnly = true)
     public Map<String, TranslationInfoWithId> getTranslatedPlacesMapIfRequired(
         Language userLanguage,
         List<PlaceDto> categoryPlaces
@@ -87,12 +86,12 @@ public class PlaceTranslationService {
         List<PlaceDto> places,
         Language targetLanguage
     ) {
-        int threadCount = Math.min(maxThreads, Math.max(1, places.size() / batchSize));
+        int threadCount = Math.min(MAX_THREADS, Math.max(1, places.size() / BATCH_SIZE));
         ExecutorService executor = Executors.newFixedThreadPool(threadCount);
         try {
             List<Future<List<TranslationInfoWithId>>> futures = new ArrayList<>();
-            for (int start = 0; start < places.size(); start += batchSize) {
-                int end = Math.min(start + batchSize, places.size());
+            for (int start = 0; start < places.size(); start += BATCH_SIZE) {
+                int end = Math.min(start + BATCH_SIZE, places.size());
                 List<PlacePromptInput> promptInputs = buildPromptInputs(places, start, end);
                 futures.add(executor.submit(() -> buildTranslationTask(promptInputs, targetLanguage)
                 ));
