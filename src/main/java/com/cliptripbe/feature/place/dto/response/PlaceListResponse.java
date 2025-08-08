@@ -19,7 +19,8 @@ public record PlaceListResponse(
     PlaceType type,
     double longitude,
     double latitude,
-    Integer placeOrder
+    Integer placeOrder,
+    String kakaoPlaceId
 ) {
 
     public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type) {
@@ -30,6 +31,7 @@ public record PlaceListResponse(
             .type(type)
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
             .build();
     }
 
@@ -41,10 +43,15 @@ public record PlaceListResponse(
             .type(PlaceType.findByCode(placeDto.categoryCode()))
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
             .build();
     }
 
     public static PlaceListResponse fromEntity(Place place, Integer placeOrder) {
+        String kakaoPlaceId = place.getKakaoPlaceId();
+        if (kakaoPlaceId == null) {
+            kakaoPlaceId = "-1";
+        }
         return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
@@ -54,6 +61,7 @@ public record PlaceListResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
+            .kakaoPlaceId(kakaoPlaceId)
             .build();
     }
 
