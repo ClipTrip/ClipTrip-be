@@ -19,6 +19,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
+import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
@@ -49,6 +50,7 @@ public class PlaceService {
 
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
+    private final PlaceRepository placeRepository;
 
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
@@ -67,9 +69,8 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest placeInfoRequest,
-        User user) {
-        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
+    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest request, User user) {
+        Place place = findOrCreatePlaceByPlaceInfo(request);
         boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
             place.getId());
         return PlaceAccessibilityInfoResponse.of(place, bookmarked);
@@ -98,12 +99,19 @@ public class PlaceService {
     }
 
     @Transactional
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest placeInfoRequest) {
-        Place place = placeFinder.getOptionPlaceByPlaceInfo(
-            placeInfoRequest.placeName(),
-            placeInfoRequest.roadAddress()
-        ).orElseGet(() -> placeRegister.createPlaceFromInfo(placeInfoRequest));
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+        String kakaoPlaceId = request.kakaoPlaceId();
+        String placeName = request.placeName();
+        String address = request.roadAddress();
 
+        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
+            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
+                .map(p -> {
+                    p.addKakaoPlaceId(kakaoPlaceId);
+                    return placeRepository.save(p);
+                })
+            )
+            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
         placeTranslationService.registerPlace(place);
         return place;
     }
@@ -163,7 +171,8 @@ public class PlaceService {
                 (p1, p2) -> p1)); // 중복 시 하나 선택
 
         Map<Pair<String, String>, Place> placeByAddressName = existsPlaceList.stream()
-            .filter(p -> p.getAddress() != null && p.getAddress().roadAddress() != null
+            .filter(p -> p.getAddress() != null
+                && p.getAddress().roadAddress() != null
                 && p.getName() != null)
             .collect(Collectors.toMap(
                 p -> Pair.of(p.getAddress().roadAddress(), p.getName()),

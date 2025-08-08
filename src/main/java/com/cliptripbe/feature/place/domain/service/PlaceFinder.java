@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +21,16 @@ public class PlaceFinder {
 
     private final PlaceRepository placeRepository;
 
-    public Optional<Place> getOptionPlaceByPlaceInfo(String placeName, String roadAddress) {
-        return placeRepository.findPlaceByPlaceInfo(
-            placeName,
-            roadAddress
-        );
+
+    public Optional<Place> getOptionPlaceByPlaceInfo(
+        String placeName,
+        String roadAddress
+    ) {
+        return placeRepository.findPlaceByPlaceInfo(placeName, roadAddress);
+    }
+
+    public Optional<Place> findByKakaoPlaceId(String kakaoPlaceId) {
+        return placeRepository.findByKakaoPlaceId(kakaoPlaceId);
     }
 
     public Place getPlaceById(Long placeId) {
@@ -60,4 +66,6 @@ public class PlaceFinder {
             .toList();
         return placeRepository.findExistingPlaceByAddress(addresses);
     }
+
+
 }

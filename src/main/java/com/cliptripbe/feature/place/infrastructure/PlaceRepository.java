@@ -5,13 +5,18 @@ import com.cliptripbe.feature.place.domain.type.PlaceType;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import org.antlr.v4.runtime.atn.SemanticContext.AND;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    @Query("SELECT p FROM Place p WHERE p.name = :name AND p.address.roadAddress = :roadAddress")
+    @Query("""
+        SELECT p 
+          FROM Place p 
+         WHERE p.name = :name AND p.address.roadAddress = :roadAddress
+        """)
     Optional<Place> findPlaceByPlaceInfo(
         @Param("name") String name,
         @Param("roadAddress") String roadAddress
@@ -40,4 +45,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findByNameAndAddressRoadAddress(String name, String roadAddress);
 
+    Optional<Place> findByKakaoPlaceId(String kakaoPlaceId);
 }

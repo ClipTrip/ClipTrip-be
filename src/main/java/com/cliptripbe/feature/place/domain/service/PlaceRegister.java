@@ -25,6 +25,7 @@ public class PlaceRegister {
             .phoneNumber(placeInfoRequest.phoneNumber())
             .address(placeInfoRequest.getAddress())
             .placeType(placeInfoRequest.type())
+            .kakaoPlaceId(placeInfoRequest.kakaoPlaceId())
             .build();
         placeRepository.save(place);
         return place;
