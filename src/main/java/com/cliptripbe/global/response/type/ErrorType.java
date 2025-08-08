@@ -27,8 +27,10 @@ public enum ErrorType {
     NOT_VALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효한 토큰이 아닙니다."),
 
     DUPLICATE_SEND(HttpStatus.CONFLICT, "인증 코드가 발송되어 있습니다."),
-
-
+    FAIL_COLLECT_TASK(HttpStatus.INTERNAL_SERVER_ERROR, "GPT 작업 병합에 실패했습니다."),
+    FAIL_GPT_JSON_PARSING(HttpStatus.INTERNAL_SERVER_ERROR, "GPT 응답 JSON 파싱 실패"),
+    INTERRUPT_TRANSLATE(HttpStatus.INTERNAL_SERVER_ERROR, "번역 작업이 인터럽트되었습니다"),
+    FAIL_GPT_TRANSLATE(HttpStatus.INTERNAL_SERVER_ERROR, "GPT 번역 작업이 실패했습니다"),
     // place
     PLACE_NOT_FOUND(HttpStatus.BAD_REQUEST, "요청한 정보로 place를 찾을 수 없습니다"),
     EXISTS_PLACE(HttpStatus.BAD_REQUEST, "이미 존재하는 장소 정보입니다."),
@@ -46,8 +48,8 @@ public enum ErrorType {
 
     // kakaoMobility
     KAKAO_MOBILITY_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "kakaoMobility로부터 응답을 받지 못했습니다."),
-    FAIL_KAKAO_MOBILITY(HttpStatus.BAD_GATEWAY, "kakaoMobility 서비스 호출 실패"),
-    ;
+    FAIL_KAKAO_MOBILITY(HttpStatus.BAD_GATEWAY, "kakaoMobility 서비스 호출 실패");
+
 
     private final HttpStatus httpStatusCode;
     private final String message;

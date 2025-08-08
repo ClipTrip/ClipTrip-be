@@ -60,9 +60,11 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping("/category")
     public ApiResponse<List<PlaceListResponse>> getPlacesByCategory(
-        @ModelAttribute @Valid PlaceSearchByCategoryRequest request
+        @ModelAttribute @Valid PlaceSearchByCategoryRequest request,
+        @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<PlaceListResponse> places = placeService.getPlacesByCategory(request);
+        List<PlaceListResponse> places = placeService.getPlacesByCategory(request,
+            customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 

@@ -3,9 +3,12 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
+import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.Builder;
 
@@ -20,10 +23,21 @@ public record PlaceListResponse(
     double longitude,
     double latitude,
     Integer placeOrder,
+    Optional<String> translatedPlaceName,
+    Optional<String> translatedRoadAddress,
+    Language language,
     String kakaoPlaceId
 ) {
 
-    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type) {
+    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type,
+        TranslationInfoWithId translatedInfo,
+        Language language) {
+        Optional<String> translatedPlaceName = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedName() : null
+        );
+        Optional<String> translatedRoadAddress = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
+        );
         return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
@@ -32,6 +46,9 @@ public record PlaceListResponse(
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())
+            .translatedPlaceName(translatedPlaceName)
+            .translatedRoadAddress(translatedRoadAddress)
+            .language(language)
             .build();
     }
 

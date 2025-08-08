@@ -1,8 +1,11 @@
 package com.cliptripbe.global.util;
 
+import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.PlacePromptInput;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class ChatGPTUtils {
 
@@ -19,5 +22,16 @@ public class ChatGPTUtils {
             return "";
         }
         return input.replace("\n", "");
+    }
+
+    public static List<PlacePromptInput> buildPromptInputs(List<PlaceDto> places, int start,
+        //**TODO 범용성 좋게 바꿀 예정
+        int end) {
+        return IntStream.range(start, end)
+            .mapToObj(i -> {
+                PlaceDto p = places.get(i);
+                return new PlacePromptInput(String.valueOf(i), p.placeName(), p.roadAddress());
+            })
+            .collect(Collectors.toList());
     }
 }

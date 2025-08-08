@@ -67,14 +67,19 @@ public class PromptConstants {
 
     public static final String TRANSLATE_PLACE_INFO = """
         You are a translation assistant. Please translate the following place information from Korean to %s.
-        
+                
         Place Name: %s
         Road Address: %s
-        
+                
         Return ONLY in JSON format like:
         {
           "translatedName": "...",
           "translatedRoadAddress": "..."
         }
         """;
+
+    public static final String TRANSLATE_PLACE_INFO_BATCH_PROMPT =
+        "You are a translator. Translate this list of places from Korean to %s. " +
+            "Respond ONLY as a JSON array with 'id', 'translatedName', 'translatedRoadAddress'.\n" +
+            "%s";
 }

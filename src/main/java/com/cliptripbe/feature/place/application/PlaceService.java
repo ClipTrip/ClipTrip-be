@@ -12,6 +12,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
@@ -117,15 +118,33 @@ public class PlaceService {
         return place;
     }
 
-    public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
+    @Transactional(readOnly = true)
+    public List<PlaceListResponse> getPlacesByCategory(
+        PlaceSearchByCategoryRequest request,
+        User user
+    ) {
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
-        return categoryPlaces.stream()
-            .map((PlaceDto placeDto) ->
-                PlaceListResponse.ofDto(
-                    placeDto,
-                    PlaceType.findByCode(request.categoryCode()))
-            )
-            .toList();
+        Language userLanguage = user.getLanguage();
+
+        Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
+            userLanguage, categoryPlaces);
+
+        List<PlaceListResponse> list = new ArrayList<>();
+
+        for (int i = 0; i < categoryPlaces.size(); i++) {
+            PlaceDto placeDto = categoryPlaces.get(i);
+            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
+            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
+
+            PlaceListResponse response = PlaceListResponse.ofDto(
+                placeDto,
+                PlaceType.findByCode(request.categoryCode()),
+                translatedInfo,
+                userLanguage
+            );
+            list.add(response);
+        }
+        return list;
     }
 
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
