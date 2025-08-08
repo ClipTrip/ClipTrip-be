@@ -13,7 +13,6 @@ import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
-import com.cliptripbe.infrastructure.adapter.out.google.GooglePlacesAdapter;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

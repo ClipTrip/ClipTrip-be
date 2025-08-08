@@ -53,7 +53,7 @@ public class Place extends BaseTimeEntity {
     @Column
     private String imageUrl;
 
-    @Column
+    @Column(unique = true)
     private String kakaoPlaceId;
 
     @OneToMany(mappedBy = "place", cascade = CascadeType.ALL)

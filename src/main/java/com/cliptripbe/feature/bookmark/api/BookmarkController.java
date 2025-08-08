@@ -12,6 +12,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -49,7 +50,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     @PatchMapping("/{bookmarkId}")
     public ApiResponse<Long> updateBookmark(
         @PathVariable(value = "bookmarkId") Long bookmarkId,
-        @RequestBody UpdateBookmarkRequest updateBookmarkRequest
+        @RequestBody @Valid UpdateBookmarkRequest updateBookmarkRequest
     ) {
         bookmarkService.updateBookmark(bookmarkId, updateBookmarkRequest);
         return ApiResponse.success(SuccessType.OK, bookmarkId);
@@ -60,7 +61,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     public ApiResponse<Long> addPlaceToBookmark(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long bookmarkId,
-        @RequestBody PlaceInfoRequest placeInfoRequest
+        @RequestBody @Valid PlaceInfoRequest placeInfoRequest
     ) {
         bookmarkService.addPlaceToBookmark(
             customerDetails.getUser(),
