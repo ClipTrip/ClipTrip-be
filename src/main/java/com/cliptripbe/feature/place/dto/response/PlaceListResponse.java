@@ -25,15 +25,13 @@ public record PlaceListResponse(
     Integer placeOrder,
     Optional<String> translatedPlaceName,
     Optional<String> translatedRoadAddress,
-    Language language
+    Language language,
+    String kakaoPlaceId
 ) {
 
-    public static PlaceListResponse ofDto(
-        PlaceDto placeDto,
-        PlaceType placeType,
+    public static PlaceListResponse ofDto(PlaceDto placeDto, PlaceType type,
         TranslationInfoWithId translatedInfo,
-        Language language
-    ) {
+        Language language) {
         Optional<String> translatedPlaceName = Optional.ofNullable(
             translatedInfo != null ? translatedInfo.translatedName() : null
         );
@@ -44,9 +42,10 @@ public record PlaceListResponse(
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
-            .type(placeType)
+            .type(type)
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
             .translatedPlaceName(translatedPlaceName)
             .translatedRoadAddress(translatedRoadAddress)
             .language(language)
@@ -61,10 +60,15 @@ public record PlaceListResponse(
             .type(PlaceType.findByCode(placeDto.categoryCode()))
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
             .build();
     }
 
     public static PlaceListResponse fromEntity(Place place, Integer placeOrder) {
+        String kakaoPlaceId = place.getKakaoPlaceId();
+        if (kakaoPlaceId == null) {
+            kakaoPlaceId = "-1";
+        }
         return PlaceListResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
@@ -74,6 +78,7 @@ public record PlaceListResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
+            .kakaoPlaceId(kakaoPlaceId)
             .build();
     }
 

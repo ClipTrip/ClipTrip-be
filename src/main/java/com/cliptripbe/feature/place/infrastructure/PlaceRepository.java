@@ -10,7 +10,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
 
-    @Query("SELECT p FROM Place p WHERE p.name = :name AND p.address.roadAddress = :roadAddress")
+    @Query("""
+        SELECT p 
+          FROM Place p 
+         WHERE p.name = :name AND p.address.roadAddress = :roadAddress
+        """)
     Optional<Place> findPlaceByPlaceInfo(
         @Param("name") String name,
         @Param("roadAddress") String roadAddress
@@ -25,10 +29,11 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
     @Query("""
         SELECT p
           FROM Place p
-         WHERE p.address.roadAddress IN :addressList
-           AND p.name                IN :placeNameList
+         WHERE p.kakaoPlaceId IN :kakaoPlaceIdList
+            OR (p.address.roadAddress IN :addressList AND p.name IN :placeNameList)
         """)
-    List<Place> findExistingPlaceByAddressAndName(
+    List<Place> findExistingPlaceByKakaoPlaceIdOrAddressAndName(
+        @Param("kakaoPlaceIdList") List<String> kakaoPlaceIdList,
         @Param("addressList") List<String> addressList,
         @Param("placeNameList") List<String> placeNameList
     );
@@ -38,4 +43,5 @@ public interface PlaceRepository extends JpaRepository<Place, Long> {
 
     Optional<Place> findByNameAndAddressRoadAddress(String name, String roadAddress);
 
+    Optional<Place> findByKakaoPlaceId(String kakaoPlaceId);
 }
