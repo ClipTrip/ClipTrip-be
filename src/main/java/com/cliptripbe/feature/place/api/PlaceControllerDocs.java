@@ -38,7 +38,8 @@ public interface PlaceControllerDocs {
         summary = "카테고리 별 장소리스트 조회",
         description = "카테고리를 이용해 현재 장소 정보들을 조회합니다.")
     ApiResponse<List<PlaceListResponse>> getPlacesByCategory(
-        PlaceSearchByCategoryRequest request
+        PlaceSearchByCategoryRequest request,
+        CustomerDetails customerDetails
     );
 
     @Operation(

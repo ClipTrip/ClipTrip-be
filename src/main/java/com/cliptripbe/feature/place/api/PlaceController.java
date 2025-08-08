@@ -13,7 +13,6 @@ import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
-import com.cliptripbe.infrastructure.adapter.out.google.GooglePlacesAdapter;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -61,9 +60,11 @@ public class PlaceController implements PlaceControllerDocs {
 
     @GetMapping("/category")
     public ApiResponse<List<PlaceListResponse>> getPlacesByCategory(
-        @ModelAttribute @Valid PlaceSearchByCategoryRequest request
+        @ModelAttribute @Valid PlaceSearchByCategoryRequest request,
+        @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<PlaceListResponse> places = placeService.getPlacesByCategory(request);
+        List<PlaceListResponse> places = placeService.getPlacesByCategory(request,
+            customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 
