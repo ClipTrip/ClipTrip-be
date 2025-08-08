@@ -12,6 +12,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
@@ -24,9 +25,12 @@ import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -104,15 +108,53 @@ public class PlaceService {
         return place;
     }
 
-    public List<PlaceListResponse> getPlacesByCategory(PlaceSearchByCategoryRequest request) {
+    public List<PlaceListResponse> getPlacesByCategory(
+        PlaceSearchByCategoryRequest request,
+        User user
+    ) {
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
-        return categoryPlaces.stream()
-            .map((PlaceDto placeDto) ->
-                PlaceListResponse.ofDto(
-                    placeDto,
-                    PlaceType.findByCode(request.categoryCode()))
-            )
-            .toList();
+        Language userLanguage = user.getLanguage();
+
+        Map<String, TranslationInfoWithId> translatedPlacesMap = getTranslatedPlacesMapIfRequired(
+            userLanguage, categoryPlaces);
+
+        List<PlaceListResponse> list = new ArrayList<>();
+
+        for (int i = 0; i < categoryPlaces.size(); i++) {
+            PlaceDto placeDto = categoryPlaces.get(i);
+            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
+
+            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
+
+            // 번역 정보가 있을 경우 Optional로 감싸서 전달
+            Optional<String> placeNameForeign = Optional.ofNullable(
+                translatedInfo != null ? translatedInfo.translatedName() : null);
+            Optional<String> roadAddressForeign = Optional.ofNullable(
+                translatedInfo != null ? translatedInfo.translatedRoadAddress() : null);
+
+            // 최종 응답 객체 생성
+            PlaceListResponse response = PlaceListResponse.ofDto(
+                placeDto,
+                PlaceType.findByCode(request.categoryCode()),
+                placeNameForeign,
+                roadAddressForeign,
+                userLanguage
+            );
+            list.add(response);
+        }
+
+        return list;
+    }
+
+    private Map<String, TranslationInfoWithId> getTranslatedPlacesMapIfRequired(
+        Language userLanguage, List<PlaceDto> categoryPlaces
+    ) {
+        Map<String, TranslationInfoWithId> translatedPlacesMap = Collections.emptyMap();
+        if (userLanguage != Language.KOREAN) {
+            translatedPlacesMap = placeTranslationService.translatePlaceListBatch(
+                categoryPlaces, userLanguage);
+        }
+        return translatedPlacesMap;
     }
 
     public List<PlaceListResponse> getPlacesByKeyword(PlaceSearchByKeywordRequest request) {
