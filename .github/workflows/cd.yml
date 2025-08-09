@@ -1,4 +1,4 @@
-name: CD - Deploy to Elastic Beanstalk
+name: CD - Deploy to EC2 Docker Container
 
 on:
   workflow_dispatch:
@@ -9,12 +9,12 @@ jobs:
 
     env:
       AWS_REGION: ap-northeast-2
-      APPLICATION_NAME: clip-trip
-      ENVIRONMENT_NAME: Clip-trip-server-env
-      DEPLOY_LABEL: github-actions-${{ github.run_number }}
-      DOCKER_IMAGE_URI: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:latest
-      S3_BUCKET: ${{ secrets.S3_BUCKET }}
-      S3_KEY: docker-run-${{ github.run_number }}.zip
+      ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
+      ECR_REPOSITORY: clip-trip/server
+      IMAGE_TAG: latest
+      EC2_USER: ec2-user
+      EC2_HOST: ${{ secrets.EC2_HOST }}      # EC2 공인 IP 또는 DNS
+      SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}  # PEM 파일 내용
 
     steps:
       - name: Checkout source
@@ -27,60 +27,18 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Create Dockerrun.aws.json
+      - name: Login to Amazon ECR
         run: |
-          cat > Dockerrun.aws.json <<EOF
-          {
-            "AWSEBDockerrunVersion": "1",
-            "Image": {
-              "Name": "${{ env.DOCKER_IMAGE_URI }}",
-              "Update": "true"
-            },
-            "Ports": [
-              {
-                "ContainerPort": 8080
-              }
-            ]
-          }
-          EOF
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-      - name: Zip Dockerrun.aws.json
-        run: |
-          zip $S3_KEY Dockerrun.aws.json 
-
-      - name: Upload to S3
-        run: |
-          aws s3 cp $S3_KEY s3://$S3_BUCKET/$S3_KEY
-
-      - name: Create Application Version
-        run: |
-          aws elasticbeanstalk create-application-version \
-            --application-name $APPLICATION_NAME \
-            --version-label $DEPLOY_LABEL \
-            --source-bundle S3Bucket=$S3_BUCKET,S3Key=$S3_KEY \
-            --auto-create-application
-
-      - name: Wait for application version to be processed
-        run: |
-          for i in {1..15}; do
-            STATUS=$(aws elasticbeanstalk describe-application-versions \
-              --application-name $APPLICATION_NAME \
-              --version-label $DEPLOY_LABEL \
-              --query "ApplicationVersions[0].Status" \
-              --output text)
-            echo "Current status: $STATUS"
-
-            if [ "$STATUS" = "PROCESSED" ]; then
-              echo "Application version processed."
-              break
-            fi
-
-            echo "Waiting for application version to be processed..."
-            sleep 6
-          done
-
-      - name: Update Environment
-        run: |
-          aws elasticbeanstalk update-environment \
-            --environment-name $ENVIRONMENT_NAME \
-            --version-label $DEPLOY_LABEL
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ${{ env.EC2_USER }}
+          key: ${{ env.SSH_KEY }}
+          script: |
+            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            docker stop clip-trip-container || true
+            docker rm clip-trip-container || true
+            docker run -d --name clip-trip-container -p 8080:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
