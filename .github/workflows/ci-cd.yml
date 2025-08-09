@@ -44,7 +44,7 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-            
+
       - name: Build Spring Boot App
         run: ./gradlew clean bootJar -x test
 
@@ -95,7 +95,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy to EC2 via SSH
-        uses: appleboy/ssh-action@b4a07ca594
+        uses: appleboy/ssh-action@b4a07ca5940a7dc94925e99f8e6eab3671b0fa64
         with:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_USER }}
