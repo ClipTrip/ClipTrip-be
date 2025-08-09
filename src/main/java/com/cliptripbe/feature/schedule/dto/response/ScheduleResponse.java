@@ -12,6 +12,7 @@ public record ScheduleResponse(
     String scheduleName,
     String description,
     List<PlaceListResponse> placeList
+
 ) {
 
     public static ScheduleResponse of(Schedule schedule, Language language) {
