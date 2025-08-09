@@ -10,6 +10,7 @@ jobs:
 
     env:
       AWS_REGION: ap-northeast-2
+      ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
       ECR_REPOSITORY: clip-trip/server
       IMAGE_TAG: latest
 
