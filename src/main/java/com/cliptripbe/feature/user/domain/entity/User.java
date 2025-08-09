@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.user.domain.entity;
 
 import com.cliptripbe.feature.user.domain.type.AgeGroup;
+import com.cliptripbe.feature.user.domain.type.CountryCode;
 import com.cliptripbe.feature.user.domain.type.Gender;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.user.domain.type.Role;
@@ -12,14 +13,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "user_table")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 
     @Id
@@ -43,18 +48,11 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 2, nullable = false)
+    @Enumerated(EnumType.STRING)
+    private CountryCode country;
+
     public String getRole() {
         return role.getRole();
-    }
-
-    @Builder
-    public User(String email, String password, Language language, AgeGroup ageGroup,
-        Gender gender) {
-        this.email = email;
-        this.password = password;
-        this.language = language;
-        this.ageGroup = ageGroup;
-        this.gender = gender;
-        this.role = Role.USER;
     }
 }
