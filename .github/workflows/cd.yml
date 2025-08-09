@@ -40,14 +40,13 @@ jobs:
           script: |
             CONTAINER_NAME=clip-trip-server
             
+            # 최신 이미지 풀
             docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            if [ "$(docker ps -q -f name=^/${CONTAINER_NAME}$)" ]; then
-            docker stop "$CONTAINER_NAME"
-            fi
 
-            if [ "$(docker ps -aq -f name=^/${CONTAINER_NAME}$)" ]; then
-            docker rm "$CONTAINER_NAME"
-            fi
-            
+            # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
+            docker stop "$CONTAINER_NAME" || true
+            docker rm "$CONTAINER_NAME" || true
+
+            # 새로운 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
             docker run -d --name "$CONTAINER_NAME" -p 8080:8080 "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
