@@ -7,6 +7,7 @@ import com.cliptripbe.feature.user.dto.request.UserSignUpRequest;
 import com.cliptripbe.feature.user.dto.response.UserInfoResponse;
 import com.cliptripbe.global.response.ApiResponse;
 import com.cliptripbe.global.response.type.SuccessType;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public class UserController implements UserControllerDocs {
     @Override
     @PostMapping("/sign-up")
     public ApiResponse<?> signUp(
-        @RequestBody UserSignUpRequest signUpDto
+        @Valid @RequestBody UserSignUpRequest signUpDto
     ) {
         UserInfoResponse studentSignUpResponse = userService.signUp(signUpDto);
         return ApiResponse.success(SuccessType.CREATED, studentSignUpResponse);
