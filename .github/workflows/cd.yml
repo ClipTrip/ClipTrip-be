@@ -39,6 +39,6 @@ jobs:
           key: ${{ env.SSH_KEY }}
           script: |
             docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-            docker stop clip-trip-container || true
-            docker rm clip-trip-container || true
-            docker run -d --name clip-trip-container -p 8080:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+            docker stop clip-trip-server || true
+            docker rm clip-trip-server || true
+            docker run -d --name clip-trip-server -p 8080:8080 $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
