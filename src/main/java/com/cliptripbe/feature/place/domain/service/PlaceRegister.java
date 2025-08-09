@@ -22,7 +22,7 @@ public class PlaceRegister {
     public Place createPlaceFromInfo(PlaceInfoRequest placeInfoRequest) {
         Place place = Place.builder()
             .name(placeInfoRequest.placeName())
-            .phoneNumber(placeInfoRequest.phoneNumber())
+            .phoneNumber(placeInfoRequest.phone())
             .address(placeInfoRequest.getAddress())
             .placeType(placeInfoRequest.type())
             .kakaoPlaceId(placeInfoRequest.kakaoPlaceId())

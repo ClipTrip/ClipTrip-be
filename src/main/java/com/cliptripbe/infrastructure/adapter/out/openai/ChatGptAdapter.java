@@ -72,7 +72,6 @@ public class ChatGptAdapter implements AiTextProcessorPort {
             .model("gpt-4.1-nano")
             .messages(List.of(message))
             .temperature(0.0)
-            .max_tokens(350)
             .frequency_penalty(0.0)
             .build();
 

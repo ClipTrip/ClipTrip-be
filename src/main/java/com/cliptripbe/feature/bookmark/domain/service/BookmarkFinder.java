@@ -4,13 +4,18 @@ import static com.cliptripbe.global.initialization.type.DefaultData.STORAGE_SEOU
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
+import com.cliptripbe.feature.bookmark.infrastructure.projection.BookmarkMapping;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-@Component
+@Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class BookmarkFinder {
 
@@ -28,5 +33,21 @@ public class BookmarkFinder {
     public Bookmark findByIdWithPlacesAndTranslations(Long bookmarkId) {
         return bookmarkRepository.findByIdWithPlacesAndTranslations(bookmarkId)
             .orElseThrow(() -> new CustomException(ErrorType.ENTITY_NOT_FOUND));
+    }
+
+    public Map<String, List<Long>> findBookmarkIdsByKakaoPlaceIds(
+        Long userId,
+        List<String> kakaoPlaceIdList
+    ) {
+        if (kakaoPlaceIdList == null || kakaoPlaceIdList.isEmpty()) {
+            return Map.of();
+        }
+        // String : kakaoPlaceId , List<Long> : 북마크 ids
+        return bookmarkRepository.findBookmarkMappingsByUserAndKakaoPlaceIds(
+                userId, kakaoPlaceIdList).stream()
+            .collect(Collectors.groupingBy(
+                BookmarkMapping::getKakaoPlaceId,
+                Collectors.mapping(BookmarkMapping::getBookmarkId, Collectors.toList())
+            ));
     }
 }

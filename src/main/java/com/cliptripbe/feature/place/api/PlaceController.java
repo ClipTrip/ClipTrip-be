@@ -4,10 +4,8 @@ import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
-import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.global.auth.security.CustomerDetails;
@@ -30,25 +28,6 @@ public class PlaceController implements PlaceControllerDocs {
 
     private final PlaceService placeService;
 
-    @GetMapping("/accessInfo")
-    public ApiResponse<?> getPlaceAccessibilityInfo(
-        @ModelAttribute PlaceInfoRequest placeInfoRequest
-    ) {
-        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceAccessibilityInfo(
-            placeInfoRequest);
-        return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
-    }
-
-    @GetMapping
-    public ApiResponse<?> getPlaceById(
-        @ModelAttribute PlaceInfoRequest placeInfoRequest,
-        @AuthenticationPrincipal CustomerDetails customerDetails
-    ) {
-        PlaceAccessibilityInfoResponse placeAccessibilityInfo = placeService.getPlaceInfo(
-            placeInfoRequest, customerDetails.getUser());
-        return ApiResponse.success(SuccessType.OK, placeAccessibilityInfo);
-    }
-
     @GetMapping("/{placeId}")
     public ApiResponse<PlaceResponse> getPlaceById(
         @PathVariable(value = "placeId") Long placeId,
@@ -63,15 +42,18 @@ public class PlaceController implements PlaceControllerDocs {
         @ModelAttribute @Valid PlaceSearchByCategoryRequest request,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<PlaceListResponse> places = placeService.getPlacesByCategory(request,
-            customerDetails.getUser());
+        List<PlaceListResponse> places = placeService.getPlacesByCategory(
+            request, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 
     @GetMapping("/keyword")
     public ApiResponse<List<PlaceListResponse>> getPlacesByKeyword(
-        @ModelAttribute @Valid PlaceSearchByKeywordRequest request) {
-        List<PlaceListResponse> places = placeService.getPlacesByKeyword(request);
+        @ModelAttribute @Valid PlaceSearchByKeywordRequest request,
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        List<PlaceListResponse> places = placeService.getPlacesByKeyword(
+            request, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 
