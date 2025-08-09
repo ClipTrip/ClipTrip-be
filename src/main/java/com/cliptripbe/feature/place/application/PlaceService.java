@@ -17,7 +17,6 @@ import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
-import com.cliptripbe.feature.place.dto.response.PlaceAccessibilityInfoResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
@@ -31,12 +30,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.tuple.Triple;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,22 +57,6 @@ public class PlaceService {
     private final PlaceSearchPort placeSearchPort;
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
-
-    @Transactional(readOnly = true)
-    public PlaceAccessibilityInfoResponse getPlaceAccessibilityInfo(
-        PlaceInfoRequest placeInfoRequest
-    ) {
-        Place place = findOrCreatePlaceByPlaceInfo(placeInfoRequest);
-        return PlaceAccessibilityInfoResponse.from(place);
-    }
-
-    @Transactional(readOnly = true)
-    public PlaceAccessibilityInfoResponse getPlaceInfo(PlaceInfoRequest request, User user) {
-        Place place = findOrCreatePlaceByPlaceInfo(request);
-        boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
-            place.getId());
-        return PlaceAccessibilityInfoResponse.of(place, bookmarked);
-    }
 
     @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {

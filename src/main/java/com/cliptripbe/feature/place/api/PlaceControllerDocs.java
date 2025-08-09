@@ -15,17 +15,6 @@ import java.util.List;
 @Tag(name = "Place 관련 API")
 public interface PlaceControllerDocs {
 
-    @Operation(summary = "장소 접근성 조회 API, 로그인 불필요")
-    ApiResponse<?> getPlaceAccessibilityInfo(
-        PlaceInfoRequest placeInfoRequest
-    );
-
-    @Operation(summary = "유저의 장소 카드 정보 조회, 로그인 필요")
-    ApiResponse<?> getPlaceById(
-        PlaceInfoRequest placeInfoRequest,
-        CustomerDetails customerDetails
-    );
-
     @Operation(
         summary = "장소카드 상세조회, 로그인 필요",
         description = "장소 카드 상세 조회입니다. 유저가 해당 장소에 북마크를 했는지 여부를 알려줍니다.")
