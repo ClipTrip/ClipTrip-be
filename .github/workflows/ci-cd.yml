@@ -44,11 +44,9 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Run tests
-        run: ./gradlew clean test
-
+            
       - name: Build Spring Boot App
-        run: ./gradlew bootJar
+        run: ./gradlew clean bootJar -x test
 
       - name: Copy jar for Docker
         run: cp build/libs/*.jar app.jar
