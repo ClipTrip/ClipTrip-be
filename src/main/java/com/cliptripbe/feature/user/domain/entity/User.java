@@ -48,6 +48,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 2, nullable = false)
     @Enumerated(EnumType.STRING)
     private CountryCode country;
 
