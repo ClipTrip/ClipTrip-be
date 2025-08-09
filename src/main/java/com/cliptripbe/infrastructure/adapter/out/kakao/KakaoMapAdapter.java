@@ -55,7 +55,8 @@ public class KakaoMapAdapter implements PlaceSearchPort {
                     .retrieve()
                     .body(KakaoMapResponse.class);
 
-                if (response == null || response.documents().isEmpty()) {
+                if (response == null || response.documents() == null || response.documents()
+                    .isEmpty()) {
                     break;
                 }
 
