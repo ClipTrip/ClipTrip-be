@@ -26,13 +26,15 @@ public record PlaceListResponse(
     Optional<String> translatedPlaceName,
     Optional<String> translatedRoadAddress,
     Language language,
-    String kakaoPlaceId
+    String kakaoPlaceId,
+    List<Long> bookmarkedIdList
 ) {
 
     public static PlaceListResponse ofDto(
         PlaceDto placeDto,
         TranslationInfoWithId translatedInfo,
-        Language language
+        Language language,
+        List<Long> bookmarkedIdList
     ) {
         Optional<String> translatedPlaceName = Optional.ofNullable(
             translatedInfo != null ? translatedInfo.translatedName() : null
@@ -40,6 +42,9 @@ public record PlaceListResponse(
         Optional<String> translatedRoadAddress = Optional.ofNullable(
             translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
         );
+        if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
+            bookmarkedIdList = List.of();
+        }
         return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
@@ -51,6 +56,7 @@ public record PlaceListResponse(
             .translatedPlaceName(translatedPlaceName)
             .translatedRoadAddress(translatedRoadAddress)
             .language(language)
+            .bookmarkedIdList(bookmarkedIdList)
             .build();
     }
 

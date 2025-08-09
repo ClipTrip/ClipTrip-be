@@ -43,16 +43,17 @@ public class PlaceController implements PlaceControllerDocs {
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         List<PlaceListResponse> places = placeService.getPlacesByCategory(
-            request,
-            customerDetails.getUser()
-        );
+            request, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 
     @GetMapping("/keyword")
     public ApiResponse<List<PlaceListResponse>> getPlacesByKeyword(
-        @ModelAttribute @Valid PlaceSearchByKeywordRequest request) {
-        List<PlaceListResponse> places = placeService.getPlacesByKeyword(request);
+        @ModelAttribute @Valid PlaceSearchByKeywordRequest request,
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        List<PlaceListResponse> places = placeService.getPlacesByKeyword(
+            request, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 

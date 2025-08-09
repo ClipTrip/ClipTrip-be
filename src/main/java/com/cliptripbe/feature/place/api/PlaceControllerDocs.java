@@ -35,7 +35,8 @@ public interface PlaceControllerDocs {
         summary = "키워드 장소리스트 조회",
         description = "키워드를 이용해 현재 장소 정보들을 조회합니다.")
     ApiResponse<List<PlaceListResponse>> getPlacesByKeyword(
-        PlaceSearchByKeywordRequest request
+        PlaceSearchByKeywordRequest request,
+        CustomerDetails customerDetails
     );
 
     @Operation(
