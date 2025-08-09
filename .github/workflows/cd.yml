@@ -48,9 +48,6 @@ jobs:
             if [ "$(docker ps -aq -f name=^/${CONTAINER_NAME}$)" ]; then
             docker rm "$CONTAINER_NAME"
             fi
-
+            
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-
-            echo "Cleaning up unused docker images"
-            docker image prune -f
+            docker run -d  --name "$CONTAINER_NAME" -p 8080:8080 "$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
