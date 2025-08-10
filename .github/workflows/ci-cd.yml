@@ -16,7 +16,6 @@ jobs:
       AWS_REGION: ap-northeast-2
       ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
       ECR_REPOSITORY: clip-trip/server
-      IMAGE_TAG: latest
 
     steps:
       - name: Checkout source
@@ -102,15 +101,18 @@ jobs:
           key: ${{ env.SSH_KEY }}
           script: |
             CONTAINER_NAME=clip-trip-server
+            IMAGE_URI="${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}"
             
-            # 최신 이미지 풀
-            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-            docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:${{ env.IMAGE_TAG }}
-
+            # ECR 로그인. AWS_REGION 변수가 올바르게 전달되도록 수정
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | docker login --username AWS --password-stdin ${{ env.ECR_REGISTRY }}
+            
+            # 이미지 풀
+            docker pull "$IMAGE_URI"
+            
             # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
             docker stop "$CONTAINER_NAME" || true
             docker rm "$CONTAINER_NAME" || true
-
+            
             # 새로운 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:${{ env.IMAGE_TAG }}
+            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 "$IMAGE_URI"
