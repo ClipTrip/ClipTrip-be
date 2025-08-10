@@ -94,15 +94,24 @@ jobs:
           username: ${{ env.EC2_USER }}
           key: ${{ env.SSH_KEY }}
           script: |
+            set -eux  # 디버그용(명령어 출력 및 오류 발생 시 즉시 중단)
             CONTAINER_NAME=clip-trip-server
-              # 최신 이미지 풀
-            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-            docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+            IMAGE_URI=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
-              # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
+            echo "AWS_REGION=${AWS_REGION}"
+            echo "ECR_REGISTRY=${ECR_REGISTRY}"
+            echo "IMAGE_URI=${IMAGE_URI}"
+
+            # AWS 로그인
+            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+
+            # 이미지 pull
+            docker pull ${IMAGE_URI}
+
+            # 기존 컨테이너 중지 및 삭제
             docker stop "$CONTAINER_NAME" || true
             docker rm "$CONTAINER_NAME" || true
 
-            # 새로운 컨테이너 실행
+            # 새 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 ${IMAGE_URI}
