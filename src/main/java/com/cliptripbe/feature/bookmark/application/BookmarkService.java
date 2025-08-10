@@ -92,7 +92,7 @@ public class BookmarkService {
     }
 
     @Transactional
-    public void deletePlaceFromBookmark(User user, Long bookmarkId, Long placeId) {
+    public void deletePlaceFromBookmarkByPlaceId(User user, Long bookmarkId, Long placeId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
         if (!bookmark.getUser().getId().equals(user.getId())) {
@@ -101,6 +101,26 @@ public class BookmarkService {
 
         BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
             .filter(bp -> bp.getPlace().getId().equals(placeId))
+            .findFirst()
+            .orElseThrow(() -> new CustomException(PLACE_NOT_FOUND));
+
+        bookmark.getBookmarkPlaces().remove(targetPlace);
+    }
+
+    @Transactional
+    public void deletePlaceFromBookmarkByKakaoPlaceId(
+        User user,
+        Long bookmarkId,
+        String kakaoPlaceId
+    ) {
+        Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+
+        if (!bookmark.getUser().getId().equals(user.getId())) {
+            throw new CustomException(ACCESS_DENIED_EXCEPTION);
+        }
+
+        BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
+            .filter(bp -> bp.getPlace().getKakaoPlaceId().equals(kakaoPlaceId))
             .findFirst()
             .orElseThrow(() -> new CustomException(PLACE_NOT_FOUND));
 

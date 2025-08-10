@@ -73,13 +73,26 @@ public class BookmarkController implements BookmarkControllerDocs {
 
     @Override
     @DeleteMapping("/{bookmarkId}/{placeId}")
-    public ApiResponse<Long> deletePlaceFromBookmark(
+    public ApiResponse<Long> deletePlaceFromBookmarkByPlaceId(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "bookmarkId") Long bookmarkId,
         @PathVariable(value = "placeId") Long placeId
     ) {
-        bookmarkService.deletePlaceFromBookmark(customerDetails.getUser(), bookmarkId, placeId);
+        bookmarkService.deletePlaceFromBookmarkByPlaceId(customerDetails.getUser(), bookmarkId,
+            placeId);
         return ApiResponse.success(SuccessType.OK, placeId);
+    }
+
+    @Override
+    @DeleteMapping("/{bookmarkId}/{kakaoPlaceId}")
+    public ApiResponse<String> deletePlaceFromBookmarkByKakaoPlaceId(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
+        @PathVariable(value = "bookmarkId") Long bookmarkId,
+        @PathVariable(value = "kakaoPlaceId") String kakaoPlaceId
+    ) {
+        bookmarkService.deletePlaceFromBookmarkByKakaoPlaceId(
+            customerDetails.getUser(), bookmarkId, kakaoPlaceId);
+        return ApiResponse.success(SuccessType.OK, kakaoPlaceId);
     }
 
 
