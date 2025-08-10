@@ -43,6 +43,7 @@ public interface PlaceControllerDocs {
         description = "위도 경도를 이용해 2km 이내 물품 보관소 정보를 조회합니다."
     )
     ApiResponse<List<PlaceListResponse>> getLuggageStorages(
-        LuggageStorageRequest luggageStorageRequest
+        LuggageStorageRequest luggageStorageRequest,
+        CustomerDetails customerDetails
     );
 }

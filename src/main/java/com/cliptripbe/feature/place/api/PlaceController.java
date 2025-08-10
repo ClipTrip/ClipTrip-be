@@ -60,9 +60,11 @@ public class PlaceController implements PlaceControllerDocs {
     @Override
     @GetMapping("/luggage-storages")
     public ApiResponse<List<PlaceListResponse>> getLuggageStorages(
-        @ModelAttribute @Valid LuggageStorageRequest luggageStorageRequest
+        @ModelAttribute @Valid LuggageStorageRequest luggageStorageRequest,
+        @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
-        List<PlaceListResponse> places = placeService.getLuggageStorage(luggageStorageRequest);
+        List<PlaceListResponse> places = placeService.getLuggageStorage(
+            luggageStorageRequest, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 }

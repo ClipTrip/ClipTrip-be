@@ -145,6 +145,7 @@ public class PlaceService {
         PlaceSearchByCategoryRequest request,
         User user
     ) {
+        // TODO : request keyword 번역해서 요청 보내야함
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
 
         List<String> kakaoPlaceIdList = categoryPlaces.stream()
@@ -295,14 +296,27 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getLuggageStorage(
-        LuggageStorageRequest luggageStorageRequest
+        LuggageStorageRequest luggageStorageRequest,
+        User user
     ) {
         List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
 
+        List<Long> placeIdList = luggageStoragePlaces.stream()
+            .map(Place::getId)
+            .toList();
+
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
+
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
             luggageStorageRequest, luggageStoragePlaces);
+
+        // TODO : 응답할 때 번역 부분 적용해야 함
         return placesInRange.stream()
-            .map(place -> PlaceListResponse.fromEntity(place, -1))
+            .map(place -> {
+                List<Long> bookmarkIds = bookmarkIdsMap.get(place.getId());
+                return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
+            })
             .toList();
     }
 
