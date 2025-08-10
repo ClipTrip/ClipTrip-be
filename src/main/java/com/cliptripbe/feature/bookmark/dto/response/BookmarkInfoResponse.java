@@ -26,4 +26,18 @@ public record BookmarkInfoResponse(
             )
             .build();
     }
+
+    public static BookmarkInfoResponse of(
+        Bookmark bookmark,
+        List<PlaceListResponse> placeListResponses
+    ) {
+        return BookmarkInfoResponse.builder()
+            .id(bookmark.getId())
+            .name(bookmark.getName())
+            .description(bookmark.getDescription())
+            .placeList(
+                placeListResponses
+            )
+            .build();
+    }
 }

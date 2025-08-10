@@ -15,18 +15,4 @@ public class BookmarkMapper {
             .description(bookmark.getDescription())
             .build();
     }
-
-    public static BookmarkInfoResponse mapBookmarkInfoResponse(
-        Bookmark bookmark,
-        List<PlaceListResponse> placeListResponses
-    ) {
-        return BookmarkInfoResponse.builder()
-            .id(bookmark.getId())
-            .name(bookmark.getName())
-            .description(bookmark.getDescription())
-            .placeList(
-                placeListResponses
-            )
-            .build();
-    }
 }

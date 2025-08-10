@@ -2,6 +2,7 @@ package com.cliptripbe.feature.bookmark.infrastructure;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
 import com.cliptripbe.feature.bookmark.infrastructure.projection.BookmarkMapping;
+import com.cliptripbe.feature.bookmark.infrastructure.projection.PlaceBookmarkMapping;
 import com.cliptripbe.feature.user.domain.entity.User;
 import java.util.List;
 import java.util.Optional;
@@ -52,5 +53,30 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
         @Param("userId") Long userId,
         @Param("kakaoPlaceIds") List<String> kakaoPlaceIds
     );
+
+    @Query("""
+            SELECT p.id as placeId,
+                   b.id as bookmarkId
+            FROM BookmarkPlace bp1
+            JOIN bp1.place p
+            JOIN BookmarkPlace bp2 ON bp2.place.id = p.id
+            JOIN bp2.bookmark b
+            WHERE p.id IN :placeIdList
+            AND b.user.id = :userId
+            ORDER BY p.id, b.id
+        """)
+    List<PlaceBookmarkMapping> findPlaceBookmarkMappingsByUserAndPlaceIds(
+        @Param("placeIdList") List<Long> placeIdList,
+        @Param("userId") Long userId
+    );
+
+    @Query("""
+        select p.id
+        from BookmarkPlace bp
+        join bp.place p
+        where bp.bookmark.id = :bookmarkId
+        order by bp.id
+    """)
+    List<Long> findPlaceIdsByBookmarkId(@Param("bookmarkId") Long bookmarkId);
 }
 

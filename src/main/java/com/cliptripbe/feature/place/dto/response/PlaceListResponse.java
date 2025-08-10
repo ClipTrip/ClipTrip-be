@@ -30,6 +30,37 @@ public record PlaceListResponse(
     List<Long> bookmarkedIdList
 ) {
 
+    public static PlaceListResponse ofEntity(
+        Place place,
+        TranslationInfoWithId translatedInfo,
+        Language language,
+        List<Long> bookmarkedIdList
+    ) {
+        Optional<String> translatedPlaceName = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedName() : null
+        );
+        Optional<String> translatedRoadAddress = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
+        );
+        if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
+            bookmarkedIdList = List.of();
+        }
+        return PlaceListResponse.builder()
+            .placeId(place.getId())
+            .placeName(place.getName())
+            .roadAddress(place.getAddress().roadAddress())
+            .phone(place.getPhoneNumber())
+            .type(place.getPlaceType())
+            .longitude(place.getAddress().longitude())
+            .latitude(place.getAddress().latitude())
+            .kakaoPlaceId(place.getKakaoPlaceId())
+            .translatedPlaceName(translatedPlaceName)
+            .translatedRoadAddress(translatedRoadAddress)
+            .language(language)
+            .bookmarkedIdList(bookmarkedIdList)
+            .build();
+    }
+
     public static PlaceListResponse ofDto(
         PlaceDto placeDto,
         TranslationInfoWithId translatedInfo,
@@ -90,7 +121,7 @@ public record PlaceListResponse(
             .build();
     }
 
-    public static PlaceListResponse of(
+    public static PlaceListResponse ofTranslation(
         Place place,
         PlaceTranslation placeTranslation,
         Integer placeOrder

@@ -27,6 +27,7 @@ public class PlaceRegister {
             .placeType(placeInfoRequest.type())
             .kakaoPlaceId(placeInfoRequest.kakaoPlaceId())
             .build();
+
         placeRepository.save(place);
         return place;
     }
