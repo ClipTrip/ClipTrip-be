@@ -2,7 +2,6 @@ package com.cliptripbe.feature.place.application;
 
 import static com.cliptripbe.feature.user.domain.type.Language.ENGLISH;
 import static com.cliptripbe.global.util.ChatGPTUtils.buildPromptInputs;
-import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_PLACE_INFO_BATCH_PROMPT;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
@@ -23,10 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlaceTranslationService {
 
     private static final int BATCH_SIZE = 5;
-    private static final int MAX_THREADS = 10;
 
+    private final AsyncTranslationTaskService asyncTranslationTaskService;
     private final ChatGptAdapter chatGptAdapter;
     private final PlaceTranslationRepository placeTranslationRepository;
     private final JsonUtils jsonUtils;
@@ -82,45 +78,21 @@ public class PlaceTranslationService {
 
     }
 
-    private Map<String, TranslationInfoWithId> translatePlaceListBatch(
+
+    public Map<String, TranslationInfoWithId> translatePlaceListBatch(
         List<PlaceDto> places,
         Language targetLanguage
     ) {
-        int threadCount = Math.min(MAX_THREADS, Math.max(1, places.size() / BATCH_SIZE));
-        ExecutorService executor = Executors.newFixedThreadPool(threadCount);
-        try {
-            List<Future<List<TranslationInfoWithId>>> futures = new ArrayList<>();
-            for (int start = 0; start < places.size(); start += BATCH_SIZE) {
-                int end = Math.min(start + BATCH_SIZE, places.size());
-                List<PlacePromptInput> promptInputs = buildPromptInputs(places, start, end);
-                futures.add(executor.submit(() -> buildTranslationTask(promptInputs, targetLanguage)
-                ));
-            }
-            Map<String, TranslationInfoWithId> resultMap = collectTranslationResults(futures);
-            return resultMap;
-        } finally {
-            executor.shutdown();
-            try {
-                if (!executor.awaitTermination(60, TimeUnit.SECONDS)) {
-                    executor.shutdownNow();
-                }
-            } catch (InterruptedException e) {
-                executor.shutdownNow();
-                Thread.currentThread().interrupt();
-            }
+        List<Future<List<TranslationInfoWithId>>> futures = new ArrayList<>();
+        for (int start = 0; start < places.size(); start += BATCH_SIZE) {
+            int end = Math.min(start + BATCH_SIZE, places.size());
+            List<PlacePromptInput> promptInputs = buildPromptInputs(places, start, end);
+            futures.add(
+                asyncTranslationTaskService.asyncTranslateTask(promptInputs, targetLanguage));
         }
-    }
+        Map<String, TranslationInfoWithId> resultMap = collectTranslationResults(futures);
+        return resultMap;
 
-    private List<TranslationInfoWithId> buildTranslationTask(
-        List<PlacePromptInput> promptInputs,
-        Language targetLanguage
-    ) {
-        String inputJson = jsonUtils.toJson(promptInputs);
-        String prompt = TRANSLATE_PLACE_INFO_BATCH_PROMPT.formatted(
-            targetLanguage.getName(), inputJson
-        );
-        String responseJson = chatGptAdapter.ask(prompt);
-        return jsonUtils.parseToList(responseJson, TranslationInfoWithId.class);
     }
 
     private Map<String, TranslationInfoWithId> collectTranslationResults(
