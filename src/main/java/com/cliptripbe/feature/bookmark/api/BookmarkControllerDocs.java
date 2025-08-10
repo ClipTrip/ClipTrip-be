@@ -31,12 +31,20 @@ public interface BookmarkControllerDocs {
         PlaceInfoRequest placeInfoRequest
     );
 
-    @Operation(summary = "북마크에 하나의 장소 삭제하기, \n로그인 필요")
-    ApiResponse<Long> deletePlaceFromBookmark(
+    @Operation(summary = "북마크에 하나의 장소 삭제하기 (placeId), \n로그인 필요")
+    ApiResponse<Long> deletePlaceFromBookmarkByPlaceId(
         CustomerDetails customerDetails,
         Long bookmarkId,
         Long placeId
     );
+
+    @Operation(summary = "북마크에 하나의 장소 삭제하기 (kakaoPlaceId), \n로그인 필요")
+    ApiResponse<String> deletePlaceFromBookmarkByKakaoPlaceId(
+        CustomerDetails customerDetails,
+        Long bookmarkId,
+        String kakaoPlaceId
+    );
+
 
     @Operation(summary = "유저 북마크 전체 조회하기, \n로그인 필요")
     ApiResponse<List<BookmarkListResponse>> getUserBookmark(CustomerDetails customerDetails);
