@@ -101,7 +101,7 @@ public class ScheduleService {
                 Place place = sp.getPlace();
                 Integer placeOrder = sp.getPlaceOrder();
                 PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
-                return PlaceListResponse.of(place, translation, placeOrder);
+                return PlaceListResponse.ofTranslation(place, translation, placeOrder);
             })
             .toList();
 
