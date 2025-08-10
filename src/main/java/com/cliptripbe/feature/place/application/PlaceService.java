@@ -139,6 +139,12 @@ public class PlaceService {
         } catch (DataIntegrityViolationException e) {
             entityManager.clear();
 
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+
             if (kakaoPlaceId == null || kakaoPlaceId.trim().isEmpty()) {
                 throw new CustomException(FAIL_CREATE_PLACE_ENTITY);
             }
