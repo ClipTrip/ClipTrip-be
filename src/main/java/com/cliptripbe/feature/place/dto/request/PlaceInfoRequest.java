@@ -17,8 +17,6 @@ public record PlaceInfoRequest(
 
     String placeName,
 
-    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호는 00(0)-0000-0000 형식이어야 합니다.")
-    @Nullable
     String phone,
 
     PlaceType type,
