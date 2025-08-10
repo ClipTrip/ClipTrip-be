@@ -93,6 +93,11 @@ jobs:
           host: ${{ env.EC2_HOST }}
           username: ${{ env.EC2_USER }}
           key: ${{ env.SSH_KEY }}
+          env:
+            AWS_REGION: ${{ env.AWS_REGION }}
+            ECR_REGISTRY: ${{ env.ECR_REGISTRY }}
+            ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+            IMAGE_TAG: ${{ env.IMAGE_TAG }}
           script: |
             set -eux  # 디버그용(명령어 출력 및 오류 발생 시 즉시 중단)
             CONTAINER_NAME=clip-trip-server
