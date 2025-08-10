@@ -28,7 +28,7 @@ public class PlaceRegister {
             .kakaoPlaceId(placeInfoRequest.kakaoPlaceId())
             .build();
 
-        placeRepository.save(place);
+        placeRepository.saveAndFlush(place);
         return place;
     }
 }

@@ -123,7 +123,7 @@ public class PlaceService {
                 .map(p -> {
                     if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
                         p.addKakaoPlaceId(kakaoPlaceId);
-                        return placeRepository.save(p);
+                        return placeRepository.saveAndFlush(p);
                     }
                     return p;
                 })
@@ -131,6 +131,7 @@ public class PlaceService {
 
             placeTranslationService.registerPlace(place);
             return place;
+
         } catch (DataIntegrityViolationException e) {
             Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
                 .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
