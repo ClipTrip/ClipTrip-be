@@ -95,15 +95,14 @@ jobs:
           key: ${{ env.SSH_KEY }}
           script: |
             CONTAINER_NAME=clip-trip-server
-            
-            # 최신 이미지 풀
+              # 최신 이미지 풀
             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
             docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
-            # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
+              # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
             docker stop "$CONTAINER_NAME" || true
             docker rm "$CONTAINER_NAME" || true
 
             # 새로운 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:${IMAGE_TAG}
+            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
