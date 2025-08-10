@@ -314,7 +314,7 @@ public class PlaceService {
         // TODO : 응답할 때 번역 부분 적용해야 함
         return placesInRange.stream()
             .map(place -> {
-                List<Long> bookmarkIds = bookmarkIdsMap.get(place.getId());
+                List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
                 return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
             })
             .toList();
