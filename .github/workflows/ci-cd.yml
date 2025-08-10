@@ -99,7 +99,7 @@ jobs:
             ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
             IMAGE_TAG: ${{ env.IMAGE_TAG }}
           script: |
-            set -eux  # 디버그용(명령어 출력 및 오류 발생 시 즉시 중단)
+            set -eux  # 명령어 출력 및 오류 발생 시 중단
             CONTAINER_NAME=clip-trip-server
             IMAGE_URI=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
@@ -107,16 +107,9 @@ jobs:
             echo "ECR_REGISTRY=${ECR_REGISTRY}"
             echo "IMAGE_URI=${IMAGE_URI}"
 
-            # AWS 로그인
             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-
-            # 이미지 pull
             docker pull ${IMAGE_URI}
-
-            # 기존 컨테이너 중지 및 삭제
             docker stop "$CONTAINER_NAME" || true
             docker rm "$CONTAINER_NAME" || true
-
-            # 새 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
             docker run -d --name "$CONTAINER_NAME" -p 8080:8080 ${IMAGE_URI}
