@@ -72,7 +72,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     }
 
     @Override
-    @DeleteMapping("/{bookmarkId}/{placeId}")
+    @DeleteMapping("/{bookmarkId}/place/{placeId}")
     public ApiResponse<Long> deletePlaceFromBookmarkByPlaceId(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "bookmarkId") Long bookmarkId,
@@ -84,7 +84,7 @@ public class BookmarkController implements BookmarkControllerDocs {
     }
 
     @Override
-    @DeleteMapping("/{bookmarkId}/{kakaoPlaceId}")
+    @DeleteMapping("/{bookmarkId}/kakao/{kakaoPlaceId}")
     public ApiResponse<String> deletePlaceFromBookmarkByKakaoPlaceId(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "bookmarkId") Long bookmarkId,
