@@ -13,7 +13,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -295,15 +294,15 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getLuggageStorage(
-        LuggageStorageRequestDto luggageStorageRequestDto
+        LuggageStorageRequest luggageStorageRequest
     ) {
         List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
 
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
-            luggageStorageRequestDto,
-            luggageStoragePlaces
-        );
-        return PlaceListResponse.fromList(placesInRange);
+            luggageStorageRequest, luggageStoragePlaces);
+        return placesInRange.stream()
+            .map(place -> PlaceListResponse.fromEntity(place, -1))
+            .toList();
     }
 
     @Transactional(readOnly = true)

@@ -145,20 +145,4 @@ public record PlaceListResponse(
             .placeOrder(placeOrder)
             .build();
     }
-
-    public static List<PlaceListResponse> fromList(List<Place> places) {
-        return places.stream()
-            .map(PlaceListResponse::fromPlace)
-            .collect(Collectors.toList());
-    }
-
-    public static PlaceListResponse fromPlace(Place place) {
-        return PlaceListResponse.builder()
-            .placeId(place.getId())
-            .placeName(place.getName())
-            .latitude(place.getAddress().latitude())
-            .longitude(place.getAddress().longitude())
-            .roadAddress(place.getAddress().roadAddress())
-            .build();
-    }
 }

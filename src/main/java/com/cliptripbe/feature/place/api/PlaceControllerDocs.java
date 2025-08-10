@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.place.api;
 
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
@@ -44,6 +43,6 @@ public interface PlaceControllerDocs {
         description = "위도 경도를 이용해 2km 이내 물품 보관소 정보를 조회합니다."
     )
     ApiResponse<List<PlaceListResponse>> getLuggageStorages(
-        LuggageStorageRequestDto luggageStorageRequestDto
+        LuggageStorageRequest luggageStorageRequest
     );
 }
