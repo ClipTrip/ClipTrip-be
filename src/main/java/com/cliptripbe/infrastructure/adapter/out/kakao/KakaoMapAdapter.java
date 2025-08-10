@@ -105,6 +105,11 @@ public class KakaoMapAdapter implements PlaceSearchPort {
                     .retrieve()
                     .body(KakaoMapResponse.class);
 
+                if (response == null || response.documents() == null || response.documents()
+                    .isEmpty()) {
+                    break;
+                }
+
                 List<PlaceDto> places = Optional.ofNullable(response)
                     .orElseThrow(() -> new CustomException(KAKAO_MAP_NO_RESPONSE))
                     .documents()
@@ -112,6 +117,10 @@ public class KakaoMapAdapter implements PlaceSearchPort {
                     .map(PlaceDto::from)
                     .toList();
                 allPlaces.addAll(places);
+
+                if (response.meta().is_end()) {
+                    break;
+                }
             }
             long elapsed = System.currentTimeMillis() - start;
             log.info("[{}] 개별 호출 레이턴시: {} ms", request.query(), elapsed);

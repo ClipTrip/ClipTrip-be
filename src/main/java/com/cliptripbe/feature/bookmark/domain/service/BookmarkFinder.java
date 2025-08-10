@@ -8,6 +8,7 @@ import com.cliptripbe.feature.bookmark.infrastructure.projection.BookmarkMapping
 import com.cliptripbe.feature.bookmark.infrastructure.projection.PlaceBookmarkMapping;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -48,7 +49,11 @@ public class BookmarkFinder {
                 userId, kakaoPlaceIdList).stream()
             .collect(Collectors.groupingBy(
                 BookmarkMapping::getKakaoPlaceId,
-                Collectors.mapping(BookmarkMapping::getBookmarkId, Collectors.toList())
+                Collectors.mapping(BookmarkMapping::getBookmarkId,
+                    Collectors.collectingAndThen(
+                        Collectors.toSet(),
+                        ArrayList::new
+                    ))
             ));
     }
 
@@ -62,7 +67,11 @@ public class BookmarkFinder {
         return mappings.stream()
             .collect(Collectors.groupingBy(
                 PlaceBookmarkMapping::getPlaceId,
-                Collectors.mapping(PlaceBookmarkMapping::getBookmarkId, Collectors.toList())
+                Collectors.mapping(PlaceBookmarkMapping::getBookmarkId,
+                    Collectors.collectingAndThen(
+                        Collectors.toSet(),
+                        ArrayList::new
+                    ))
             ));
     }
 }
