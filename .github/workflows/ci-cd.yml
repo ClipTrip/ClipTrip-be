@@ -70,25 +70,23 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     needs: [ build-and-push ]
-    
-    env:
-      AWS_REGION: ap-northeast-2
-      ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
-      ECR_REPOSITORY: clip-trip/server
-      IMAGE_TAG: latest
-      EC2_USER: ec2-user
 
     steps:
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
-          username: ${{ env.EC2_USER }}
+          username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
             set -eux
             
-            # ssh-action에서 env를 통해 전달된 변수를 사용
+            # EC2 서버 내부에서 환경 변수 직접 정의
+            AWS_REGION="ap-northeast-2"
+            ECR_REGISTRY="118497224929.dkr.ecr.ap-northeast-2.amazonaws.com"
+            ECR_REPOSITORY="clip-trip/server"
+            IMAGE_TAG="latest"
+
             CONTAINER_NAME=clip-trip-server
             IMAGE_URI=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
 
