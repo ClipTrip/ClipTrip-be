@@ -40,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -56,6 +57,7 @@ public class PlaceService {
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
+    private final PlaceTransactionService placeTransactionService;
     private final PlaceRepository placeRepository;
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
@@ -133,10 +135,7 @@ public class PlaceService {
             return place;
 
         } catch (DataIntegrityViolationException e) {
-            Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
-                .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
-            placeTranslationService.registerPlace(place);
-            return place;
+            return placeTransactionService.handleDuplicateKakaoPlaceId(kakaoPlaceId);
         }
     }
 
@@ -324,4 +323,6 @@ public class PlaceService {
     public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
+
+
 }
