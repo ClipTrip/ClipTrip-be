@@ -120,7 +120,13 @@ public class BookmarkService {
         }
 
         BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
-            .filter(bp -> bp.getPlace().getKakaoPlaceId().equals(kakaoPlaceId))
+            .filter(bp -> {
+                if (bp.getPlace() == null) {
+                    return false;
+                }
+                String placeKakaoId = bp.getPlace().getKakaoPlaceId();
+                return placeKakaoId != null && placeKakaoId.equals(kakaoPlaceId);
+            })
             .findFirst()
             .orElseThrow(() -> new CustomException(PLACE_NOT_FOUND));
 
