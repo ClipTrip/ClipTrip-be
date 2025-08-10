@@ -21,7 +21,6 @@ public record PlaceInfoRequest(
 
     PlaceType type,
 
-    @NotBlank(message = "kakaoPlaceId는 필수입니다.")
     String kakaoPlaceId
 ) {
 
