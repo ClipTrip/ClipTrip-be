@@ -57,7 +57,6 @@ public class PlaceService {
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
-    private final PlaceTransactionService placeTransactionService;
     private final PlaceRepository placeRepository;
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
@@ -106,7 +105,7 @@ public class PlaceService {
 //        return place;
 //    }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
         // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
         String kakaoPlaceId = request.kakaoPlaceId();
@@ -135,7 +134,14 @@ public class PlaceService {
             return place;
 
         } catch (DataIntegrityViolationException e) {
-            return placeTransactionService.handleDuplicateKakaoPlaceId(kakaoPlaceId);
+            if (kakaoPlaceId == null || kakaoPlaceId.trim().isEmpty()) {
+                throw new CustomException(FAIL_CREATE_PLACE_ENTITY);
+            }
+
+            Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
+                .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
+            placeTranslationService.registerPlace(place);
+            return place;
         }
     }
 
