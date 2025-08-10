@@ -175,7 +175,7 @@ public class BookmarkService {
             Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
             List<PlaceListResponse> placeListResponses = bookmark.getPlaces().stream()
                 .map(place -> {
-                    List<Long> bookmarkIds = bookmarkIdsMap.get(place.getId());
+                    List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
                     return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
                 })
                 .toList();

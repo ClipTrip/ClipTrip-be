@@ -13,7 +13,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
@@ -37,7 +37,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
@@ -124,7 +123,7 @@ public class PlaceService {
                 .map(p -> {
                     if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
                         p.addKakaoPlaceId(kakaoPlaceId);
-                        return placeRepository.save(p);
+                        return placeRepository.saveAndFlush(p);
                     }
                     return p;
                 })
@@ -132,6 +131,7 @@ public class PlaceService {
 
             placeTranslationService.registerPlace(place);
             return place;
+
         } catch (DataIntegrityViolationException e) {
             Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
                 .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
@@ -145,6 +145,7 @@ public class PlaceService {
         PlaceSearchByCategoryRequest request,
         User user
     ) {
+        // TODO : request keyword 번역해서 요청 보내야함
         List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
 
         List<String> kakaoPlaceIdList = categoryPlaces.stream()
@@ -295,15 +296,28 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getLuggageStorage(
-        LuggageStorageRequestDto luggageStorageRequestDto
+        LuggageStorageRequest luggageStorageRequest,
+        User user
     ) {
         List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
 
+        List<Long> placeIdList = luggageStoragePlaces.stream()
+            .map(Place::getId)
+            .toList();
+
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
+
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
-            luggageStorageRequestDto,
-            luggageStoragePlaces
-        );
-        return PlaceListResponse.fromList(placesInRange);
+            luggageStorageRequest, luggageStoragePlaces);
+
+        // TODO : 응답할 때 번역 부분 적용해야 함
+        return placesInRange.stream()
+            .map(place -> {
+                List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
+                return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
+            })
+            .toList();
     }
 
     @Transactional(readOnly = true)

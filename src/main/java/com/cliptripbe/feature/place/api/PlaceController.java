@@ -3,7 +3,7 @@ package com.cliptripbe.feature.place.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.application.PlaceService;
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
@@ -60,10 +60,11 @@ public class PlaceController implements PlaceControllerDocs {
     @Override
     @GetMapping("/luggage-storages")
     public ApiResponse<List<PlaceListResponse>> getLuggageStorages(
-        @ModelAttribute @Valid LuggageStorageRequestDto luggageStorageRequestDto
+        @ModelAttribute @Valid LuggageStorageRequest luggageStorageRequest,
+        @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         List<PlaceListResponse> places = placeService.getLuggageStorage(
-            luggageStorageRequestDto);
+            luggageStorageRequest, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, places);
     }
 }
