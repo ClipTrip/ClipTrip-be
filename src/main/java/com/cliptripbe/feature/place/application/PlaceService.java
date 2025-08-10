@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.application;
 
 
+import static com.cliptripbe.global.response.type.ErrorType.FAIL_CREATE_PLACE_ENTITY;
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
@@ -37,6 +38,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,7 +88,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
         String kakaoPlaceId = request.kakaoPlaceId();
         String placeName = request.placeName();
         String address = request.roadAddress();
@@ -101,6 +103,36 @@ public class PlaceService {
             .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
         placeTranslationService.registerPlace(place);
         return place;
+    }
+
+    @Transactional
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+        String kakaoPlaceId = request.kakaoPlaceId();
+
+        try {
+            Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
+            if (existingPlace.isPresent()) {
+                Place place = existingPlace.get();
+                placeTranslationService.registerPlace(place);
+                return place;
+            }
+
+            Place place = placeFinder.getOptionPlaceByPlaceInfo(request.placeName(),
+                    request.roadAddress())
+                .map(p -> {
+                    p.addKakaoPlaceId(kakaoPlaceId);
+                    return placeRepository.save(p);
+                })
+                .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+
+            placeTranslationService.registerPlace(place);
+            return place;
+        } catch (DataIntegrityViolationException e) {
+            Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
+                .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
+            placeTranslationService.registerPlace(place);
+            return place;
+        }
     }
 
     @Transactional(readOnly = true)
