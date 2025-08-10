@@ -28,6 +28,7 @@ import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -64,6 +65,8 @@ public class PlaceService {
     private final PlaceSearchPort placeSearchPort;
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
+
+    private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
@@ -134,6 +137,8 @@ public class PlaceService {
             return place;
 
         } catch (DataIntegrityViolationException e) {
+            entityManager.clear();
+
             if (kakaoPlaceId == null || kakaoPlaceId.trim().isEmpty()) {
                 throw new CustomException(FAIL_CREATE_PLACE_ENTITY);
             }
