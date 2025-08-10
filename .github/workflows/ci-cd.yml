@@ -3,6 +3,7 @@ name: CI/CD - Build, Push and Deploy
 on:
   push:
     branches: [ main ]
+
 concurrency:
   group: ci-cd-${{ github.ref }}
   cancel-in-progress: true
@@ -10,7 +11,7 @@ concurrency:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-
+    
     env:
       AWS_REGION: ap-northeast-2
       ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
@@ -62,7 +63,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          IMAGE_URI=$(aws sts get-caller-identity --query "Account" --output text).dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}:${IMAGE_TAG}
+          IMAGE_URI=$(aws sts get-caller-identity --query "Account" --output text).dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
           docker build -t $IMAGE_URI .
           docker push $IMAGE_URI
 
@@ -70,40 +71,37 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-and-push ]
 
-    env:
-      AWS_REGION: ap-northeast-2
-      ECR_REGISTRY: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com
-      ECR_REPOSITORY: clip-trip/server
-      IMAGE_TAG: latest
-      EC2_USER: ec2-user
-      EC2_HOST: ${{ secrets.EC2_HOST }}
-      SSH_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ env.EC2_HOST }}
-          username: ${{ env.EC2_USER }}
-          key: ${{ env.SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            CONTAINER_NAME=clip-trip-server
+            set -eux
             
-            # 최신 이미지 풀
-            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-            docker pull ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+            # EC2 서버 내부에서 환경 변수 직접 정의
+            AWS_REGION="ap-northeast-2"
+            ECR_REGISTRY="118497224929.dkr.ecr.ap-northeast-2.amazonaws.com"
+            ECR_REPOSITORY="clip-trip/server"
+            IMAGE_TAG="latest"
 
-            # 기존 컨테이너가 존재하면 중지 및 삭제 (오류 무시)
+            CONTAINER_NAME=clip-trip-server
+            IMAGE_URI=${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+
+            echo "AWS_REGION: ${AWS_REGION}"
+            echo "ECR_REGISTRY: ${ECR_REGISTRY}"
+            echo "IMAGE_URI: ${IMAGE_URI}"
+
+            # ECR 로그인 및 최신 이미지 풀
+            aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+            docker pull ${IMAGE_URI}
+
+            # 기존 컨테이너 중지 및 삭제 (오류 무시)
             docker stop "$CONTAINER_NAME" || true
             docker rm "$CONTAINER_NAME" || true
 
             # 새로운 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:latest
+            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 ${IMAGE_URI}
