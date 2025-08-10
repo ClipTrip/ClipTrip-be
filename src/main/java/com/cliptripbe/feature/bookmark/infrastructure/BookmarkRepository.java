@@ -66,7 +66,7 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
             ORDER BY p.id, b.id
         """)
     List<PlaceBookmarkMapping> findPlaceBookmarkMappingsByUserAndPlaceIds(
-        @Param("placeIds") List<Long> placeIdList,
+        @Param("placeIdList") List<Long> placeIdList,
         @Param("userId") Long userId
     );
 

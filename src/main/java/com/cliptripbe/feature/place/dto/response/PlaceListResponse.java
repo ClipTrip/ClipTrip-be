@@ -46,6 +46,7 @@ public record PlaceListResponse(
             bookmarkedIdList = List.of();
         }
         return PlaceListResponse.builder()
+            .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
             .phone(place.getPhoneNumber())

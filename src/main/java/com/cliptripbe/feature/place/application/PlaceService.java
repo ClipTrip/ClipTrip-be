@@ -87,41 +87,46 @@ public class PlaceService {
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
 
-    @Transactional
-    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
-        String kakaoPlaceId = request.kakaoPlaceId();
-        String placeName = request.placeName();
-        String address = request.roadAddress();
-
-        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
-            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
-                .map(p -> {
-                    p.addKakaoPlaceId(kakaoPlaceId);
-                    return placeRepository.save(p);
-                })
-            )
-            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
-        placeTranslationService.registerPlace(place);
-        return place;
-    }
+//    @Transactional
+//    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
+//        String kakaoPlaceId = request.kakaoPlaceId();
+//        String placeName = request.placeName();
+//        String address = request.roadAddress();
+//
+//        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
+//            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
+//                .map(p -> {
+//                    p.addKakaoPlaceId(kakaoPlaceId);
+//                    return placeRepository.save(p);
+//                })
+//            )
+//            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+//        placeTranslationService.registerPlace(place);
+//        return place;
+//    }
 
     @Transactional
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
         String kakaoPlaceId = request.kakaoPlaceId();
-
         try {
-            Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
-            if (existingPlace.isPresent()) {
-                Place place = existingPlace.get();
-                placeTranslationService.registerPlace(place);
-                return place;
+            if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
+                Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
+                if (existingPlace.isPresent()) {
+                    Place place = existingPlace.get();
+                    placeTranslationService.registerPlace(place);
+                    return place;
+                }
             }
 
             Place place = placeFinder.getOptionPlaceByPlaceInfo(request.placeName(),
                     request.roadAddress())
                 .map(p -> {
-                    p.addKakaoPlaceId(kakaoPlaceId);
-                    return placeRepository.save(p);
+                    if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
+                        p.addKakaoPlaceId(kakaoPlaceId);
+                        return placeRepository.save(p);
+                    }
+                    return p;
                 })
                 .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
 
