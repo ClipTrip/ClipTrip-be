@@ -106,4 +106,4 @@ jobs:
 
             # 새로운 컨테이너 실행
             echo "Running new container $CONTAINER_NAME"
-            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:latest
+            docker run -d --name "$CONTAINER_NAME" -p 8080:8080 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:${IMAGE_TAG}
