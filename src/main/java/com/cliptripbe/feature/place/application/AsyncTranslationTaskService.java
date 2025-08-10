@@ -8,10 +8,9 @@ import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.JsonUtils;
 import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -22,7 +21,7 @@ public class AsyncTranslationTaskService {
     private final ChatGptAdapter chatGptAdapter;
 
     @Async("threadPoolTaskExecutor")
-    public Future<List<TranslationInfoWithId>> asyncTranslateTask(
+    public CompletableFuture<List<TranslationInfoWithId>> asyncTranslateTask(
         List<PlacePromptInput> promptInputs,
         Language targetLanguage
     ) {
@@ -31,6 +30,8 @@ public class AsyncTranslationTaskService {
             targetLanguage.getName(), inputJson
         );
         String responseJson = chatGptAdapter.ask(prompt);
-        return new AsyncResult<>(jsonUtils.parseToList(responseJson, TranslationInfoWithId.class));
+        List<TranslationInfoWithId> translationInfoWithIds = jsonUtils.parseToList(responseJson,
+            TranslationInfoWithId.class);
+        return CompletableFuture.completedFuture(translationInfoWithIds);
     }
 }
