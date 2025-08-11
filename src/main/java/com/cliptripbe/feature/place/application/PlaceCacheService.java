@@ -1,15 +1,16 @@
 package com.cliptripbe.feature.place.application;
 
+import static com.cliptripbe.global.util.CacheUtils.createTranslatedPlaceKey;
+
+import com.cliptripbe.feature.place.domain.vo.PlaceInfoWithTranslation;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.translate.dto.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.adapter.out.cache.dto.TranslatedPlaceCacheRequest;
 import com.cliptripbe.infrastructure.port.cache.CacheServicePort;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -17,53 +18,55 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PlaceCacheService {
 
+
     private final CacheServicePort cacheServicePort;
+
 
     public void cachePlace(
         List<PlaceDto> placeDtoList,
-        Map<String, TranslationInfo> translatedPlacesMap,
+        List<TranslationInfo> translationInfos,
         Language userLanguage
     ) {
-        List<TranslatedPlaceCacheRequest> requests = placeDtoList.stream()
-            .map(placeDto -> {
-                String key = createTranslatedPlaceKey(placeDto, userLanguage);
-                TranslationInfo translatedInfo = translatedPlacesMap.get(key);
-                if (translatedInfo != null) {
-                    return TranslatedPlaceCacheRequest.of(placeDto, translatedInfo, userLanguage);
-                }
-                return null;
-            })
-            .filter(Objects::nonNull)
-            .toList();
-
+        List<TranslatedPlaceCacheRequest> requests = new ArrayList<>();
+        for (int i = 0; i < placeDtoList.size(); i++) {
+            requests.add(
+                TranslatedPlaceCacheRequest.of(placeDtoList.get(i), translationInfos.get(i),
+                    userLanguage));
+        }
         if (!requests.isEmpty()) {
             cacheServicePort.cacheTranslatedPlaces(requests);
         }
     }
 
-    // 키 생성 로직은 다음과 같이 헬퍼 메서드로 분리하는 것이 좋습니다.
-    private String createTranslatedPlaceKey(PlaceDto placeDto, Language userLanguage) {
-        return String.format("translatedPlace:%s:%s", placeDto.kakaoPlaceId(), userLanguage.name());
-    }
 
-    public Map<String, TranslationInfo> getAndFilter(List<PlaceDto> placeDtoList,
-        Language userLanguage) {
-        // 1. 모든 PlaceDto에 대한 캐시 키 리스트 생성
-        List<String> keys = placeDtoList.stream()
-            .map(dto -> createTranslatedPlaceKey(dto, userLanguage))
-            .collect(Collectors.toList());
+    public TranslationSplitResult classifyPlaces(
+        List<PlaceDto> placeDtoList,
+        Language language
+    ) {
+        List<String> redisKeys = placeDtoList.stream()
+            .map(dto -> createTranslatedPlaceKey(dto, language))
+            .toList();
 
-        // 2. Redis의 multiGet을 사용하여 한 번에 여러 데이터 조회
-        List<TranslationInfo> values = cacheServicePort.multiGet(keys);
+        List<TranslationInfo> translationInfos = cacheServicePort.multiGet(redisKeys);
 
-        // 3. 캐시된 데이터를 Map 형태로 변환 (키는 Redis 키, 값은 TranslationInfoWithId)
-        Map<String, TranslationInfo> cachedTranslations = new HashMap<>();
-        for (int i = 0; i < keys.size(); i++) {
-            TranslationInfo value = values.get(i);
-            if (value != null) {
-                cachedTranslations.put(keys.get(i), value);
+        List<PlaceDto> untranslatedPlaces = new ArrayList<>();
+        List<PlaceInfoWithTranslation> translatedPlaceInfos = new ArrayList<>();
+
+        for (int i = 0; i < placeDtoList.size(); i++) {
+            PlaceDto placeDto = placeDtoList.get(i);
+            TranslationInfo translationInfo = translationInfos.get(i);
+
+            if (translationInfo != null) {
+                // 번역 정보가 있는 경우
+                translatedPlaceInfos.add(
+                    PlaceInfoWithTranslation.of(placeDto, translationInfo, language)
+                );
+            } else {
+                // 번역 정보가 없는 경우
+                untranslatedPlaces.add(placeDto);
             }
         }
-        return cachedTranslations;
+
+        return new TranslationSplitResult(translatedPlaceInfos, untranslatedPlaces);
     }
 }

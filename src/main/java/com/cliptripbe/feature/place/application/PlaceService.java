@@ -13,7 +13,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
+import com.cliptripbe.feature.place.domain.vo.PlaceInfoWithTranslation;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
@@ -21,9 +21,9 @@ import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.feature.translate.application.PlaceTranslationService;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
-import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
@@ -32,11 +32,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -117,25 +115,44 @@ public class PlaceService {
 
         Map<String, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByKakaoPlaceIds(
             user.getId(), kakaoPlaceIdList);
-
         Language userLanguage = user.getLanguage();
-        Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
-            userLanguage, categoryPlaces);
 
-        List<PlaceListResponse> placeResponseList = new ArrayList<>(categoryPlaces.size());
-        for (int i = 0; i < categoryPlaces.size(); i++) {
-            PlaceDto placeDto = categoryPlaces.get(i);
-            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
-            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
+        // 1. 한국어일 경우 PlaceDto 리스트를 그대로 사용
+        // 2. 외국어일 경우 번역된 PlaceInfoWithTranslation 리스트를 사용
+        List<?> placesToProcess = (userLanguage == Language.KOREAN)
+            ? categoryPlaces
+            : placeTranslationService.getTranslatedPlaces(userLanguage,
+                categoryPlaces);
 
-            List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(placeDto.kakaoPlaceId(),
-                List.of());
+        return placesToProcess.stream()
+            .map(place -> {
+                String kakaoPlaceId = getKakaoPlaceId(place);
+                List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(kakaoPlaceId, List.of());
+                return createPlaceListResponse(place, userLanguage,
+                    bookmarkIds);
+            })
+            .toList();
+    }
 
-            PlaceListResponse response = PlaceListResponse.ofDto(
-                placeDto, translatedInfo, userLanguage, bookmarkIds);
-            placeResponseList.add(response);
+    private String getKakaoPlaceId(Object place) {
+        if (place instanceof PlaceDto placeDto) {
+            return placeDto.kakaoPlaceId();
         }
-        return placeResponseList;
+        if (place instanceof PlaceInfoWithTranslation translatedPlace) {
+            return translatedPlace.kakaoPlaceId();
+        }
+        return null;
+    }
+
+    private PlaceListResponse createPlaceListResponse(Object place, Language userLanguage,
+        List<Long> bookmarkIds) {
+        if (place instanceof PlaceDto placeDto) {
+            return PlaceListResponse.ofDto(placeDto, userLanguage, bookmarkIds);
+        }
+        if (place instanceof PlaceInfoWithTranslation translatedPlace) {
+            return PlaceListResponse.ofDto(translatedPlace, bookmarkIds);
+        }
+        throw new IllegalArgumentException("Unsupported place type: " + place.getClass().getName());
     }
 
     public List<PlaceListResponse> getPlacesByKeyword(
@@ -153,20 +170,18 @@ public class PlaceService {
             user.getId(), kakaoPlaceIdList);
 
         Language userLanguage = user.getLanguage();
-        Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
+        List<PlaceInfoWithTranslation> placeInfoWithTranslations = placeTranslationService.getTranslatedPlaces(
             userLanguage, keywordPlaces);
 
-        List<PlaceListResponse> placeResponseList = new ArrayList<>(keywordPlaces.size());
-        for (int i = 0; i < keywordPlaces.size(); i++) {
-            PlaceDto placeDto = keywordPlaces.get(i);
-            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
-            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
-
-            List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(placeDto.kakaoPlaceId(),
+        List<PlaceListResponse> placeResponseList = new ArrayList<>(
+            placeInfoWithTranslations.size());
+        for (int i = 0; i < placeInfoWithTranslations.size(); i++) {
+            PlaceInfoWithTranslation placeInfoWithTranslation = placeInfoWithTranslations.get(i);
+            List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(
+                placeInfoWithTranslation.kakaoPlaceId(),
                 List.of());
-
-            PlaceListResponse response = PlaceListResponse.ofDto(
-                placeDto, translatedInfo, userLanguage, bookmarkIds);
+            PlaceListResponse response = PlaceListResponse.ofDto(placeInfoWithTranslation,
+                bookmarkIds);
             placeResponseList.add(response);
         }
 

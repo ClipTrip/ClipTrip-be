@@ -3,7 +3,7 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
+import com.cliptripbe.feature.place.domain.vo.PlaceInfoWithTranslation;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -30,21 +30,8 @@ public record PlaceListResponse(
     List<Long> bookmarkedIdList
 ) {
 
-    public static PlaceListResponse ofDto(
-        PlaceDto placeDto,
-        TranslationInfoWithId translatedInfo,
-        Language language,
-        List<Long> bookmarkedIdList
-    ) {
-        Optional<String> translatedPlaceName = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedName() : null
-        );
-        Optional<String> translatedRoadAddress = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
-        );
-        if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
-            bookmarkedIdList = List.of();
-        }
+    public static PlaceListResponse ofDto(PlaceDto placeDto, Language language,
+        List<Long> bookmarkedIdList) {
         return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
@@ -53,10 +40,34 @@ public record PlaceListResponse(
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())
-            .translatedPlaceName(translatedPlaceName)
-            .translatedRoadAddress(translatedRoadAddress)
+            .translatedPlaceName(Optional.empty())
+            .translatedRoadAddress(Optional.empty())
             .language(language)
             .bookmarkedIdList(bookmarkedIdList)
+            .build();
+    }
+
+    public static PlaceListResponse ofDto(
+        PlaceInfoWithTranslation placeInfoWithTranslation,
+        List<Long> bookmarkedIdList
+    ) {
+        List<Long> safeBookmarkedIdList = bookmarkedIdList == null || bookmarkedIdList.isEmpty()
+            ? List.of() : bookmarkedIdList;
+
+        return PlaceListResponse.builder()
+            .placeName(placeInfoWithTranslation.placeName())
+            .roadAddress(placeInfoWithTranslation.roadAddress())
+            .phone(placeInfoWithTranslation.phone())
+            .type(placeInfoWithTranslation.type())
+            .longitude(placeInfoWithTranslation.longitude())
+            .latitude(placeInfoWithTranslation.latitude())
+            .kakaoPlaceId(placeInfoWithTranslation.kakaoPlaceId())
+            .translatedPlaceName(
+                Optional.ofNullable(placeInfoWithTranslation.translatedPlaceName()))
+            .translatedRoadAddress(
+                Optional.ofNullable(placeInfoWithTranslation.translatedRoadAddress()))
+            .language(placeInfoWithTranslation.language())
+            .bookmarkedIdList(safeBookmarkedIdList)
             .build();
     }
 
