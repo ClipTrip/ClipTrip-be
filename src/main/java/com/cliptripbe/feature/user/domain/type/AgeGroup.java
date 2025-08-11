@@ -23,19 +23,12 @@ public enum AgeGroup {
         this.maxAge = maxAge;
     }
 
-//    public static AgeGroup from(int age) {
-//        for (AgeGroup group : values()) {
-//            if (age >= group.minAge && age <= group.maxAge) {
-//                return group;
-//            }
-//        }
-//        throw new IllegalArgumentException("Invalid age: " + age);
-//    }
-//
-//    public String getLabel() {
-//        if (this == SENIOR) {
-//            return "65세 이상";
-//        }
-//        return String.format("%d~%d세", minAge, maxAge);
-//    }
+    public static AgeGroup from(int age) {
+        for (AgeGroup group : values()) {
+            if (age >= group.minAge && age <= group.maxAge) {
+                return group;
+            }
+        }
+        throw new IllegalArgumentException("Invalid age: " + age);
+    }
 }
