@@ -33,7 +33,7 @@ public class ChatGPTUtils {
         return IntStream.range(start, end)
             .mapToObj(i -> {
                 PlaceDto p = places.get(i);
-                return new PlacePromptInput(String.valueOf(i), p.placeName(), p.roadAddress());
+                return new PlacePromptInput(p.placeName(), p.roadAddress());
             })
             .collect(Collectors.toList());
     }
