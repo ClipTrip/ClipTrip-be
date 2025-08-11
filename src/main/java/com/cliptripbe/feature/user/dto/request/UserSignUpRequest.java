@@ -12,7 +12,7 @@ public record UserSignUpRequest(
     @NotNull String email,
     @NotNull String password,
     @NotNull Gender gender,
-    @NotNull AgeGroup ageGroup,
+    @NotNull Integer age,
     @NotNull Language language,
     @NotNull CountryCode countryCode
 ) {
@@ -22,7 +22,7 @@ public record UserSignUpRequest(
             .email(email)
             .password(encodePassword)
             .gender(gender)
-            .ageGroup(ageGroup)
+            .ageGroup(AgeGroup.from(age))
             .country(countryCode)
             .language(language)
             .role(Role.USER)
