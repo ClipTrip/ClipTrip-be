@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;

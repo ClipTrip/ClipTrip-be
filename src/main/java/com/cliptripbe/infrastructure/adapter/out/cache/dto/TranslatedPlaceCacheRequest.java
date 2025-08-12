@@ -1,7 +1,7 @@
 package com.cliptripbe.infrastructure.adapter.out.cache.dto;
 
 
-import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.CacheUtils;

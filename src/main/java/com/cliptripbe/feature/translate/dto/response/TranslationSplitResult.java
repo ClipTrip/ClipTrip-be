@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.translate.dto.response;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
 import java.util.ArrayList;
 import java.util.List;
 

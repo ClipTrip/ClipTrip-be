@@ -2,7 +2,7 @@ package com.cliptripbe.feature.place.application;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
-import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;
 import java.util.Map;

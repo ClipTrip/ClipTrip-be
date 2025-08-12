@@ -1,7 +1,6 @@
-package com.cliptripbe.feature.place.dto.response;
+package com.cliptripbe.feature.translate.dto.response;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import lombok.Builder;
 
