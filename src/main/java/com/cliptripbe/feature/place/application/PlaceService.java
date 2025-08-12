@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
@@ -79,15 +80,37 @@ public class PlaceService {
             place.addImageUrl(imageUrl);
         }
 
-        boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
-            place.getId());
+        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+            user.getId(), place.getId());
+
+        // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarked);
+            return PlaceResponse.of(place, bookmarkIds);
         }
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponse.ofTranslation(place, bookmarked, placeTranslation);
+        return PlaceResponse.ofTranslation(place, bookmarkIds, placeTranslation);
+    }
+
+
+    public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
+        Place place = findOrCreatePlaceByPlaceInfo(request);
+
+        if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
+            String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
+            byte[] imageBytes = placeImageProviderPort.getPhotoByAddress(searchKeyWord);
+            String imageUrl = fileStoragePort.upload(S3_PLACE_PREFIX, imageBytes);
+            place.addImageUrl(imageUrl);
+        }
+        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+            user.getId(), place.getId());
+
+        // TODO : 여기도 번역 적용해주세요.
+        if (user.getLanguage() == Language.KOREAN) {
+            return PlaceResponse.of(place, bookmarkIds);
+        }
+        return null;
     }
 
 //    @Transactional
@@ -110,7 +133,7 @@ public class PlaceService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
-        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
+        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함 -> user 언어 받아야 할 거 같음
         String kakaoPlaceId = request.kakaoPlaceId();
         try {
             if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
