@@ -3,6 +3,7 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
 import java.util.Set;
 import lombok.Builder;
 
@@ -12,7 +13,7 @@ public record PlaceResponse(
     String placeName,
     String roadAddress,
     String phone,
-    String type,
+    PlaceType placeType,
     double longitude,
     double latitude,
     Set<AccessibilityFeature> accessibilityFeatures,
@@ -26,7 +27,7 @@ public record PlaceResponse(
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
             .phone(place.getPhoneNumber())
-            .type(place.getPlaceType().getKorName())
+            .placeType(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
@@ -35,7 +36,7 @@ public record PlaceResponse(
             .build();
     }
 
-    public static PlaceResponse of(
+    public static PlaceResponse ofTranslation(
         Place place,
         Boolean bookmarked,
         PlaceTranslation placeTranslation
@@ -45,7 +46,7 @@ public record PlaceResponse(
             .placeName(placeTranslation.getName())
             .roadAddress(placeTranslation.getRoadAddress())
             .phone(place.getPhoneNumber())
-            .type(place.getPlaceType().getEngName())
+            .placeType(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())

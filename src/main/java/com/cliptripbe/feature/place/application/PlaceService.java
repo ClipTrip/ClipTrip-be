@@ -87,7 +87,7 @@ public class PlaceService {
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponse.of(place, bookmarked, placeTranslation);
+        return PlaceResponse.ofTranslation(place, bookmarked, placeTranslation);
     }
 
 //    @Transactional
