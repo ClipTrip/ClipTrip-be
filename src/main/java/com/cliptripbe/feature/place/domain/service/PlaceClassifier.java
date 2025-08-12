@@ -2,23 +2,23 @@ package com.cliptripbe.feature.place.domain.service;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.vo.Address;
-import com.cliptripbe.feature.place.dto.request.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class PlaceClassifier {
 
     private static final Double EARTH_RADIUS = 6371000.0; // 단위: meters;
     private static final Integer CLASSIFY_RANGE = 2000; // 2km 이내
 
     public List<Place> getLuggagePlacesByRange(
-        LuggageStorageRequestDto luggageStorageRequestDto,
+        LuggageStorageRequest luggageStorageRequest,
         List<Place> luggageStoragePlaces
     ) {
-        double latitude = Math.toRadians(luggageStorageRequestDto.latitude());
-        double longitude = Math.toRadians(luggageStorageRequestDto.longitude());
+        double latitude = Math.toRadians(luggageStorageRequest.latitude());
+        double longitude = Math.toRadians(luggageStorageRequest.longitude());
         List<Place> luggagePlaces = new ArrayList<>();
 
         for (Place place : luggageStoragePlaces) {

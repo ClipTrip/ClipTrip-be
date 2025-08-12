@@ -4,11 +4,11 @@ import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Builder;
 
 @Builder
@@ -67,6 +67,37 @@ public record PlaceListResponse(
             .build();
     }
 
+    public static PlaceListResponse ofEntity(
+        Place place,
+        TranslationInfo translatedInfo,
+        Language language,
+        List<Long> bookmarkedIdList
+    ) {
+        Optional<String> translatedPlaceName = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedName() : null
+        );
+        Optional<String> translatedRoadAddress = Optional.ofNullable(
+            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
+        );
+        if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
+            bookmarkedIdList = List.of();
+        }
+        return PlaceListResponse.builder()
+            .placeId(place.getId())
+            .placeName(place.getName())
+            .roadAddress(place.getAddress().roadAddress())
+            .phone(place.getPhoneNumber())
+            .type(place.getPlaceType())
+            .longitude(place.getAddress().longitude())
+            .latitude(place.getAddress().latitude())
+            .kakaoPlaceId(place.getKakaoPlaceId())
+            .translatedPlaceName(translatedPlaceName)
+            .translatedRoadAddress(translatedRoadAddress)
+            .language(language)
+            .bookmarkedIdList(bookmarkedIdList)
+            .build();
+    }
+
     public static PlaceListResponse fromEntity(Place place, Integer placeOrder) {
         String kakaoPlaceId = place.getKakaoPlaceId();
         if (kakaoPlaceId == null) {
@@ -85,7 +116,7 @@ public record PlaceListResponse(
             .build();
     }
 
-    public static PlaceListResponse of(
+    public static PlaceListResponse ofTranslation(
         Place place,
         PlaceTranslation placeTranslation,
         Integer placeOrder
@@ -107,22 +138,6 @@ public record PlaceListResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
-            .build();
-    }
-
-    public static List<PlaceListResponse> fromList(List<Place> places) {
-        return places.stream()
-            .map(PlaceListResponse::fromPlace)
-            .collect(Collectors.toList());
-    }
-
-    public static PlaceListResponse fromPlace(Place place) {
-        return PlaceListResponse.builder()
-            .placeId(place.getId())
-            .placeName(place.getName())
-            .latitude(place.getAddress().latitude())
-            .longitude(place.getAddress().longitude())
-            .roadAddress(place.getAddress().roadAddress())
             .build();
     }
 

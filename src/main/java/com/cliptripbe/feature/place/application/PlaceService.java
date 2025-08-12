@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.application;
 
 
+import static com.cliptripbe.global.response.type.ErrorType.FAIL_CREATE_PLACE_ENTITY;
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
@@ -13,7 +14,7 @@ import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.place.dto.request.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
@@ -24,19 +25,24 @@ import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.translate.application.PlaceTranslationService;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
+import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -60,6 +66,8 @@ public class PlaceService {
     private final PlaceSearchPort placeSearchPort;
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
+
+    private final EntityManager entityManager;
 
     private final PlaceListResponseAssembler placeListResponseAssembler;
 
@@ -85,23 +93,72 @@ public class PlaceService {
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
 
-    @Transactional
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
-        String kakaoPlaceId = request.kakaoPlaceId();
-        String placeName = request.placeName();
-        String address = request.roadAddress();
+//    @Transactional
+//    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
+//        String kakaoPlaceId = request.kakaoPlaceId();
+//        String placeName = request.placeName();
+//        String address = request.roadAddress();
+//
+//        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
+//            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
+//                .map(p -> {
+//                    p.addKakaoPlaceId(kakaoPlaceId);
+//                    return placeRepository.save(p);
+//                })
+//            )
+//            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+//        placeTranslationService.registerPlace(place);
+//        return place;
+//    }
 
-        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
-            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
+        String kakaoPlaceId = request.kakaoPlaceId();
+        try {
+            if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
+                Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
+                if (existingPlace.isPresent()) {
+                    Place place = existingPlace.get();
+                    placeTranslationService.registerPlace(place);
+                    return place;
+                }
+            }
+
+            Place place = placeFinder.getOptionPlaceByPlaceInfo(request.placeName(),
+                    request.roadAddress())
                 .map(p -> {
-                    p.addKakaoPlaceId(kakaoPlaceId);
-                    return placeRepository.save(p);
+                    if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
+                        p.addKakaoPlaceId(kakaoPlaceId);
+                        return placeRepository.saveAndFlush(p);
+                    }
+                    return p;
                 })
-            )
-            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
-        placeTranslationService.registerPlace(place);
-        return place;
+                .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+
+            placeTranslationService.registerPlace(place);
+            return place;
+
+        } catch (DataIntegrityViolationException e) {
+            entityManager.clear();
+
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException ie) {
+                Thread.currentThread().interrupt();
+            }
+
+            if (kakaoPlaceId == null || kakaoPlaceId.trim().isEmpty()) {
+                throw new CustomException(FAIL_CREATE_PLACE_ENTITY);
+            }
+
+            Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
+                .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
+            placeTranslationService.registerPlace(place);
+            return place;
+        }
     }
+
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(
@@ -134,7 +191,6 @@ public class PlaceService {
         return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap, translatedPlaces,
             bookmarkIdsMap, userLanguage);
     }
-
 
     public List<PlaceListResponse> getPlacesByKeyword(
         PlaceSearchByKeywordRequest request,
@@ -252,19 +308,34 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getLuggageStorage(
-        LuggageStorageRequestDto luggageStorageRequestDto
+        LuggageStorageRequest luggageStorageRequest,
+        User user
     ) {
         List<Place> luggageStoragePlaces = placeFinder.getPlaceByType(PlaceType.LUGGAGE_STORAGE);
 
+        List<Long> placeIdList = luggageStoragePlaces.stream()
+            .map(Place::getId)
+            .toList();
+
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
+
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
-            luggageStorageRequestDto,
-            luggageStoragePlaces
-        );
-        return PlaceListResponse.fromList(placesInRange);
+            luggageStorageRequest, luggageStoragePlaces);
+
+        // TODO : 응답할 때 번역 부분 적용해야 함
+        return placesInRange.stream()
+            .map(place -> {
+                List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
+                return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
+            })
+            .toList();
     }
 
     @Transactional(readOnly = true)
     public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
+
+
 }

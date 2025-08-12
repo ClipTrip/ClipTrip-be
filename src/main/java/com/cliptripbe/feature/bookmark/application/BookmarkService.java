@@ -19,10 +19,10 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
-import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -142,27 +142,50 @@ public class BookmarkService {
             .toList();
     }
 
+//    @Transactional(readOnly = true)
+//    public BookmarkInfoResponse getBookmarkInfo(Long bookmarkId, User user) {
+//
+//        if (user.getLanguage() == KOREAN) {
+//            Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+//            return BookmarkInfoResponse.from(bookmark);
+//        }
+//        Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
+//
+//        Set<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
+//
+//        List<PlaceListResponse> placeListResponses = bookmarkPlaces.stream()
+//            .map(bp -> {
+//                Place place = bp.getPlace();
+//                PlaceTranslation placeTranslation = place.getTranslationByLanguage(
+//                    user.getLanguage());
+//                return PlaceListResponse.ofTranslation(place, placeTranslation, -1);
+//            })
+//            .collect(Collectors.toList());
+//
+//        return BookmarkInfoResponse.of(bookmark, placeListResponses);
+//    }
+
     @Transactional(readOnly = true)
     public BookmarkInfoResponse getBookmarkInfo(Long bookmarkId, User user) {
+        List<Long> placeIdList = bookmarkRepository.findPlaceIdsByBookmarkId(bookmarkId);
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
 
         if (user.getLanguage() == KOREAN) {
             Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-            return BookmarkInfoResponse.from(bookmark);
+            List<PlaceListResponse> placeListResponses = bookmark.getPlaces().stream()
+                .map(place -> {
+                    List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
+                    return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
+                })
+                .toList();
+            return BookmarkInfoResponse.of(bookmark, placeListResponses);
+        } else {
+            // TODO : 북마크 상세조회 번역 응답부분 작업해야 함(응답때 장소에 대한 북마크id 리스트 응답하는 거 추가해야함)
+            Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
+
+            return null;
         }
-        Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
-
-        Set<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
-
-        List<PlaceListResponse> placeListResponses = bookmarkPlaces.stream()
-            .map(bp -> {
-                Place place = bp.getPlace();
-                PlaceTranslation placeTranslation = place.getTranslationByLanguage(
-                    user.getLanguage());
-                return PlaceListResponse.of(place, placeTranslation, -1);
-            })
-            .collect(Collectors.toList());
-
-        return BookmarkMapper.mapBookmarkInfoResponse(bookmark, placeListResponses);
     }
 
     @Transactional
