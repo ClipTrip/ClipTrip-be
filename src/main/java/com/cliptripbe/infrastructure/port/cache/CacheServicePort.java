@@ -8,5 +8,5 @@ public interface CacheServicePort {
 
     void cacheTranslatedPlaces(List<TranslatedPlaceCacheRequest> translatedPlaceCacheRequest);
 
-    List<TranslationInfo> multiGet(List<String> keys);
+    List<TranslationInfo> findAllByKeys(List<String> keys);
 }
