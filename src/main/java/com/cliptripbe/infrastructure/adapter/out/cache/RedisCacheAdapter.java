@@ -24,14 +24,15 @@ public class RedisCacheAdapter implements CacheServicePort {
         }
 
         for (TranslatedPlaceCacheRequest request : translatedPlaceCacheRequest) {
+            if (request == null) {
+                continue;
+            }
             String key = request.key();
             TranslationInfo value = request.translationInfo();
-
-            // Redis에 key-value 쌍을 저장
-            translationInfoRedisTemplate.opsForValue().set(key, value);
-
-            // 만료 시간 설정
-            translationInfoRedisTemplate.expire(key, TIME_OUT, TimeUnit.DAYS);
+            if (key == null || key.isBlank() || value == null) {
+                continue;
+            }
+            translationInfoRedisTemplate.opsForValue().set(key, value, 7, TimeUnit.DAYS);
         }
     }
 
