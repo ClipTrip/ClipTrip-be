@@ -2,7 +2,7 @@ package com.cliptripbe.feature.translate.application;
 
 import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_PLACE_INFO_BATCH_PROMPT;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
+import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithIndex;
 import com.cliptripbe.feature.place.dto.PlacePromptInput;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.JsonUtils;
@@ -22,7 +22,7 @@ public class AsyncHelper {
     private final ChatGptAdapter chatGptAdapter;
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<List<TranslationInfo>> asyncTranslateTask(
+    public CompletableFuture<List<TranslationInfoWithIndex>> asyncTranslateTask(
         List<PlacePromptInput> promptInputs,
         Language targetLanguage
     ) {
@@ -31,8 +31,8 @@ public class AsyncHelper {
             targetLanguage.getName(), inputJson
         );
         String responseJson = chatGptAdapter.ask(prompt);
-        List<TranslationInfo> translationInfoWithIds = jsonUtils.parseToList(responseJson,
-            TranslationInfo.class);
-        return CompletableFuture.completedFuture(translationInfoWithIds);
+        List<TranslationInfoWithIndex> translationInfoWithIndices = jsonUtils.parseToList(responseJson,
+            TranslationInfoWithIndex.class);
+        return CompletableFuture.completedFuture(translationInfoWithIndices);
     }
 }

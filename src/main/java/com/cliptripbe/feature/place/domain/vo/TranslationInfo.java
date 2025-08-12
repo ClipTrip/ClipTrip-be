@@ -8,7 +8,7 @@ public record TranslationInfo(
     String translatedRoadAddress
 ) {
 
-    public static TranslationInfo from(TranslationInfoWithId translatedInfo) {
+    public static TranslationInfo from(TranslationInfoWithIndex translatedInfo) {
         return TranslationInfo.builder()
             .translatedName(translatedInfo.translatedName())
             .translatedRoadAddress(translatedInfo.translatedRoadAddress())
