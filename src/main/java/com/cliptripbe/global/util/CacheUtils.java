@@ -8,6 +8,10 @@ public class CacheUtils {
         String placeName,
         String roadAddress,
         Language userLanguage) {
-        return String.format("%s %s %s", placeName, roadAddress, userLanguage);
+
+        String normalizedName = placeName.trim().replaceAll("\\s+", "");
+        String normalizedAddress = roadAddress.trim().replaceAll("\\s+", "");
+
+        return String.format("%s:%s:%s", normalizedName, normalizedAddress, userLanguage.name());
     }
 }
