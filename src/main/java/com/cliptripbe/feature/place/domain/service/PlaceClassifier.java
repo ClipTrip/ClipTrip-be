@@ -2,7 +2,7 @@ package com.cliptripbe.feature.place.domain.service;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.vo.Address;
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequestDto;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.stereotype.Component;

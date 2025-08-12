@@ -2,8 +2,8 @@ package com.cliptripbe.feature.translate.application;
 
 import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_PLACE_INFO_BATCH_PROMPT;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithIndex;
-import com.cliptripbe.feature.place.dto.PlacePromptInput;
+import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
+import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.JsonUtils;
 import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;

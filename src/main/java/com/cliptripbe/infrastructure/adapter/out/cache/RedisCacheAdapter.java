@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.adapter.out.cache;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.infrastructure.adapter.out.cache.dto.TranslatedPlaceCacheRequest;
 import com.cliptripbe.infrastructure.port.cache.CacheServicePort;
 import java.util.List;

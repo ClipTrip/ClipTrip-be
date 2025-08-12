@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.translate.dto;
+package com.cliptripbe.feature.translate.dto.response;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;

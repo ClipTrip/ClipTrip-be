@@ -1,5 +1,6 @@
-package com.cliptripbe.feature.place.domain.vo;
+package com.cliptripbe.feature.translate.dto.response;
 
+import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
 import lombok.Builder;
 
 @Builder

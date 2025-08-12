@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.vo.PlaceDetailVO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,9 +34,5 @@ public class SchedulePlace {
         this.schedule = schedule;
         this.place = place;
         this.placeOrder = placeOrder;
-    }
-
-    public PlaceDetailVO toVO() {
-        return new PlaceDetailVO(place.getId(), place.getName(), place.getAccessibilityFeatures());
     }
 }

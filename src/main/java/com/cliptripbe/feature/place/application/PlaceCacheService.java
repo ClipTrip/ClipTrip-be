@@ -2,10 +2,10 @@ package com.cliptripbe.feature.place.application;
 
 import static com.cliptripbe.global.util.CacheUtils.createTranslatedPlaceKey;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.TranslationSplitResult;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.infrastructure.adapter.out.cache.dto.TranslatedPlaceCacheRequest;
 import com.cliptripbe.infrastructure.port.cache.CacheServicePort;

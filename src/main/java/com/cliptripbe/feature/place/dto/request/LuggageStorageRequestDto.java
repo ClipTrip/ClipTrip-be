@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain.vo;
+package com.cliptripbe.feature.place.dto.request;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;

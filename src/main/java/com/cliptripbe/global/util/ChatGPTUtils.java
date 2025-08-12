@@ -1,7 +1,7 @@
 package com.cliptripbe.global.util;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.place.dto.PlacePromptInput;
+import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;

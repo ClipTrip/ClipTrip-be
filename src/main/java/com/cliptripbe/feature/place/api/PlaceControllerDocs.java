@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.place.api;
 
-import com.cliptripbe.feature.place.domain.vo.LuggageStorageRequestDto;
-import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequestDto;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;

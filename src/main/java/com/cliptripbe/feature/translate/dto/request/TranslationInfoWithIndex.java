@@ -1,4 +1,4 @@
-package com.cliptripbe.feature.place.domain.vo;
+package com.cliptripbe.feature.translate.dto.request;
 
 public record TranslationInfoWithIndex(
     Integer index,

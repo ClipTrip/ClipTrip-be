@@ -1,10 +1,10 @@
 package com.cliptripbe.feature.translate.application;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithIndex;
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.place.dto.PlacePromptInput;
 import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
+import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
