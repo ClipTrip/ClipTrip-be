@@ -3,7 +3,7 @@ package com.cliptripbe.feature.place.application;
 import static com.cliptripbe.global.util.CacheUtils.createTranslatedPlaceKey;
 
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
@@ -49,7 +49,7 @@ public class PlaceCacheService {
             .map(dto -> createTranslatedPlaceKey(dto.placeName(), dto.roadAddress(), language))
             .toList();
 
-        List<TranslationInfo> translationInfos = cacheServicePort.multiGet(redisKeys);
+        List<TranslationInfo> translationInfos = cacheServicePort.findAllByKeys(redisKeys);
 
         List<PlaceDto> untranslatedPlaces = new ArrayList<>();
         List<TranslatedPlaceAddress> translatedPlaceInfos = new ArrayList<>();

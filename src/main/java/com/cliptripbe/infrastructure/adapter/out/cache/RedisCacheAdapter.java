@@ -37,7 +37,7 @@ public class RedisCacheAdapter implements CacheServicePort {
     }
 
     @Override
-    public List<TranslationInfo> multiGet(List<String> keys) {
+    public List<TranslationInfo> findAllByKeys(List<String> keys) {
         return translationInfoRedisTemplate.opsForValue().multiGet(keys);
     }
 }
