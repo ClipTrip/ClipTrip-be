@@ -5,9 +5,9 @@ import static com.cliptripbe.feature.user.domain.type.Language.ENGLISH;
 import com.cliptripbe.feature.place.application.PlaceCacheService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.place.domain.vo.PlaceInfoWithTranslation;
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.translate.dto.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
@@ -46,18 +46,19 @@ public class PlaceTranslationService {
             });
     }
 
-    public List<PlaceInfoWithTranslation> getTranslatedPlaces(
+    public List<TranslatedPlaceAddress> getTranslatedPlaces(
         Language userLanguage,
         List<PlaceDto> placeDtoList
     ) {
-        TranslationSplitResult result = placeCacheService.classifyPlaces(placeDtoList,
-            userLanguage);
-        List<TranslationInfo> newTranslations = asyncTranslationTaskService.translate(
+        TranslationSplitResult result = placeCacheService.classifyPlaces(placeDtoList, userLanguage);
+
+        List<TranslatedPlaceAddress> newTranslations = asyncTranslationTaskService.translate(
             result.untranslatedPlaces(), userLanguage
         );
-        placeCacheService.cachePlace(result.untranslatedPlaces(), newTranslations, userLanguage);
 
-        return result.mergeWith(newTranslations, userLanguage);
+        placeCacheService.cachePlace(newTranslations, userLanguage);
+
+        return result.mergeWith(newTranslations);
     }
 
     private TranslationInfo translatePlaceInfo(Place place, Language language) {

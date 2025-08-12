@@ -1,13 +1,14 @@
 package com.cliptripbe.feature.translate.application;
 
-import static com.cliptripbe.global.util.ChatGPTUtils.buildPromptInputs;
-
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
+import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithIndex;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.PlacePromptInput;
+import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
+import com.cliptripbe.global.util.ChatGPTUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,24 +23,38 @@ public class AsyncTranslationTaskService {
     private final static Integer BATCH_SIZE = 5;
     private final AsyncHelper asyncHelper;
 
-    public List<TranslationInfo> translate(List<PlaceDto> placeDtos, Language userLanguage) {
-        List<CompletableFuture<List<TranslationInfo>>> futures = new ArrayList<>();
-        for (int start = 0; start < placeDtos.size(); start += BATCH_SIZE) {
-            int end = Math.min(start + BATCH_SIZE, placeDtos.size());
-            List<PlacePromptInput> promptInputs = buildPromptInputs(placeDtos, start, end);
-            futures.add(
-                asyncHelper.asyncTranslateTask(promptInputs, userLanguage));
+    public List<TranslatedPlaceAddress> translate(List<PlaceDto> placeDtos, Language userLanguage) {
+        List<CompletableFuture<List<TranslationInfoWithIndex>>> futures = new ArrayList<>();
+        for (int i = 0; i < placeDtos.size(); i += BATCH_SIZE) {
+            int end = Math.min(i + BATCH_SIZE, placeDtos.size());
+            List<PlacePromptInput> promptInputs = ChatGPTUtils.buildPromptInputs(placeDtos, i, end);
+            futures.add(asyncHelper.asyncTranslateTask(promptInputs, userLanguage));
         }
-        return collectTranslationResults(futures);
+        List<TranslationInfoWithIndex> translationInfoWithIndices = collectTranslatedPlaceDtos(futures);
+        return getTranslatedPlaceAddressList(translationInfoWithIndices, placeDtos, userLanguage);
     }
 
-    protected List<TranslationInfo> collectTranslationResults(
-        List<CompletableFuture<List<TranslationInfo>>> futures
+    private List<TranslatedPlaceAddress> getTranslatedPlaceAddressList(
+        List<TranslationInfoWithIndex> translationInfoWithIndices, List<PlaceDto> placeDtos, Language userLanguage
     ) {
-        List<TranslationInfo> translationInfoList = new ArrayList<>();
-        for (CompletableFuture<List<TranslationInfo>> future : futures) {
+        return translationInfoWithIndices.stream()
+            .map(translationInfoWithIndex -> {
+                PlaceDto placeDto = placeDtos.get(translationInfoWithIndex.index());
+                TranslationInfo translationInfo = TranslationInfo.from(translationInfoWithIndex);
+                return TranslatedPlaceAddress.of(placeDto, translationInfo, userLanguage);
+            })
+            .toList();
+    }
+
+    protected List<TranslationInfoWithIndex> collectTranslatedPlaceDtos(
+        List<CompletableFuture<List<TranslationInfoWithIndex>>> futures
+    ) {
+        List<TranslationInfoWithIndex> allTranslations = new ArrayList<>();
+
+        for (CompletableFuture<List<TranslationInfoWithIndex>> future : futures) {
             try {
-                translationInfoList.addAll(future.get());
+                List<TranslationInfoWithIndex> translationInfos = future.get();
+                allTranslations.addAll(translationInfos);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 throw new CustomException(ErrorType.INTERRUPT_TRANSLATE);
@@ -47,6 +62,6 @@ public class AsyncTranslationTaskService {
                 throw new CustomException(ErrorType.FAIL_GPT_TRANSLATE);
             }
         }
-        return translationInfoList;
+        return allTranslations;
     }
 }

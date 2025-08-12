@@ -2,7 +2,7 @@ package com.cliptripbe.infrastructure.adapter.out.cache.dto;
 
 
 import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
-import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.CacheUtils;
 import lombok.Builder;
@@ -14,14 +14,16 @@ public record TranslatedPlaceCacheRequest(
 ) {
 
     public static TranslatedPlaceCacheRequest of(
-        PlaceDto placeDto,
-        TranslationInfo translatedInfo,
+        TranslatedPlaceAddress translatedPlaceAddresses,
         Language userLanguage
     ) {
-        String key = CacheUtils.createTranslatedPlaceKey(placeDto, userLanguage);
+        String key = CacheUtils.createTranslatedPlaceKey(
+            translatedPlaceAddresses.placeName(),
+            translatedPlaceAddresses.roadAddress(),
+            userLanguage);
         return TranslatedPlaceCacheRequest.builder()
             .key(key)
-            .translationInfo(translatedInfo)
+            .translationInfo(translatedPlaceAddresses.translationInfo())
             .build();
     }
 }
