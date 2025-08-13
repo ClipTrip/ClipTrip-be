@@ -112,7 +112,7 @@ public class PlaceService {
 //    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
         // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
         String kakaoPlaceId = request.kakaoPlaceId();
         try {
@@ -120,7 +120,7 @@ public class PlaceService {
                 Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
                 if (existingPlace.isPresent()) {
                     Place place = existingPlace.get();
-                    placeTranslationService.registerPlace(place);
+                    placeTranslationService.translateAndRegisterPlace(place, language);
                     return place;
                 }
             }
@@ -136,7 +136,7 @@ public class PlaceService {
                 })
                 .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
 
-            placeTranslationService.registerPlace(place);
+            placeTranslationService.translateAndRegisterPlace(place, language);
             return place;
 
         } catch (DataIntegrityViolationException e) {
@@ -154,7 +154,7 @@ public class PlaceService {
 
             Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
                 .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
-            placeTranslationService.registerPlace(place);
+            placeTranslationService.translateAndRegisterPlace(place, language);
             return place;
         }
     }
