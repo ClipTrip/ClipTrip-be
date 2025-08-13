@@ -2,15 +2,18 @@ package com.cliptripbe.feature.place.application;
 
 import static com.cliptripbe.global.util.CacheUtils.createTranslatedPlaceKey;
 
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
+import com.cliptripbe.global.util.CacheUtils;
 import com.cliptripbe.infrastructure.adapter.out.cache.dto.TranslatedPlaceCacheRequest;
 import com.cliptripbe.infrastructure.port.cache.CacheServicePort;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -18,9 +21,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PlaceCacheService {
 
-
     private final CacheServicePort cacheServicePort;
-
 
     public void cachePlace(
         List<TranslatedPlaceAddress> translatedPlaceAddresses,
@@ -39,7 +40,6 @@ public class PlaceCacheService {
             cacheServicePort.cacheTranslatedPlaces(requests);
         }
     }
-
 
     public TranslationSplitResult classifyPlaces(
         List<PlaceDto> placeDtoList,
@@ -67,5 +67,11 @@ public class PlaceCacheService {
             }
         }
         return new TranslationSplitResult(translatedPlaceInfos, untranslatedPlaces);
+    }
+
+    public Optional<TranslationInfo> getTranslationInfo(Place place, Language language) {
+        String translatedPlaceKey = CacheUtils.createTranslatedPlaceKey(place.getName(),
+            place.getAddress().roadAddress(), language);
+        return cacheServicePort.retrieveByKey(translatedPlaceKey);
     }
 }

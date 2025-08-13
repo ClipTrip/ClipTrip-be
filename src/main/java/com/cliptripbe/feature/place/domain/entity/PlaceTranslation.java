@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.place.domain.entity;
 
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -33,6 +34,15 @@ public class PlaceTranslation {
     private String name;
 
     private String roadAddress;
+
+    public static PlaceTranslation of(Place place, TranslationInfo translationInfo, Language language) {
+        return PlaceTranslation.builder()
+            .place(place)
+            .name(translationInfo.translatedName())
+            .roadAddress(translationInfo.translatedRoadAddress())
+            .language(language)
+            .build();
+    }
 
     public void addPlace(Place place) {
         this.place = place;

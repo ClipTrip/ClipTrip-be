@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.translate.application;
 
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
@@ -9,6 +10,9 @@ import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import com.cliptripbe.global.util.ChatGPTUtils;
+import com.cliptripbe.global.util.JsonUtils;
+import com.cliptripbe.global.util.prompt.type.PromptConstants;
+import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -18,12 +22,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class AsyncTranslationTaskService {
+public class PlaceTranslator {
 
+    private final ChatGptAdapter chatGptAdapter;
+    private final JsonUtils jsonUtils;
     private final static Integer BATCH_SIZE = 5;
     private final AsyncHelper asyncHelper;
 
-    public List<TranslatedPlaceAddress> translate(List<PlaceDto> placeDtos, Language userLanguage) {
+    public List<TranslatedPlaceAddress> translateList(List<PlaceDto> placeDtos, Language userLanguage) {
         List<CompletableFuture<List<TranslationInfoWithIndex>>> futures = new ArrayList<>();
         for (int i = 0; i < placeDtos.size(); i += BATCH_SIZE) {
             int end = Math.min(i + BATCH_SIZE, placeDtos.size());
@@ -32,6 +38,17 @@ public class AsyncTranslationTaskService {
         }
         List<TranslationInfoWithIndex> translationInfoWithIndices = collectTranslatedPlaceDtos(futures);
         return getTranslatedPlaceAddressList(translationInfoWithIndices, placeDtos, userLanguage);
+    }
+
+    public TranslationInfo translatePlaceInfo(Place place, Language language) {
+        String prompt = PromptConstants.TRANSLATE_PLACE_INFO.formatted(
+            language.getName(),
+            place.getName(),
+            place.getAddress().roadAddress()
+        );
+        String response = chatGptAdapter.ask(prompt);
+
+        return jsonUtils.readValue(response, TranslationInfo.class);
     }
 
     private List<TranslatedPlaceAddress> getTranslatedPlaceAddressList(

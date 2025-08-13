@@ -22,12 +22,11 @@ import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.translate.application.PlaceTranslationService;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
-import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
-import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import jakarta.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -89,7 +88,7 @@ public class PlaceService {
 
 
     public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
-        Place place = findOrCreatePlaceByPlaceInfo(request);
+        Place place = findOrCreatePlaceByPlaceInfo(request, user.getLanguage());
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             placeImageService.savePlaceImage(place);
@@ -123,15 +122,17 @@ public class PlaceService {
 //    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
-        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함 -> user 언어 받아야 할 거 같음
+    public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
+        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
         String kakaoPlaceId = request.kakaoPlaceId();
         try {
             if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
                 Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
                 if (existingPlace.isPresent()) {
                     Place place = existingPlace.get();
-                    placeTranslationService.registerPlace(place);
+                    if (language != Language.KOREAN) {
+                        placeTranslationService.translateAndRegisterPlace(place, language);
+                    }
                     return place;
                 }
             }
@@ -146,8 +147,10 @@ public class PlaceService {
                     return p;
                 })
                 .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+            if (language != Language.KOREAN) {
+                placeTranslationService.translateAndRegisterPlace(place, language);
+            }
 
-            placeTranslationService.registerPlace(place);
             return place;
 
         } catch (DataIntegrityViolationException e) {
@@ -165,7 +168,9 @@ public class PlaceService {
 
             Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
                 .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
-            placeTranslationService.registerPlace(place);
+            if (language != Language.KOREAN) {
+                placeTranslationService.translateAndRegisterPlace(place, language);
+            }
             return place;
         }
     }
@@ -348,5 +353,16 @@ public class PlaceService {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
 
-
+    @Transactional
+    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places, Language language) {
+        List<Long> placeIds = places.stream()
+            .map(Place::getId)
+            .toList();
+        List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(placeIds, language);
+        return translations.stream()
+            .collect(Collectors.toMap(
+                translation -> translation.getPlace().getId(),
+                TranslationInfoDto::fromEntity
+            ));
+    }
 }

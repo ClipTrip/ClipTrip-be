@@ -59,7 +59,7 @@ public class VideoPlaceExtractFacade {
 
         List<Place> placeList = placeService.createPlaceAll(places);
         if (user.getLanguage() == Language.ENGLISH) {
-            placeList.forEach(placeTranslationService::registerPlace);
+            placeList.forEach(place -> placeTranslationService.translateAndRegisterPlace(place, user.getLanguage()));
         }
 
         Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated));

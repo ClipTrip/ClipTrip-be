@@ -47,10 +47,11 @@ public class BookmarkController implements BookmarkControllerDocs {
     @Override
     @PatchMapping("/{bookmarkId}")
     public ApiResponse<Long> updateBookmark(
+        @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "bookmarkId") Long bookmarkId,
         @RequestBody @Valid UpdateBookmarkRequest updateBookmarkRequest
     ) {
-        bookmarkService.updateBookmark(bookmarkId, updateBookmarkRequest);
+        bookmarkService.updateBookmark(bookmarkId, updateBookmarkRequest, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, bookmarkId);
     }
 

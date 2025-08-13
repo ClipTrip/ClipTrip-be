@@ -15,16 +15,12 @@ import com.cliptripbe.feature.bookmark.dto.response.BookmarkListResponse;
 import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,13 +40,12 @@ public class BookmarkService {
     ) {
         Bookmark bookmark = Bookmark.createByUser(request.bookmarkName(), request.description(),
             user);
-
         bookmarkRepository.save(bookmark);
         return bookmark.getId();
     }
 
     @Transactional
-    public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request) {
+    public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request, User user) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
 
         String newName =
@@ -64,7 +59,7 @@ public class BookmarkService {
         if (request.placeInfoRequests() != null) {
             bookmark.cleanBookmarkPlace();
             for (PlaceInfoRequest placeInfoRequest : request.placeInfoRequests()) {
-                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
+                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest, user.getLanguage());
                 BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
                     .bookmark(bookmark)
                     .place(place)
@@ -82,7 +77,7 @@ public class BookmarkService {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
 
-        Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest);
+        Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest, user.getLanguage());
 
         BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
             .bookmark(bookmark)
