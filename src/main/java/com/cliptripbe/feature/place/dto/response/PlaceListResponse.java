@@ -5,7 +5,7 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
@@ -61,8 +61,8 @@ public record PlaceListResponse(
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())
-            .translatedPlaceName(Optional.ofNullable(tp.translationInfo().translatedName()))
-            .translatedRoadAddress(Optional.ofNullable(tp.translationInfo().translatedRoadAddress()))
+            .translatedPlaceName(Optional.ofNullable(tp.translationInfoDto().translatedName()))
+            .translatedRoadAddress(Optional.ofNullable(tp.translationInfoDto().translatedRoadAddress()))
             .language(language)
             .bookmarkedIdList(safeBookmarkedIdList)
             .build();
@@ -70,7 +70,7 @@ public record PlaceListResponse(
 
     public static PlaceListResponse ofEntity(
         Place place,
-        TranslationInfo translatedInfo,
+        TranslationInfoDto translatedInfo,
         Language language,
         List<Long> bookmarkedIdList
     ) {

@@ -1,6 +1,6 @@
 package com.cliptripbe.global.util;
 
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -22,7 +22,7 @@ public class JsonUtils {
         }
     }
 
-    public TranslationInfo readValue(String response, Class<TranslationInfo> translationInfoClass) {
+    public TranslationInfoDto readValue(String response, Class<TranslationInfoDto> translationInfoClass) {
         try {
             return objectMapper.readValue(response, translationInfoClass);
         } catch (JsonProcessingException e) {

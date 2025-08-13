@@ -5,7 +5,7 @@ import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
@@ -40,7 +40,7 @@ public class PlaceTranslator {
         return getTranslatedPlaceAddressList(translationInfoWithIndices, placeDtos, userLanguage);
     }
 
-    public TranslationInfo translatePlaceInfo(Place place, Language language) {
+    public TranslationInfoDto translatePlaceInfo(Place place, Language language) {
         String prompt = PromptConstants.TRANSLATE_PLACE_INFO.formatted(
             language.getName(),
             place.getName(),
@@ -48,7 +48,7 @@ public class PlaceTranslator {
         );
         String response = chatGptAdapter.ask(prompt);
 
-        return jsonUtils.readValue(response, TranslationInfo.class);
+        return jsonUtils.readValue(response, TranslationInfoDto.class);
     }
 
     private List<TranslatedPlaceAddress> getTranslatedPlaceAddressList(
@@ -57,8 +57,8 @@ public class PlaceTranslator {
         return translationInfoWithIndices.stream()
             .map(translationInfoWithIndex -> {
                 PlaceDto placeDto = placeDtos.get(translationInfoWithIndex.index());
-                TranslationInfo translationInfo = TranslationInfo.from(translationInfoWithIndex);
-                return TranslatedPlaceAddress.of(placeDto, translationInfo, userLanguage);
+                TranslationInfoDto translationInfoDto = TranslationInfoDto.from(translationInfoWithIndex);
+                return TranslatedPlaceAddress.of(placeDto, translationInfoDto, userLanguage);
             })
             .toList();
     }
