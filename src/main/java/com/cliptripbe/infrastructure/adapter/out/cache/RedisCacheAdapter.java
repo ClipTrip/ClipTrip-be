@@ -33,7 +33,7 @@ public class RedisCacheAdapter implements CacheServicePort {
             if (key == null || key.isBlank() || value == null) {
                 continue;
             }
-            translationInfoRedisTemplate.opsForValue().set(key, value, 7, TimeUnit.DAYS);
+            translationInfoRedisTemplate.opsForValue().set(key, value, TIME_OUT, TimeUnit.DAYS);
         }
     }
 
@@ -44,6 +44,9 @@ public class RedisCacheAdapter implements CacheServicePort {
 
     @Override
     public Optional<TranslationInfo> retrieveByKey(String translatedPlaceKey) {
+        if (translatedPlaceKey == null || translatedPlaceKey.isBlank()) {
+            return Optional.empty();
+        }
         TranslationInfo result = translationInfoRedisTemplate.opsForValue().get(translatedPlaceKey);
         return Optional.ofNullable(result);
     }
