@@ -120,7 +120,9 @@ public class PlaceService {
                 Optional<Place> existingPlace = placeFinder.findByKakaoPlaceId(kakaoPlaceId);
                 if (existingPlace.isPresent()) {
                     Place place = existingPlace.get();
-                    placeTranslationService.translateAndRegisterPlace(place, language);
+                    if (language != Language.KOREAN) {
+                        placeTranslationService.translateAndRegisterPlace(place, language);
+                    }
                     return place;
                 }
             }
@@ -135,8 +137,10 @@ public class PlaceService {
                     return p;
                 })
                 .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
+            if (language != Language.KOREAN) {
+                placeTranslationService.translateAndRegisterPlace(place, language);
+            }
 
-            placeTranslationService.translateAndRegisterPlace(place, language);
             return place;
 
         } catch (DataIntegrityViolationException e) {
@@ -154,7 +158,9 @@ public class PlaceService {
 
             Place place = placeRepository.findByKakaoPlaceId(kakaoPlaceId)
                 .orElseThrow(() -> new CustomException(FAIL_CREATE_PLACE_ENTITY));
-            placeTranslationService.translateAndRegisterPlace(place, language);
+            if (language != Language.KOREAN) {
+                placeTranslationService.translateAndRegisterPlace(place, language);
+            }
             return place;
         }
     }
