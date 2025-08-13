@@ -20,6 +20,7 @@ public interface BookmarkControllerDocs {
 
     @Operation(summary = "북마크 수정하기, \n로그인 필요,put 메서드")
     ApiResponse<Long> updateBookmark(
+        CustomerDetails customerDetails,
         Long bookmarkId,
         UpdateBookmarkRequest updateBookmarkRequest
     );
