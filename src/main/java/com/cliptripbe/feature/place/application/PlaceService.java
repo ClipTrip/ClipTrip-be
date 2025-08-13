@@ -13,15 +13,16 @@ import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.domain.service.PlaceRegister;
 import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
-import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
+import com.cliptripbe.feature.translate.application.PlaceTranslationService;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -67,6 +68,8 @@ public class PlaceService {
     private final PlaceImageProviderPort placeImageProviderPort;
 
     private final EntityManager entityManager;
+
+    private final PlaceListResponseAssembler placeListResponseAssembler;
 
     @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
@@ -156,15 +159,15 @@ public class PlaceService {
         }
     }
 
+
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(
         PlaceSearchByCategoryRequest request,
         User user
     ) {
-        // TODO : request keyword 번역해서 요청 보내야함
-        List<PlaceDto> categoryPlaces = placeSearchPort.searchPlacesByCategory(request);
+        List<PlaceDto> placeDtoList = placeSearchPort.searchPlacesByCategory(request);
 
-        List<String> kakaoPlaceIdList = categoryPlaces.stream()
+        List<String> kakaoPlaceIdList = placeDtoList.stream()
             .map(PlaceDto::kakaoPlaceId)
             .filter(Objects::nonNull)
             .toList();
@@ -173,23 +176,20 @@ public class PlaceService {
             user.getId(), kakaoPlaceIdList);
 
         Language userLanguage = user.getLanguage();
-        Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
-            userLanguage, categoryPlaces);
 
-        List<PlaceListResponse> placeResponseList = new ArrayList<>(categoryPlaces.size());
-        for (int i = 0; i < categoryPlaces.size(); i++) {
-            PlaceDto placeDto = categoryPlaces.get(i);
-            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
-            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
-
-            List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(placeDto.kakaoPlaceId(),
-                List.of());
-
-            PlaceListResponse response = PlaceListResponse.ofDto(
-                placeDto, translatedInfo, userLanguage, bookmarkIds);
-            placeResponseList.add(response);
+        if (userLanguage == Language.KOREAN) {
+            return placeListResponseAssembler.createPlaceListResponseForKorean(placeDtoList, bookmarkIdsMap);
         }
-        return placeResponseList;
+
+        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(userLanguage,
+            placeDtoList);
+        Map<String, PlaceDto> placeDtoMap = placeDtoList.stream()
+            .collect(Collectors.toMap(
+                dto -> dto.placeName() + dto.roadAddress(),
+                Function.identity()
+            ));
+        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap, translatedPlaces,
+            bookmarkIdsMap, userLanguage);
     }
 
     public List<PlaceListResponse> getPlacesByKeyword(
@@ -207,24 +207,20 @@ public class PlaceService {
             user.getId(), kakaoPlaceIdList);
 
         Language userLanguage = user.getLanguage();
-        Map<String, TranslationInfoWithId> translatedPlacesMap = placeTranslationService.getTranslatedPlacesMapIfRequired(
-            userLanguage, keywordPlaces);
 
-        List<PlaceListResponse> placeResponseList = new ArrayList<>(keywordPlaces.size());
-        for (int i = 0; i < keywordPlaces.size(); i++) {
-            PlaceDto placeDto = keywordPlaces.get(i);
-            String key = String.valueOf(i); // 번역 시 사용했던 인덱스를 키로 사용
-            TranslationInfoWithId translatedInfo = translatedPlacesMap.get(key);
-
-            List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(placeDto.kakaoPlaceId(),
-                List.of());
-
-            PlaceListResponse response = PlaceListResponse.ofDto(
-                placeDto, translatedInfo, userLanguage, bookmarkIds);
-            placeResponseList.add(response);
+        if (userLanguage == Language.KOREAN) {
+            return placeListResponseAssembler.createPlaceListResponseForKorean(keywordPlaces, bookmarkIdsMap);
         }
 
-        return placeResponseList;
+        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(userLanguage,
+            keywordPlaces);
+        Map<String, PlaceDto> placeDtoMap = keywordPlaces.stream()
+            .collect(Collectors.toMap(
+                dto -> dto.placeName() + dto.roadAddress(),
+                Function.identity()
+            ));
+        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap, translatedPlaces,
+            bookmarkIdsMap, userLanguage);
     }
 
     @Transactional

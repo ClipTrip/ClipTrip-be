@@ -79,7 +79,14 @@ public class PromptConstants {
         """;
 
     public static final String TRANSLATE_PLACE_INFO_BATCH_PROMPT =
-        "You are a translator. Translate this list of places from Korean to %s. " +
-            "Respond ONLY as a JSON array with 'id', 'translatedName', 'translatedRoadAddress'.\n" +
+        "You are a professional translator. Translate the provided list of places from Korean to %s. "
+            +
+            "The input is a list of JSON objects, and the output must be a single JSON array containing objects with 'index', 'translatedName' and 'translatedRoadAddress' fields. "
+            +
+            "Ensure all string values are enclosed in double quotes. " +
+            "Respond ONLY with the JSON array, with no additional text or explanations. For example: "
+            +
+            "[{\"index\": 1, \"translatedName\": \"Name\", \"translatedRoadAddress\": \"Address\"}].\n"
+            +
             "%s";
 }

@@ -8,10 +8,5 @@ public record PlaceDetailVO(
     String name,
     Set<AccessibilityFeature> accessibilityFeatures
 ) {
-
-    public PlaceDetailVO(Long id, String name, Set<AccessibilityFeature> accessibilityFeatures) {
-        this.id = id;
-        this.name = name;
-        this.accessibilityFeatures = accessibilityFeatures;
-    }
+    
 }

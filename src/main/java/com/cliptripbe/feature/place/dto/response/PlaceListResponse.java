@@ -3,13 +3,13 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
-import com.cliptripbe.feature.place.domain.vo.TranslationInfoWithId;
 import com.cliptripbe.feature.place.dto.PlaceDto;
+import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Builder;
 
 @Builder
@@ -30,9 +30,47 @@ public record PlaceListResponse(
     List<Long> bookmarkedIdList
 ) {
 
+    public static PlaceListResponse ofDto(PlaceDto placeDto, Language language,
+        List<Long> bookmarkedIdList) {
+        return PlaceListResponse.builder()
+            .placeName(placeDto.placeName())
+            .roadAddress(placeDto.roadAddress())
+            .phone(placeDto.phone())
+            .type(PlaceType.findByCode(placeDto.categoryCode()))
+            .longitude(placeDto.longitude())
+            .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
+            .translatedPlaceName(Optional.empty())
+            .translatedRoadAddress(Optional.empty())
+            .language(language)
+            .bookmarkedIdList(bookmarkedIdList)
+            .build();
+    }
+
+    public static PlaceListResponse ofDto(
+        PlaceDto placeDto, TranslatedPlaceAddress tp, List<Long> bookmarkIds, Language language
+    ) {
+        List<Long> safeBookmarkedIdList = bookmarkIds == null || bookmarkIds.isEmpty()
+            ? List.of() : bookmarkIds;
+
+        return PlaceListResponse.builder()
+            .placeName(tp.placeName())
+            .roadAddress(tp.roadAddress())
+            .phone(placeDto.phone())
+            .type(PlaceType.findByCode(placeDto.categoryCode()))
+            .longitude(placeDto.longitude())
+            .latitude(placeDto.latitude())
+            .kakaoPlaceId(placeDto.kakaoPlaceId())
+            .translatedPlaceName(Optional.ofNullable(tp.translationInfo().translatedName()))
+            .translatedRoadAddress(Optional.ofNullable(tp.translationInfo().translatedRoadAddress()))
+            .language(language)
+            .bookmarkedIdList(safeBookmarkedIdList)
+            .build();
+    }
+
     public static PlaceListResponse ofEntity(
         Place place,
-        TranslationInfoWithId translatedInfo,
+        TranslationInfo translatedInfo,
         Language language,
         List<Long> bookmarkedIdList
     ) {
@@ -58,48 +96,6 @@ public record PlaceListResponse(
             .translatedRoadAddress(translatedRoadAddress)
             .language(language)
             .bookmarkedIdList(bookmarkedIdList)
-            .build();
-    }
-
-    public static PlaceListResponse ofDto(
-        PlaceDto placeDto,
-        TranslationInfoWithId translatedInfo,
-        Language language,
-        List<Long> bookmarkedIdList
-    ) {
-        Optional<String> translatedPlaceName = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedName() : null
-        );
-        Optional<String> translatedRoadAddress = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
-        );
-        if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
-            bookmarkedIdList = List.of();
-        }
-        return PlaceListResponse.builder()
-            .placeName(placeDto.placeName())
-            .roadAddress(placeDto.roadAddress())
-            .phone(placeDto.phone())
-            .type(PlaceType.findByCode(placeDto.categoryCode()))
-            .longitude(placeDto.longitude())
-            .latitude(placeDto.latitude())
-            .kakaoPlaceId(placeDto.kakaoPlaceId())
-            .translatedPlaceName(translatedPlaceName)
-            .translatedRoadAddress(translatedRoadAddress)
-            .language(language)
-            .bookmarkedIdList(bookmarkedIdList)
-            .build();
-    }
-
-    public static PlaceListResponse fromDto(PlaceDto placeDto) {
-        return PlaceListResponse.builder()
-            .placeName(placeDto.placeName())
-            .roadAddress(placeDto.roadAddress())
-            .phone(placeDto.phone())
-            .type(PlaceType.findByCode(placeDto.categoryCode()))
-            .longitude(placeDto.longitude())
-            .latitude(placeDto.latitude())
-            .kakaoPlaceId(placeDto.kakaoPlaceId())
             .build();
     }
 
@@ -144,5 +140,14 @@ public record PlaceListResponse(
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
             .build();
+    }
+
+    public static PlaceListResponse ofKorean(PlaceDto placeDto, List<Long> bookmarkIds) {
+        return ofDto(placeDto, Language.KOREAN, bookmarkIds);
+    }
+
+    public static PlaceListResponse ofForeign(PlaceDto placeDto, TranslatedPlaceAddress tp, List<Long> bookmarkIds,
+        Language userLanguage) {
+        return ofDto(placeDto, tp, bookmarkIds, userLanguage);
     }
 }

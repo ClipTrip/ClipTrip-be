@@ -1,6 +1,6 @@
 package com.cliptripbe.global.util;
 
-import com.cliptripbe.feature.place.domain.vo.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
