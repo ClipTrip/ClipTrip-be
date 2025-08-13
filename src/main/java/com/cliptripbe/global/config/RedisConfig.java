@@ -1,6 +1,6 @@
 package com.cliptripbe.global.config;
 
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,17 +30,17 @@ public class RedisConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
-    public RedisTemplate<String, TranslationInfo> translationInfoRedisTemplate(
+    public RedisTemplate<String, TranslationInfoDto> translationInfoRedisTemplate(
         RedisConnectionFactory redisConnectionFactory) {
 
-        RedisTemplate<String, TranslationInfo> redisTemplate = new RedisTemplate<>();
+        RedisTemplate<String, TranslationInfoDto> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(redisConnectionFactory);
 
         redisTemplate.setKeySerializer(new StringRedisSerializer());
 
-        Jackson2JsonRedisSerializer<TranslationInfo> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
+        Jackson2JsonRedisSerializer<TranslationInfoDto> jsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
             objectMapper,
-            TranslationInfo.class
+            TranslationInfoDto.class
         );
 
         redisTemplate.setValueSerializer(jsonRedisSerializer);

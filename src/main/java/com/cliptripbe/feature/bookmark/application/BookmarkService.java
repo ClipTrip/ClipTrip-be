@@ -16,9 +16,10 @@ import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
-import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.util.AccessUtils;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkFinder bookmarkFinder;
     private final PlaceService placeService;
+    private final BookmarkResponseAssembler bookmarkResponseAssembler;
 
     @Transactional
     public Long createBookmark(
@@ -47,6 +49,7 @@ public class BookmarkService {
     @Transactional
     public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request, User user) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+        AccessUtils.checkBookmarkAccess(bookmark, user);
 
         String newName =
             request.bookmarkName() != null ? request.bookmarkName() : bookmark.getName();
@@ -72,7 +75,7 @@ public class BookmarkService {
     @Transactional
     public void addPlaceToBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
@@ -89,7 +92,7 @@ public class BookmarkService {
     @Transactional
     public void deletePlaceFromBookmarkByPlaceId(User user, Long bookmarkId, Long placeId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
@@ -109,7 +112,7 @@ public class BookmarkService {
         String kakaoPlaceId
     ) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
@@ -166,20 +169,26 @@ public class BookmarkService {
         Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
             user.getId(), placeIdList);
 
-        if (user.getLanguage() == KOREAN) {
-            Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-            List<PlaceListResponse> placeListResponses = bookmark.getPlaces().stream()
-                .map(place -> {
-                    List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
-                    return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
-                })
-                .toList();
-            return BookmarkInfoResponse.of(bookmark, placeListResponses);
-        } else {
-            // TODO : 북마크 상세조회 번역 응답부분 작업해야 함(응답때 장소에 대한 북마크id 리스트 응답하는 거 추가해야함)
-            Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
+        Bookmark bookmarkWithPlace = bookmarkFinder.findById(bookmarkId);
 
-            return null;
+        if (user.getLanguage() == KOREAN) {
+            return bookmarkResponseAssembler.createBookmarkResponseForKorean(
+                bookmarkWithPlace,
+                bookmarkIdsMap,
+                user
+            );
+        } else {
+            List<Place> places = bookmarkWithPlace.getBookmarkPlaces().stream()
+                .map(BookmarkPlace::getPlace)
+                .toList();
+            Map<Long, TranslationInfoDto> translationsMap = placeService.getTranslationsForPlaces(places,
+                user.getLanguage());
+            return bookmarkResponseAssembler.createBookmarkResponseForForeign(
+                bookmarkWithPlace,
+                translationsMap,
+                bookmarkIdsMap,
+                user
+            );
         }
     }
 

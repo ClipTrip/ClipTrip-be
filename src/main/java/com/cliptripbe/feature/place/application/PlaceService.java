@@ -50,8 +50,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PlaceService {
 
     private final BookmarkFinder bookmarkFinder;
-
     private final PlaceImageService placeImageService;
+
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
@@ -86,7 +86,6 @@ public class PlaceService {
         return PlaceResponse.ofTranslation(place, bookmarkIds, placeTranslation);
     }
 
-
     public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
         Place place = findOrCreatePlaceByPlaceInfo(request, user.getLanguage());
 
@@ -102,24 +101,6 @@ public class PlaceService {
         }
         return null;
     }
-
-//    @Transactional
-//    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
-//        String kakaoPlaceId = request.kakaoPlaceId();
-//        String placeName = request.placeName();
-//        String address = request.roadAddress();
-//
-//        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
-//            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
-//                .map(p -> {
-//                    p.addKakaoPlaceId(kakaoPlaceId);
-//                    return placeRepository.save(p);
-//                })
-//            )
-//            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
-//        placeTranslationService.registerPlace(place);
-//        return place;
-//    }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
@@ -174,7 +155,6 @@ public class PlaceService {
             return place;
         }
     }
-
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(

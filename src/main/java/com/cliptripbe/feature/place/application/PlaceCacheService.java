@@ -5,7 +5,7 @@ import static com.cliptripbe.global.util.CacheUtils.createTranslatedPlaceKey;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.CacheUtils;
@@ -49,17 +49,17 @@ public class PlaceCacheService {
             .map(dto -> createTranslatedPlaceKey(dto.placeName(), dto.roadAddress(), language))
             .toList();
 
-        List<TranslationInfo> translationInfos = cacheServicePort.findAllByKeys(redisKeys);
+        List<TranslationInfoDto> translationInfoDtos = cacheServicePort.findAllByKeys(redisKeys);
 
         List<PlaceDto> untranslatedPlaces = new ArrayList<>();
         List<TranslatedPlaceAddress> translatedPlaceInfos = new ArrayList<>();
 
         for (int i = 0; i < placeDtoList.size(); i++) {
             PlaceDto placeDto = placeDtoList.get(i);
-            TranslationInfo translationInfo = translationInfos.get(i);
+            TranslationInfoDto translationInfoDto = translationInfoDtos.get(i);
 
-            if (translationInfo != null) {
-                TranslatedPlaceAddress translatedPlaceAddress = TranslatedPlaceAddress.of(placeDto, translationInfo,
+            if (translationInfoDto != null) {
+                TranslatedPlaceAddress translatedPlaceAddress = TranslatedPlaceAddress.of(placeDto, translationInfoDto,
                     language);
                 translatedPlaceInfos.add(translatedPlaceAddress);
             } else {
@@ -69,7 +69,7 @@ public class PlaceCacheService {
         return new TranslationSplitResult(translatedPlaceInfos, untranslatedPlaces);
     }
 
-    public Optional<TranslationInfo> getTranslationInfo(Place place, Language language) {
+    public Optional<TranslationInfoDto> getTranslationInfo(Place place, Language language) {
         String translatedPlaceKey = CacheUtils.createTranslatedPlaceKey(place.getName(),
             place.getAddress().roadAddress(), language);
         return cacheServicePort.retrieveByKey(translatedPlaceKey);
