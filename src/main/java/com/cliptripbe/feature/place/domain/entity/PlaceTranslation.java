@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,6 +37,10 @@ public class PlaceTranslation {
     private String roadAddress;
 
     public static PlaceTranslation of(Place place, TranslationInfo translationInfo, Language language) {
+        Objects.requireNonNull(place, "place must not be null");
+        Objects.requireNonNull(language, "language must not be null");
+        Objects.requireNonNull(translationInfo, "translationInfo must not be null");
+
         return PlaceTranslation.builder()
             .place(place)
             .name(translationInfo.translatedName())
