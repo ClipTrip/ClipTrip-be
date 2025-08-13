@@ -12,6 +12,11 @@ public record TranslationSplitResult(
     List<PlaceDto> untranslatedPlaces
 ) {
 
+    public TranslationSplitResult {
+        translatedPlaces = (translatedPlaces == null) ? List.of() : List.copyOf(translatedPlaces);
+        untranslatedPlaces = (untranslatedPlaces == null) ? List.of() : List.copyOf(untranslatedPlaces);
+    }
+
     public List<TranslatedPlaceAddress> mergeWith(List<TranslatedPlaceAddress> newTranslations) {
         if (newTranslations == null || newTranslations.isEmpty()) {
             return translatedPlaces;
