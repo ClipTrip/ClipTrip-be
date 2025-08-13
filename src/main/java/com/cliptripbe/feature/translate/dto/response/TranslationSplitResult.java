@@ -1,8 +1,11 @@
 package com.cliptripbe.feature.translate.dto.response;
 
+import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
+
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public record TranslationSplitResult(
     List<TranslatedPlaceAddress> translatedPlaces,
@@ -10,9 +13,12 @@ public record TranslationSplitResult(
 ) {
 
     public List<TranslatedPlaceAddress> mergeWith(List<TranslatedPlaceAddress> newTranslations) {
-        List<TranslatedPlaceAddress> allTranslatedPlaces = new ArrayList<>(this.translatedPlaces);
-        allTranslatedPlaces.addAll(newTranslations);
-        return allTranslatedPlaces;
+        if (newTranslations == null || newTranslations.isEmpty()) {
+            return translatedPlaces;
+        }
+        return Stream.concat(this.translatedPlaces.stream(), newTranslations.stream())
+            .filter(distinctByKey(TranslatedPlaceAddress::getCacheKey))
+            .collect(Collectors.toList());
     }
 
 }
