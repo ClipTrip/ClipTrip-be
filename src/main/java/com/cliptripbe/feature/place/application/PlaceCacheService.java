@@ -70,6 +70,9 @@ public class PlaceCacheService {
     }
 
     public Optional<TranslationInfo> getTranslationInfo(Place place, Language language) {
+        if (place == null || place.getName() == null || place.getAddress() == null) {
+            return Optional.empty();
+        }
         String translatedPlaceKey = CacheUtils.createTranslatedPlaceKey(place.getName(),
             place.getAddress().roadAddress(), language);
         return cacheServicePort.retrieveByKey(translatedPlaceKey);
