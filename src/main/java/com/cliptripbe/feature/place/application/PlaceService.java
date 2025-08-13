@@ -5,7 +5,6 @@ import static com.cliptripbe.global.response.type.ErrorType.FAIL_CREATE_PLACE_EN
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
-import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.service.PlaceClassifier;
@@ -47,15 +46,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class PlaceService {
 
-    private static final String S3_PLACE_PREFIX = "place/";
-
-    private final BookmarkRepository bookmarkRepository;
-
     private final BookmarkFinder bookmarkFinder;
 
+    private final PlaceImageService placeImageService;
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
@@ -64,8 +61,6 @@ public class PlaceService {
     private final PlaceTranslationFinder placeTranslationFinder;
 
     private final PlaceSearchPort placeSearchPort;
-    private final FileStoragePort fileStoragePort;
-    private final PlaceImageProviderPort placeImageProviderPort;
 
     private final EntityManager entityManager;
 
@@ -76,21 +71,37 @@ public class PlaceService {
         Place place = placeFinder.getPlaceById(placeId);
 
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
-            String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
-            byte[] imageBytes = placeImageProviderPort.getPhotoByAddress(searchKeyWord);
-            String imageUrl = fileStoragePort.upload(S3_PLACE_PREFIX, imageBytes);
-            place.addImageUrl(imageUrl);
+            placeImageService.savePlaceImage(place);
         }
 
-        boolean bookmarked = bookmarkRepository.isPlaceBookmarkedByUser(user.getId(),
-            place.getId());
+        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+            user.getId(), place.getId());
+
+        // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarked);
+            return PlaceResponse.of(place, bookmarkIds);
         }
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponse.of(place, bookmarked, placeTranslation);
+        return PlaceResponse.ofTranslation(place, bookmarkIds, placeTranslation);
+    }
+
+
+    public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
+        Place place = findOrCreatePlaceByPlaceInfo(request);
+
+        if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
+            placeImageService.savePlaceImage(place);
+        }
+        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+            user.getId(), place.getId());
+
+        // TODO : 여기도 번역 적용해주세요.
+        if (user.getLanguage() == Language.KOREAN) {
+            return PlaceResponse.of(place, bookmarkIds);
+        }
+        return null;
     }
 
 //    @Transactional
@@ -113,7 +124,7 @@ public class PlaceService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request) {
-        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
+        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함 -> user 언어 받아야 할 거 같음
         String kakaoPlaceId = request.kakaoPlaceId();
         try {
             if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
