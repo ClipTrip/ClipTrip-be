@@ -74,4 +74,8 @@ public class BookmarkFinder {
                     ))
             ));
     }
+
+    public List<Long> findBookmarkIdsByPlaceId(Long userId, Long placeId) {
+        return bookmarkRepository.findPlaceIdsByUserAndPlaceId(userId, placeId);
+    }
 }

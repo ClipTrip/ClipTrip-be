@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.place.api;
 
 import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
@@ -15,10 +16,18 @@ import java.util.List;
 public interface PlaceControllerDocs {
 
     @Operation(
-        summary = "장소카드 상세조회, 로그인 필요",
-        description = "장소 카드 상세 조회입니다. 유저가 해당 장소에 북마크를 했는지 여부를 알려줍니다.")
+        summary = "장소카드 상세조회 by placeId, 로그인 필요",
+        description = "장소 카드 상세 조회입니다 by placeId. 물품보관소, 북마크, 일정에서 장소 카드로 넘어갈 때 사용됩니다.")
     ApiResponse<PlaceResponse> getPlaceById(
         Long placeId,
+        CustomerDetails customerDetails
+    );
+
+    @Operation(
+        summary = "장소카드 상세조회 by kakaoPlaceId, 로그인 필요",
+        description = "장소 카드 상세 조회입니다 by kakaoPlaceId. 키워드, 카테고리 검색을 통해 장소 카드로 넘어갈 때 사용됩니다.")
+    ApiResponse<PlaceResponse> findOrCreatePlaceByKakaoPlaceId(
+        PlaceInfoRequest request,
         CustomerDetails customerDetails
     );
 
