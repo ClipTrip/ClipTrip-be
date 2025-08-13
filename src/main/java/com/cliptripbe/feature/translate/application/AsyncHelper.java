@@ -4,6 +4,7 @@ import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_P
 
 import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.JsonUtils;
 import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
@@ -27,7 +28,7 @@ public class AsyncHelper {
      * 'threadPoolTaskExecutor' 스레드 풀을 사용하여 ChatGpt API 호출과 같은
      * 오래 걸리는 작업을 메인 스레드와 분리해 애플리케이션의 응답성을 향상시킵니다.
      */
-    
+
     private final JsonUtils jsonUtils;
     private final ChatGptAdapter chatGptAdapter;
 
@@ -44,5 +45,16 @@ public class AsyncHelper {
         List<TranslationInfoWithIndex> translationInfoWithIndices = jsonUtils.parseToList(responseJson,
             TranslationInfoWithIndex.class);
         return CompletableFuture.completedFuture(translationInfoWithIndices);
+    }
+
+    @Async("threadPoolTaskExecutor")
+    public CompletableFuture<TranslationInfo> asyncTranslateSinglePlace(String prompt) {
+        try {
+            String response = chatGptAdapter.ask(prompt);
+            TranslationInfo translationInfo = jsonUtils.readValue(response, TranslationInfo.class);
+            return CompletableFuture.completedFuture(translationInfo);
+        } catch (Exception e) {
+            return CompletableFuture.failedFuture(e);
+        }
     }
 }

@@ -12,7 +12,6 @@ import com.cliptripbe.global.response.type.ErrorType;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.global.util.JsonUtils;
 import com.cliptripbe.global.util.prompt.type.PromptConstants;
-import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -24,7 +23,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PlaceTranslator {
 
-    private final ChatGptAdapter chatGptAdapter;
     private final JsonUtils jsonUtils;
     private final static Integer BATCH_SIZE = 5;
     private final AsyncHelper asyncHelper;
@@ -41,14 +39,21 @@ public class PlaceTranslator {
     }
 
     public TranslationInfo translatePlaceInfo(Place place, Language language) {
+        if (place == null || place.getName() == null || place.getAddress() == null
+            || place.getAddress().roadAddress() == null) {
+            throw new CustomException(ErrorType.INTERNAL_SERVER_ERROR);
+        }
         String prompt = PromptConstants.TRANSLATE_PLACE_INFO.formatted(
             language.getName(),
             place.getName(),
             place.getAddress().roadAddress()
         );
-        String response = chatGptAdapter.ask(prompt);
-
-        return jsonUtils.readValue(response, TranslationInfo.class);
+        try {
+            CompletableFuture<TranslationInfo> futureTranslation = asyncHelper.asyncTranslateSinglePlace(prompt);
+            return futureTranslation.get();
+        } catch (Exception e) {
+            throw new CustomException(ErrorType.FAIL_GPT_TRANSLATE);
+        }
     }
 
     private List<TranslatedPlaceAddress> getTranslatedPlaceAddressList(

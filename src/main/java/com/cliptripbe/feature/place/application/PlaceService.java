@@ -92,25 +92,7 @@ public class PlaceService {
             user.getLanguage());
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
-
-//    @Transactional
-//    public Place findOrCreatePlaceByPlaceInfo1(PlaceInfoRequest request) {
-//        String kakaoPlaceId = request.kakaoPlaceId();
-//        String placeName = request.placeName();
-//        String address = request.roadAddress();
-//
-//        Place place = placeFinder.findByKakaoPlaceId(kakaoPlaceId)
-//            .or(() -> placeFinder.getOptionPlaceByPlaceInfo(placeName, address)
-//                .map(p -> {
-//                    p.addKakaoPlaceId(kakaoPlaceId);
-//                    return placeRepository.save(p);
-//                })
-//            )
-//            .orElseGet(() -> placeRegister.createPlaceFromInfo(request));
-//        placeTranslationService.registerPlace(place);
-//        return place;
-//    }
-
+    
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
         // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
