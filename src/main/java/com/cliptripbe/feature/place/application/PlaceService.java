@@ -92,7 +92,7 @@ public class PlaceService {
             user.getLanguage());
         return PlaceResponse.of(place, bookmarked, placeTranslation);
     }
-    
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
         // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
@@ -146,7 +146,6 @@ public class PlaceService {
             return place;
         }
     }
-
 
     @Transactional(readOnly = true)
     public List<PlaceListResponse> getPlacesByCategory(
@@ -324,6 +323,4 @@ public class PlaceService {
     public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
-
-
 }
