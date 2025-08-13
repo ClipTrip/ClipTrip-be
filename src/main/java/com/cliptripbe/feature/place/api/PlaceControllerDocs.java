@@ -26,7 +26,7 @@ public interface PlaceControllerDocs {
     @Operation(
         summary = "장소카드 상세조회 by kakaoPlaceId, 로그인 필요",
         description = "장소 카드 상세 조회입니다 by kakaoPlaceId. 키워드, 카테고리 검색을 통해 장소 카드로 넘어갈 때 사용됩니다.")
-    ApiResponse<PlaceResponse> getPlaceByKakaoPlaceId(
+    ApiResponse<PlaceResponse> findOrCreatePlaceByKakaoPlaceId(
         PlaceInfoRequest request,
         CustomerDetails customerDetails
     );

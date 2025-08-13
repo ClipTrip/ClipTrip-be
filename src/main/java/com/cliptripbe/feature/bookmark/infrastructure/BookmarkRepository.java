@@ -74,7 +74,7 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Long> findPlaceIdsByBookmarkId(@Param("bookmarkId") Long bookmarkId);
 
     @Query("""
-            SELECT p.id
+            SELECT b.id
             FROM BookmarkPlace bp
             JOIN bp.place p
             JOIN bp.bookmark b

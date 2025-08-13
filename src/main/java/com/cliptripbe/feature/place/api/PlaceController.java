@@ -44,7 +44,7 @@ public class PlaceController implements PlaceControllerDocs {
 
     @Override
     @PostMapping("/by-external-id")
-    public ApiResponse<PlaceResponse> getPlaceByKakaoPlaceId(
+    public ApiResponse<PlaceResponse> findOrCreatePlaceByKakaoPlaceId(
         @RequestBody PlaceInfoRequest request,
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
