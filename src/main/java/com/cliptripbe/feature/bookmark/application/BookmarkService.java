@@ -19,6 +19,7 @@ import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.util.AccessUtils;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class BookmarkService {
     @Transactional
     public void updateBookmark(Long bookmarkId, UpdateBookmarkRequest request, User user) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
+        AccessUtils.checkBookmarkAccess(bookmark, user);
 
         String newName =
             request.bookmarkName() != null ? request.bookmarkName() : bookmark.getName();
@@ -72,7 +74,7 @@ public class BookmarkService {
     @Transactional
     public void addPlaceToBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
@@ -89,7 +91,7 @@ public class BookmarkService {
     @Transactional
     public void deletePlaceFromBookmarkByPlaceId(User user, Long bookmarkId, Long placeId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
@@ -109,7 +111,7 @@ public class BookmarkService {
         String kakaoPlaceId
     ) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         if (!bookmark.getUser().getId().equals(user.getId())) {
             throw new CustomException(ACCESS_DENIED_EXCEPTION);
         }
