@@ -6,7 +6,7 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
 import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;
@@ -28,9 +28,9 @@ public class PlaceTranslationService {
         //**TODO 여러 장소를 받자.
         placeTranslationRepository.findByPlaceAndLanguage(place, language)
             .orElseGet(() -> {
-                TranslationInfo translationInfo = placeCacheService.getTranslationInfo(place, language)
+                TranslationInfoDto translationInfoDto = placeCacheService.getTranslationInfo(place, language)
                     .orElseGet(() -> placeTranslator.translatePlaceInfo(place, language));
-                PlaceTranslation translation = PlaceTranslation.of(place, translationInfo, language);
+                PlaceTranslation translation = PlaceTranslation.of(place, translationInfoDto, language);
                 place.addTranslation(translation);
                 return placeTranslationRepository.saveAndFlush(translation);
             });
@@ -49,5 +49,9 @@ public class PlaceTranslationService {
         placeCacheService.cachePlace(newTranslations, userLanguage);
 
         return result.mergeWith(newTranslations);
+    }
+
+    public List<PlaceTranslation> findByPlaceIdInAndLanguage(List<Long> placeIds, Language language) {
+        return placeTranslationRepository.findByPlaceIdInAndLanguage(placeIds, language);
     }
 }

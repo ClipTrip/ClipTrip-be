@@ -23,6 +23,7 @@ import com.cliptripbe.feature.place.dto.response.PlaceResponse;
 import com.cliptripbe.feature.place.infrastructure.PlaceRepository;
 import com.cliptripbe.feature.translate.application.PlaceTranslationService;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -343,5 +344,16 @@ public class PlaceService {
         return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
     }
 
-
+    @Transactional
+    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places, Language language) {
+        List<Long> placeIds = places.stream()
+            .map(Place::getId)
+            .toList();
+        List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(placeIds, language);
+        return translations.stream()
+            .collect(Collectors.toMap(
+                translation -> translation.getPlace().getId(),
+                TranslationInfoDto::fromEntity
+            ));
+    }
 }
