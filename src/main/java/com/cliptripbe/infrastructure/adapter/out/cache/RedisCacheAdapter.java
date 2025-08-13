@@ -1,6 +1,6 @@
 package com.cliptripbe.infrastructure.adapter.out.cache;
 
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.infrastructure.adapter.out.cache.dto.TranslatedPlaceCacheRequest;
 import com.cliptripbe.infrastructure.port.cache.CacheServicePort;
 import java.util.List;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisCacheAdapter implements CacheServicePort {
 
-    private final RedisTemplate<String, TranslationInfo> translationInfoRedisTemplate;
+    private final RedisTemplate<String, TranslationInfoDto> translationInfoRedisTemplate;
     private final static Integer TIME_OUT = 7;
 
     @Override
@@ -29,7 +29,7 @@ public class RedisCacheAdapter implements CacheServicePort {
                 continue;
             }
             String key = request.key();
-            TranslationInfo value = request.translationInfo();
+            TranslationInfoDto value = request.translationInfoDto();
             if (key == null || key.isBlank() || value == null) {
                 continue;
             }
@@ -38,16 +38,16 @@ public class RedisCacheAdapter implements CacheServicePort {
     }
 
     @Override
-    public List<TranslationInfo> findAllByKeys(List<String> keys) {
+    public List<TranslationInfoDto> findAllByKeys(List<String> keys) {
         return translationInfoRedisTemplate.opsForValue().multiGet(keys);
     }
 
     @Override
-    public Optional<TranslationInfo> retrieveByKey(String translatedPlaceKey) {
+    public Optional<TranslationInfoDto> retrieveByKey(String translatedPlaceKey) {
         if (translatedPlaceKey == null || translatedPlaceKey.isBlank()) {
             return Optional.empty();
         }
-        TranslationInfo result = translationInfoRedisTemplate.opsForValue().get(translatedPlaceKey);
+        TranslationInfoDto result = translationInfoRedisTemplate.opsForValue().get(translatedPlaceKey);
         return Optional.ofNullable(result);
     }
 }

@@ -9,17 +9,17 @@ import lombok.Builder;
 public record TranslatedPlaceAddress(
     String placeName,
     String roadAddress,
-    TranslationInfo translationInfo,
+    TranslationInfoDto translationInfoDto,
     Language language
 ) {
 
-    public static TranslatedPlaceAddress of(PlaceDto placeDto, TranslationInfo translationInfo,
+    public static TranslatedPlaceAddress of(PlaceDto placeDto, TranslationInfoDto translationInfoDto,
         Language language) {
         return TranslatedPlaceAddress
             .builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())
-            .translationInfo(translationInfo)
+            .translationInfoDto(translationInfoDto)
             .language(language)
             .build();
     }

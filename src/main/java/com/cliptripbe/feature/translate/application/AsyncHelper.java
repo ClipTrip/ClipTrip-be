@@ -4,7 +4,7 @@ import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_P
 
 import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfo;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.util.JsonUtils;
 import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
@@ -48,10 +48,10 @@ public class AsyncHelper {
     }
 
     @Async("threadPoolTaskExecutor")
-    public CompletableFuture<TranslationInfo> asyncTranslateSinglePlace(String prompt) {
+    public CompletableFuture<TranslationInfoDto> asyncTranslateSinglePlace(String prompt) {
         try {
             String response = chatGptAdapter.ask(prompt);
-            TranslationInfo translationInfo = jsonUtils.readValue(response, TranslationInfo.class);
+            TranslationInfoDto translationInfo = jsonUtils.readValue(response, TranslationInfoDto.class);
             return CompletableFuture.completedFuture(translationInfo);
         } catch (Exception e) {
             return CompletableFuture.failedFuture(e);

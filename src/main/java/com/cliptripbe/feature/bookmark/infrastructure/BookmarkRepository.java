@@ -20,12 +20,6 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
     List<Bookmark> findDefaultBookmarksExcludingName(
         @Param("excludedBookmarkName") String excludedBookmarkName);
 
-    @Query("""
-            SELECT COUNT(bp) > 0
-            FROM BookmarkPlace bp
-            WHERE bp.bookmark.user.id = :userId AND bp.place.id = :placeId
-        """)
-    boolean isPlaceBookmarkedByUser(@Param("userId") Long userId, @Param("placeId") Long placeId);
 
     @Query("SELECT DISTINCT b FROM Bookmark b " +
         "LEFT JOIN FETCH b.bookmarkPlaces bp " +
@@ -78,5 +72,18 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
         order by bp.id
     """)
     List<Long> findPlaceIdsByBookmarkId(@Param("bookmarkId") Long bookmarkId);
+
+    @Query("""
+            SELECT b.id
+            FROM BookmarkPlace bp
+            JOIN bp.place p
+            JOIN bp.bookmark b
+            WHERE p.id = :placeId
+              AND b.user.id = :userId
+        """)
+    List<Long> findPlaceIdsByUserAndPlaceId(
+        @Param("placeId") Long placeId,
+        @Param("userId") Long userId
+    );
 }
 
