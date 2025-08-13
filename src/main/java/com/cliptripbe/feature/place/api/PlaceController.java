@@ -3,7 +3,9 @@ package com.cliptripbe.feature.place.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.application.PlaceService;
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
@@ -18,6 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +39,18 @@ public class PlaceController implements PlaceControllerDocs {
     ) {
         PlaceResponse place = placeService.getPlaceById(placeId, customerDetails.getUser());
         return ApiResponse.success(SuccessType.OK, place);
+    }
+
+
+    @Override
+    @PostMapping("/by-external-id")
+    public ApiResponse<PlaceResponse> findOrCreatePlaceByKakaoPlaceId(
+        @RequestBody PlaceInfoRequest request,
+        @AuthenticationPrincipal CustomerDetails customerDetails
+    ) {
+        PlaceResponse response = placeService.findOrCreateByKakaoPlaceId(
+            request, customerDetails.getUser());
+        return ApiResponse.success(SuccessType.OK, response);
     }
 
     @GetMapping("/category")

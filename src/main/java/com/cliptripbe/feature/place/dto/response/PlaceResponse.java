@@ -3,6 +3,8 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
+import com.cliptripbe.feature.place.domain.type.PlaceType;
+import java.util.List;
 import java.util.Set;
 import lombok.Builder;
 
@@ -12,32 +14,34 @@ public record PlaceResponse(
     String placeName,
     String roadAddress,
     String phone,
-    String type,
+    PlaceType type,
     double longitude,
     double latitude,
     Set<AccessibilityFeature> accessibilityFeatures,
-    Boolean bookmarked,
-    String imageUrl
+    String imageUrl,
+    List<Long> bookmarkedIdList,
+    String kakaoPlaceId
 ) {
 
-    public static PlaceResponse of(Place place, Boolean bookmarked) {
+    public static PlaceResponse of(Place place, List<Long> bookmarkedIdList) {
         return PlaceResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
             .roadAddress(place.getAddress().roadAddress())
             .phone(place.getPhoneNumber())
-            .type(place.getPlaceType().getKorName())
+            .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
-            .bookmarked(bookmarked)
             .imageUrl(place.getImageUrl())
+            .bookmarkedIdList(bookmarkedIdList)
+            .kakaoPlaceId(place.getKakaoPlaceId())
             .build();
     }
 
-    public static PlaceResponse of(
+    public static PlaceResponse ofTranslation(
         Place place,
-        Boolean bookmarked,
+        List<Long> bookmarkedIdList,
         PlaceTranslation placeTranslation
     ) {
         return PlaceResponse.builder()
@@ -45,12 +49,13 @@ public record PlaceResponse(
             .placeName(placeTranslation.getName())
             .roadAddress(placeTranslation.getRoadAddress())
             .phone(place.getPhoneNumber())
-            .type(place.getPlaceType().getEngName())
+            .type(place.getPlaceType())
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
-            .bookmarked(bookmarked)
             .imageUrl(place.getImageUrl())
+            .bookmarkedIdList(bookmarkedIdList)
+            .kakaoPlaceId(place.getKakaoPlaceId())
             .build();
     }
 }
