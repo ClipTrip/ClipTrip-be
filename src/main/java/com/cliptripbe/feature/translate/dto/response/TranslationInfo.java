@@ -10,6 +10,10 @@ public record TranslationInfo(
 ) {
 
     public static TranslationInfo from(TranslationInfoWithIndex translatedInfo) {
+        if (translatedInfo == null) {
+            return null;
+        }
+
         return TranslationInfo.builder()
             .translatedName(translatedInfo.translatedName())
             .translatedRoadAddress(translatedInfo.translatedRoadAddress())
