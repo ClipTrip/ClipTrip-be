@@ -5,10 +5,12 @@ import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
+import com.cliptripbe.feature.schedule.dto.request.PlaceWithOrderRequest;
 import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
@@ -41,7 +43,7 @@ public class ScheduleService {
     public void updateSchedule(
         User user,
         Long scheduleId,
-        UpdateScheduleRequest updateSchedule
+        UpdateScheduleRequest request
     ) {
         Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
 
@@ -49,20 +51,34 @@ public class ScheduleService {
             throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
         }
 
-        schedule.modifyInfo(updateSchedule.scheduleName(), updateSchedule.description());
-        schedule.clear();
+        if (request.scheduleName() != null) {
+            schedule.modifyName(request.scheduleName());
+        }
 
-        Integer placeOrder = 0;
-        List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(
-            updateSchedule.placeInfoRequests());
-        for (Place place : places) {
-            SchedulePlace newPlace = SchedulePlace.builder()
-                .place(place)
-                .schedule(schedule)
-                .placeOrder(placeOrder)
-                .build();
-            schedule.addSchedulePlace(newPlace);
-            placeOrder++;
+        if (request.description() != null) {
+            schedule.modifyDescription(request.description());
+        }
+
+        if (request.placeInfoRequests() != null && !request.placeInfoRequests().isEmpty()) {
+            schedule.clearSchedulePlaceList();
+
+            List<PlaceInfoRequest> placeInfoRequests = request.placeInfoRequests().stream()
+                .map(PlaceWithOrderRequest::placeInfo)
+                .toList();
+
+            List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(placeInfoRequests);
+
+            for (int i = 0; i < request.placeInfoRequests().size(); i++) {
+                PlaceWithOrderRequest placeWithOrder = request.placeInfoRequests().get(i);
+                Place place = places.get(i);
+
+                SchedulePlace newPlace = SchedulePlace.builder()
+                    .place(place)
+                    .schedule(schedule)
+                    .placeOrder(placeWithOrder.placeOrder())
+                    .build();
+                schedule.addSchedulePlace(newPlace);
+            }
         }
     }
 

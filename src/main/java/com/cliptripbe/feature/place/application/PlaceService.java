@@ -334,17 +334,55 @@ public class PlaceService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
-        return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
+    @Transactional
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request) {
+        if (request == null || request.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PlaceDto> placeDtoList = request.stream()
+            .map(PlaceDto::fromDto)
+            .toList();
+
+        List<Place> allPlaces = createPlaceAll(placeDtoList);
+
+        Map<String, Place> placeByKakaoId = allPlaces.stream()
+            .filter(p -> p.getKakaoPlaceId() != null)
+            .collect(Collectors.toMap(Place::getKakaoPlaceId, Function.identity()));
+
+        Map<String, Place> placeByAddressName = allPlaces.stream()
+            .filter(p -> p.getAddress().roadAddress() != null && p.getName() != null)
+            .collect(Collectors.toMap(
+                p -> p.getName() + "|" + p.getAddress().roadAddress(),
+                Function.identity()
+            ));
+
+        return request.stream()
+            .map(placeRequest -> {
+                if (placeRequest.kakaoPlaceId() != null && !placeRequest.kakaoPlaceId().trim()
+                    .isEmpty()) {
+                    Place place = placeByKakaoId.get(placeRequest.kakaoPlaceId());
+                    if (place != null) {
+                        return place;
+                    }
+                }
+                // key : placeName / value : roadAddress
+                String key = placeRequest.placeName() + "|" + placeRequest.roadAddress();
+                return placeByAddressName.get(key);
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Transactional
-    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places,
-        Language language) {
+    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(
+        List<Place> places,
+        Language language
+    ) {
         List<Long> placeIds = places.stream()
             .map(Place::getId)
             .toList();
+
         List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(
             placeIds, language);
         return translations.stream()

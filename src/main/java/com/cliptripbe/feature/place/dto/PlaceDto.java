@@ -3,6 +3,7 @@ package com.cliptripbe.feature.place.dto;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
+import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.infrastructure.adapter.out.kakao.dto.KakaoMapResponse;
 import lombok.Builder;
 
@@ -47,6 +48,19 @@ public record PlaceDto(
             )
             .placeType(PlaceType.findByCode(categoryCode))
             .kakaoPlaceId(kakaoPlaceId)
+            .build();
+    }
+
+    public static PlaceDto fromDto(PlaceInfoRequest request) {
+        return PlaceDto.builder()
+            .kakaoPlaceId(request.kakaoPlaceId())
+            .placeName(request.placeName())
+            .address(request.roadAddress())
+            .roadAddress(request.roadAddress())
+            .phone(request.phone())
+            .categoryCode(request.type() != null ? request.type().getCode() : null)
+            .longitude(request.longitude())
+            .latitude(request.latitude())
             .build();
     }
 }
