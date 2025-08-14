@@ -351,7 +351,9 @@ public class PlaceService {
             .collect(Collectors.toMap(Place::getKakaoPlaceId, Function.identity()));
 
         Map<String, Place> placeByAddressName = allPlaces.stream()
-            .filter(p -> p.getAddress().roadAddress() != null && p.getName() != null)
+            .filter(p -> p.getAddress() != null
+                && p.getAddress().roadAddress() != null
+                && p.getName() != null)
             .collect(Collectors.toMap(
                 p -> p.getName() + "|" + p.getAddress().roadAddress(),
                 Function.identity()
