@@ -11,6 +11,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -49,7 +51,7 @@ public class GooglePlacesAdapter implements PlaceImageProviderPort {
             .orElseThrow(() -> new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
 
         String photoReference = photoDto.photoReference();
-        byte[] photoBytes = fetchPhotoByReference(photoReference);
+        byte[] photoBytes = fetchGooglePlacePhoto(photoReference);
         byte[] responseBytes = Optional.ofNullable(photoBytes)
             .filter(bytes -> bytes.length > 0)
             .orElseThrow(() -> new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE));
@@ -59,8 +61,8 @@ public class GooglePlacesAdapter implements PlaceImageProviderPort {
         return responseBytes;
     }
 
-    private byte[] fetchPhotoByReference(String photoReference) {
-        ResponseEntity<Void> initial = googleMapsRestClient.get()
+    public byte[] fetchGooglePlacePhoto(String photoReference) {
+        ResponseEntity<byte[]> resp = googleMapsRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/maps/api/place/photo")
                 .queryParam("photoreference", photoReference)
@@ -68,13 +70,21 @@ public class GooglePlacesAdapter implements PlaceImageProviderPort {
                 .queryParam("key", restClientConfig.getGoogleApiKey())
                 .build()
             )
+            .header(HttpHeaders.ACCEPT, MediaType.IMAGE_JPEG_VALUE + ", " + MediaType.ALL_VALUE)
             .retrieve()
-            .toBodilessEntity();
+            .toEntity(byte[].class);
 
-        if (initial.getStatusCode().is3xxRedirection()) {
-            String redirectUrl = initial.getHeaders().getLocation().toString();
+        // 2xx
+        if (resp.getStatusCode().is2xxSuccessful() && resp.hasBody()) {
+            return resp.getBody();
+        }
+
+        // 3xx
+        if (resp.getStatusCode().is3xxRedirection() && resp.getHeaders().getLocation() != null) {
+            String redirectUrl = resp.getHeaders().getLocation().toString();
             ResponseEntity<byte[]> photoResp = googleMapsRestClient.get()
                 .uri(redirectUrl)
+                .header(HttpHeaders.ACCEPT, MediaType.IMAGE_JPEG_VALUE + ", " + MediaType.ALL_VALUE)
                 .retrieve()
                 .toEntity(byte[].class);
 
@@ -82,6 +92,7 @@ public class GooglePlacesAdapter implements PlaceImageProviderPort {
                 return photoResp.getBody();
             }
         }
+
         throw new CustomException(GOOGLE_PLACES_EMPTY_RESPONSE);
     }
 }

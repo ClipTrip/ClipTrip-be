@@ -174,17 +174,20 @@ public class PlaceService {
         Language userLanguage = user.getLanguage();
 
         if (userLanguage == Language.KOREAN) {
-            return placeListResponseAssembler.createPlaceListResponseForKorean(placeDtoList, bookmarkIdsMap);
+            return placeListResponseAssembler.createPlaceListResponseForKorean(placeDtoList,
+                bookmarkIdsMap);
         }
 
-        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(userLanguage,
+        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(
+            userLanguage,
             placeDtoList);
         Map<String, PlaceDto> placeDtoMap = placeDtoList.stream()
             .collect(Collectors.toMap(
                 dto -> dto.placeName() + dto.roadAddress(),
                 Function.identity()
             ));
-        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap, translatedPlaces,
+        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap,
+            translatedPlaces,
             bookmarkIdsMap, userLanguage);
     }
 
@@ -205,17 +208,20 @@ public class PlaceService {
         Language userLanguage = user.getLanguage();
 
         if (userLanguage == Language.KOREAN) {
-            return placeListResponseAssembler.createPlaceListResponseForKorean(keywordPlaces, bookmarkIdsMap);
+            return placeListResponseAssembler.createPlaceListResponseForKorean(keywordPlaces,
+                bookmarkIdsMap);
         }
 
-        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(userLanguage,
+        List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(
+            userLanguage,
             keywordPlaces);
         Map<String, PlaceDto> placeDtoMap = keywordPlaces.stream()
             .collect(Collectors.toMap(
                 dto -> dto.placeName() + dto.roadAddress(),
                 Function.identity()
             ));
-        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap, translatedPlaces,
+        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap,
+            translatedPlaces,
             bookmarkIdsMap, userLanguage);
     }
 
@@ -334,11 +340,13 @@ public class PlaceService {
     }
 
     @Transactional
-    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places, Language language) {
+    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places,
+        Language language) {
         List<Long> placeIds = places.stream()
             .map(Place::getId)
             .toList();
-        List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(placeIds, language);
+        List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(
+            placeIds, language);
         return translations.stream()
             .collect(Collectors.toMap(
                 translation -> translation.getPlace().getId(),

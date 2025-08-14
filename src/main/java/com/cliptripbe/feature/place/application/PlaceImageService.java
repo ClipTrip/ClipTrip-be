@@ -5,6 +5,7 @@ import com.cliptripbe.infrastructure.port.google.PlaceImageProviderPort;
 import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class PlaceImageService {
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
 
+    @Transactional
     public void savePlaceImage(Place place) {
         String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
         byte[] imageBytes = placeImageProviderPort.getPhotoByAddress(searchKeyWord);

@@ -41,7 +41,6 @@ public class PlaceController implements PlaceControllerDocs {
         return ApiResponse.success(SuccessType.OK, place);
     }
 
-
     @Override
     @PostMapping("/by-external-id")
     public ApiResponse<PlaceResponse> findOrCreatePlaceByKakaoPlaceId(
