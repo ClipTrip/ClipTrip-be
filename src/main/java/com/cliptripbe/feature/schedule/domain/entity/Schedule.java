@@ -62,12 +62,16 @@ public class Schedule {
         this.schedulePlaceList.add(schedulePlace);
     }
 
-    public void modifyInfo(String name, String description) {
+    public void modifyName(String name) {
         this.name = name;
+    }
+
+    public void modifyDescription(String description) {
         this.description = description;
     }
 
-    public void clear() {
+    public void clearSchedulePlaceList() {
         this.schedulePlaceList.clear();
     }
 }
+

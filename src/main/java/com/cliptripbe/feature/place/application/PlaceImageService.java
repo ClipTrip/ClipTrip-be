@@ -16,7 +16,7 @@ public class PlaceImageService {
     private final FileStoragePort fileStoragePort;
     private final PlaceImageProviderPort placeImageProviderPort;
 
-    @Transactional
+
     public void savePlaceImage(Place place) {
         String searchKeyWord = place.getName() + " " + place.getAddress().roadAddress();
         byte[] imageBytes = placeImageProviderPort.getPhotoByAddress(searchKeyWord);

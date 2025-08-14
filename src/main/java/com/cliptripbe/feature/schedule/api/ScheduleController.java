@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -38,19 +39,19 @@ public class ScheduleController implements ScheduleControllerDocs {
     }
 
     @Override
-    @PutMapping("/{scheduleId}")
-    public ApiResponse<?> updateSchedule(
+    @PatchMapping("/{scheduleId}")
+    public ApiResponse<Long> updateSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable Long scheduleId,
         @RequestBody UpdateScheduleRequest updateSchedule
     ) {
         scheduleService.updateSchedule(customerDetails.getUser(), scheduleId, updateSchedule);
-        return ApiResponse.success(SuccessType.OK);
+        return ApiResponse.success(SuccessType.OK, scheduleId);
     }
 
     @Override
     @GetMapping()
-    public ApiResponse<?> getUserScheduleList(
+    public ApiResponse<List<ScheduleListResponse>> getUserScheduleList(
         @AuthenticationPrincipal CustomerDetails customerDetails
     ) {
         List<ScheduleListResponse> list = scheduleService.getUserScheduleList(
@@ -60,7 +61,7 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     @Override
     @GetMapping("/{scheduleId}")
-    public ApiResponse<?> getUserSchedule(
+    public ApiResponse<ScheduleResponse> getUserSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId
     ) {
@@ -72,7 +73,7 @@ public class ScheduleController implements ScheduleControllerDocs {
 
     @Override
     @DeleteMapping("/{scheduleId}")
-    public ApiResponse<?> deleteUserSchedule(
+    public ApiResponse<Long> deleteUserSchedule(
         @AuthenticationPrincipal CustomerDetails customerDetails,
         @PathVariable(value = "scheduleId") Long scheduleId) {
         scheduleService.deleteSchedule(customerDetails.getUser(), scheduleId);

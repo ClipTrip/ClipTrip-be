@@ -78,12 +78,13 @@ BookmarkRepository extends JpaRepository<Bookmark, Long> {
             FROM BookmarkPlace bp
             JOIN bp.place p
             JOIN bp.bookmark b
-            WHERE p.id = :placeId
-              AND b.user.id = :userId
+            WHERE b.user.id = :userId
+              AND p.id = :placeId
+                      
         """)
-    List<Long> findPlaceIdsByUserAndPlaceId(
-        @Param("placeId") Long placeId,
-        @Param("userId") Long userId
+    List<Long> findBookmarkIdsByUserIdAndPlaceId(
+        @Param("userId") Long userId,
+        @Param("placeId") Long placeId
     );
 }
 

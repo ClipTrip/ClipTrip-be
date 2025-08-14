@@ -55,6 +55,7 @@ public class PlaceService {
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
+    private final PlaceListResponseAssembler placeListResponseAssembler;
     private final PlaceRepository placeRepository;
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
@@ -63,9 +64,7 @@ public class PlaceService {
 
     private final EntityManager entityManager;
 
-    private final PlaceListResponseAssembler placeListResponseAssembler;
 
-    @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
@@ -73,17 +72,17 @@ public class PlaceService {
             placeImageService.savePlaceImage(place);
         }
 
-        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+        List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkIds);
+            return PlaceResponse.of(place, bookmarkedIdList);
         }
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponse.ofTranslation(place, bookmarkIds, placeTranslation);
+        return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation);
     }
 
     public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
@@ -92,12 +91,12 @@ public class PlaceService {
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             placeImageService.savePlaceImage(place);
         }
-        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+        List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkIds);
+            return PlaceResponse.of(place, bookmarkedIdList);
         }
         return null;
     }
@@ -334,17 +333,57 @@ public class PlaceService {
             .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> placeInfoRequests) {
-        return placeFinder.findExistingPlaceByAddress(placeInfoRequests);
+    @Transactional
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request) {
+        if (request == null || request.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<PlaceDto> placeDtoList = request.stream()
+            .map(PlaceDto::fromDto)
+            .toList();
+
+        List<Place> allPlaces = createPlaceAll(placeDtoList);
+
+        Map<String, Place> placeByKakaoId = allPlaces.stream()
+            .filter(p -> p.getKakaoPlaceId() != null)
+            .collect(Collectors.toMap(Place::getKakaoPlaceId, Function.identity()));
+
+        Map<String, Place> placeByAddressName = allPlaces.stream()
+            .filter(p -> p.getAddress() != null
+                && p.getAddress().roadAddress() != null
+                && p.getName() != null)
+            .collect(Collectors.toMap(
+                p -> p.getName() + "|" + p.getAddress().roadAddress(),
+                Function.identity()
+            ));
+
+        return request.stream()
+            .map(placeRequest -> {
+                if (placeRequest.kakaoPlaceId() != null && !placeRequest.kakaoPlaceId().trim()
+                    .isEmpty()) {
+                    Place place = placeByKakaoId.get(placeRequest.kakaoPlaceId());
+                    if (place != null) {
+                        return place;
+                    }
+                }
+                // key : placeName / value : roadAddress
+                String key = placeRequest.placeName() + "|" + placeRequest.roadAddress();
+                return placeByAddressName.get(key);
+            })
+            .filter(Objects::nonNull)
+            .toList();
     }
 
     @Transactional
-    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(List<Place> places,
-        Language language) {
+    public Map<Long, TranslationInfoDto> getTranslationsForPlaces(
+        List<Place> places,
+        Language language
+    ) {
         List<Long> placeIds = places.stream()
             .map(Place::getId)
             .toList();
+
         List<PlaceTranslation> translations = placeTranslationService.findByPlaceIdInAndLanguage(
             placeIds, language);
         return translations.stream()

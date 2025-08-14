@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -75,7 +76,7 @@ public class BookmarkFinder {
             ));
     }
 
-    public List<Long> findBookmarkIdsByPlaceId(Long userId, Long placeId) {
-        return bookmarkRepository.findPlaceIdsByUserAndPlaceId(userId, placeId);
+    public List<Long> findBookmarkIdsByUserIdAndPlaceId(Long userId, Long placeId) {
+        return bookmarkRepository.findBookmarkIdsByUserIdAndPlaceId(userId, placeId);
     }
 }
