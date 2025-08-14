@@ -3,7 +3,6 @@ package com.cliptripbe.feature.place.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.place.application.PlaceService;
-import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;

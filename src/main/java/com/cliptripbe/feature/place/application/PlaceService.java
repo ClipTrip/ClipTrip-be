@@ -55,6 +55,7 @@ public class PlaceService {
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
+    private final PlaceListResponseAssembler placeListResponseAssembler;
     private final PlaceRepository placeRepository;
     private final PlaceTranslationService placeTranslationService;
     private final PlaceTranslationFinder placeTranslationFinder;
@@ -63,9 +64,7 @@ public class PlaceService {
 
     private final EntityManager entityManager;
 
-    private final PlaceListResponseAssembler placeListResponseAssembler;
 
-    @Transactional(readOnly = true)
     public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
@@ -73,17 +72,17 @@ public class PlaceService {
             placeImageService.savePlaceImage(place);
         }
 
-        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+        List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkIds);
+            return PlaceResponse.of(place, bookmarkedIdList);
         }
 
         PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
             user.getLanguage());
-        return PlaceResponse.ofTranslation(place, bookmarkIds, placeTranslation);
+        return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation);
     }
 
     public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
@@ -92,12 +91,12 @@ public class PlaceService {
         if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
             placeImageService.savePlaceImage(place);
         }
-        List<Long> bookmarkIds = bookmarkFinder.findBookmarkIdsByPlaceId(
+        List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkIds);
+            return PlaceResponse.of(place, bookmarkedIdList);
         }
         return null;
     }
