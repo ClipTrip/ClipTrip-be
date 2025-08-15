@@ -127,7 +127,10 @@ public class ScheduleService {
     }
 
 
-    public Schedule createScheduleByVideo(User user, List<Place> placeList) {
+    public ScheduleResponse createScheduleByVideo(User user, List<Place> placeList) {
+        List<Long> placeIdList = placeList.stream().map(Place::getId).toList();
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
         Schedule schedule = scheduleRegister.createDefaultSchedule(user);
         IntStream.range(0, placeList.size())
             .mapToObj(i -> SchedulePlace.builder()
@@ -137,6 +140,15 @@ public class ScheduleService {
                 .build()
             )
             .forEach(schedule::addSchedulePlace);
-        return schedule;
+        if (user.getLanguage() == Language.KOREAN) {
+            return createScheduleResponseForKorean(
+                schedule,
+                bookmarkIdsMap,
+                user
+            );
+        }
+        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(placeList,
+            user.getLanguage());
+        return createBookmarkResponseForForeign(schedule, translationsForPlaces, bookmarkIdsMap, user);
     }
 }
