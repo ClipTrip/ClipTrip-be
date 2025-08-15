@@ -61,7 +61,7 @@ public class S3Adapter implements FileStoragePort {
     }
 
     @Override
-    public String generatePresignedUrl(String key, Duration expiration) {
+    public String generatePresignedUrlForDownload(String key, Duration expiration) {
         try {
             GetObjectRequest getRequest = GetObjectRequest.builder()
                 .bucket(bucket)

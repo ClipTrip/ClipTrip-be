@@ -78,7 +78,7 @@ public class PlaceService {
         List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
-        String presignedUrl = fileStoragePort.generatePresignedUrl(
+        String presignedUrl = fileStoragePort.generatePresignedUrlForDownload(
             place.getImageKey(), Duration.ofMinutes(15));
 
         // TODO : 여기도 번역 적용해주세요.
@@ -98,7 +98,7 @@ public class PlaceService {
             placeImageService.savePlaceImage(place);
         }
 
-        String presignedUrl = fileStoragePort.generatePresignedUrl(
+        String presignedUrl = fileStoragePort.generatePresignedUrlForDownload(
             place.getImageKey(), Duration.ofMinutes(15));
 
         List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(

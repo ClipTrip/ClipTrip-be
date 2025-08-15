@@ -9,5 +9,5 @@ public interface FileStoragePort {
 
     String upload(String key, byte[] data);
 
-    String generatePresignedUrl(String key, Duration expiration);
+    String generatePresignedUrlForDownload(String key, Duration expiration);
 }
