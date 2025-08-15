@@ -2,6 +2,8 @@ package com.cliptripbe.feature.schedule.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -81,6 +83,12 @@ public class Schedule {
 
     public void clearSchedulePlaceList() {
         this.schedulePlaces.clear();
+    }
+
+    public void validAccess(User user) {
+        if (!this.user.getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
     }
 }
 
