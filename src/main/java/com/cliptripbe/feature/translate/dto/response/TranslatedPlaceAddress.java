@@ -27,4 +27,8 @@ public record TranslatedPlaceAddress(
     public String getCacheKey() {
         return CacheUtils.createTranslatedPlaceKey(placeName, roadAddress, language);
     }
+
+    public String getTranslationKey() {
+        return placeName + roadAddress;
+    }
 }
