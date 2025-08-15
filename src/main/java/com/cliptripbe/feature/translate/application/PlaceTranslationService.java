@@ -17,8 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class PlaceTranslationService {
-
-
+    
     private final PlaceTranslationRepository placeTranslationRepository;
     private final PlaceCacheService placeCacheService;
     private final PlaceTranslator placeTranslator;
