@@ -113,4 +113,7 @@ public class Place extends BaseTimeEntity {
         return imageKey != null && !imageKey.isBlank();
     }
 
+    public String getTranslationKey() {
+        return name + address.roadAddress();
+    }
 }
