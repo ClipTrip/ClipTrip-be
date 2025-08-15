@@ -51,7 +51,7 @@ public class Place extends BaseTimeEntity {
     private PlaceType placeType;
 
     @Column
-    private String imageUrl;
+    private String imageKey;
 
     @Column(unique = true)
     private String kakaoPlaceId;
@@ -66,7 +66,7 @@ public class Place extends BaseTimeEntity {
         Address address,
         Set<AccessibilityFeature> accessibilityFeatures,
         PlaceType placeType,
-        String imageUrl,
+        String imageKey,
         String kakaoPlaceId
     ) {
         this.name = name;
@@ -76,12 +76,12 @@ public class Place extends BaseTimeEntity {
             ? new HashSet<>(accessibilityFeatures)
             : new HashSet<>();
         this.placeType = placeType;
-        this.imageUrl = imageUrl;
+        this.imageKey = imageKey;
         this.kakaoPlaceId = kakaoPlaceId;
     }
 
-    public void addImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void addImageKey(String imageKey) {
+        this.imageKey = imageKey;
     }
 
     public PlaceTranslation getTranslationByLanguage(Language language) {
@@ -107,6 +107,10 @@ public class Place extends BaseTimeEntity {
 
     public void addKakaoPlaceId(String kakaoPlaceId) {
         this.kakaoPlaceId = kakaoPlaceId;
+    }
+
+    public boolean hasImageKey() {
+        return imageKey != null && !imageKey.isBlank();
     }
 
 }

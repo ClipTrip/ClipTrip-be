@@ -50,7 +50,11 @@ public enum ErrorType {
 
     // kakaoMobility
     KAKAO_MOBILITY_NO_RESPONSE(HttpStatus.BAD_GATEWAY, "kakaoMobility로부터 응답을 받지 못했습니다."),
-    FAIL_KAKAO_MOBILITY(HttpStatus.BAD_GATEWAY, "kakaoMobility 서비스 호출 실패");
+    FAIL_KAKAO_MOBILITY(HttpStatus.BAD_GATEWAY, "kakaoMobility 서비스 호출 실패"),
+
+    // s3
+    FAIL_GENERATE_PRESIGNED_URL(HttpStatus.INTERNAL_SERVER_ERROR, "pre-signed url 생성에 실패했습니다."),
+    ;
 
 
     private final HttpStatus httpStatusCode;

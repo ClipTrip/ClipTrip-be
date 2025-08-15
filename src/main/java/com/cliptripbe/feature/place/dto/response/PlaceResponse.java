@@ -23,7 +23,7 @@ public record PlaceResponse(
     String kakaoPlaceId
 ) {
 
-    public static PlaceResponse of(Place place, List<Long> bookmarkedIdList) {
+    public static PlaceResponse of(Place place, List<Long> bookmarkedIdList, String presignedUrl) {
         return PlaceResponse.builder()
             .placeId(place.getId())
             .placeName(place.getName())
@@ -33,7 +33,7 @@ public record PlaceResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
-            .imageUrl(place.getImageUrl())
+            .imageUrl(presignedUrl)
             .bookmarkedIdList(bookmarkedIdList)
             .kakaoPlaceId(place.getKakaoPlaceId())
             .build();
@@ -42,7 +42,8 @@ public record PlaceResponse(
     public static PlaceResponse ofTranslation(
         Place place,
         List<Long> bookmarkedIdList,
-        PlaceTranslation placeTranslation
+        PlaceTranslation placeTranslation,
+        String presignedUrl
     ) {
         return PlaceResponse.builder()
             .placeId(place.getId())
@@ -53,7 +54,7 @@ public record PlaceResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .accessibilityFeatures(place.getAccessibilityFeatures())
-            .imageUrl(place.getImageUrl())
+            .imageUrl(presignedUrl)
             .bookmarkedIdList(bookmarkedIdList)
             .kakaoPlaceId(place.getKakaoPlaceId())
             .build();
