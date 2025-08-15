@@ -16,7 +16,6 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
-
 @Component
 @RequiredArgsConstructor
 public class S3Adapter implements FileStoragePort {
