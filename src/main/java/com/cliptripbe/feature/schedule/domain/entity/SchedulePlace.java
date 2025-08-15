@@ -7,13 +7,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Builder
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SchedulePlace {
 
     @Id
@@ -28,11 +32,4 @@ public class SchedulePlace {
 
     @Column
     private Integer placeOrder;
-
-    @Builder
-    public SchedulePlace(Schedule schedule, Place place, Integer placeOrder) {
-        this.schedule = schedule;
-        this.place = place;
-        this.placeOrder = placeOrder;
-    }
 }
