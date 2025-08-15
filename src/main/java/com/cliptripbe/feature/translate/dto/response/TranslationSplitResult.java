@@ -28,5 +28,4 @@ public record TranslationSplitResult(
             .filter(distinctByKey(TranslatedPlaceAddress::getCacheKey))
             .collect(Collectors.toList());
     }
-
 }
