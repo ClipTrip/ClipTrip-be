@@ -27,7 +27,9 @@ import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
+import com.cliptripbe.infrastructure.port.s3.FileStoragePort;
 import jakarta.persistence.EntityManager;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -61,6 +63,7 @@ public class PlaceService {
     private final PlaceTranslationFinder placeTranslationFinder;
 
     private final PlaceSearchPort placeSearchPort;
+    private final FileStoragePort fileStoragePort;
 
     private final EntityManager entityManager;
 
@@ -68,35 +71,42 @@ public class PlaceService {
     public PlaceResponse getPlaceById(Long placeId, User user) {
         Place place = placeFinder.getPlaceById(placeId);
 
-        if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
+        if (!place.hasImageKey()) {
             placeImageService.savePlaceImage(place);
         }
 
         List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
+        String presignedUrl = fileStoragePort.generatePresignedUrl(
+            place.getImageKey(), Duration.ofMinutes(15));
+
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkedIdList);
+            return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
 
-        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(place,
-            user.getLanguage());
-        return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation);
+        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
+            place, user.getLanguage());
+        return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation, presignedUrl);
     }
 
     public PlaceResponse findOrCreateByKakaoPlaceId(PlaceInfoRequest request, User user) {
         Place place = findOrCreatePlaceByPlaceInfo(request, user.getLanguage());
 
-        if (place.getImageUrl() == null || place.getImageUrl().isEmpty()) {
+        if (!place.hasImageKey()) {
             placeImageService.savePlaceImage(place);
         }
+
+        String presignedUrl = fileStoragePort.generatePresignedUrl(
+            place.getImageKey(), Duration.ofMinutes(15));
+
         List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
         // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
-            return PlaceResponse.of(place, bookmarkedIdList);
+            return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
         return null;
     }
