@@ -52,7 +52,10 @@ public class PlaceTranslationService {
         List<TranslatedPlaceAddress> translatedPlaceAddresses = result.mergeWith(newTranslations);
 
         Map<String, Place> placeMap = placeEntityList.stream()
-            .collect(Collectors.toMap(Place::getTranslationKey, p -> p));
+            .collect(Collectors.toMap(
+                Place::getTranslationKey, p -> p,
+                (prev, curr) -> prev
+            ));
 
         List<PlaceTranslation> placeTranslations = translatedPlaceAddresses.stream()
             .map(translated -> {
