@@ -29,6 +29,8 @@ public record TranslatedPlaceAddress(
     }
 
     public String getTranslationKey() {
-        return placeName + roadAddress;
+        String nm = placeName == null ? "" : placeName.trim();
+        String road = roadAddress == null ? "" : roadAddress.trim();
+        return nm + "|" + road;
     }
 }

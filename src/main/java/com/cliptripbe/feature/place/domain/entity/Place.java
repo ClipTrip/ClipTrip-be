@@ -114,6 +114,8 @@ public class Place extends BaseTimeEntity {
     }
 
     public String getTranslationKey() {
-        return name + address.roadAddress();
+        String nm = name == null ? "" : name.trim();
+        String road = (address == null) || (address.roadAddress() == null) ? "" : address.roadAddress().trim();
+        return nm + "|" + road;
     }
 }
