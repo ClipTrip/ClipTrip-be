@@ -108,6 +108,7 @@ public class ScheduleService {
         Long scheduleId
     ) {
         Schedule scheduleWithPlaces = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
+        scheduleWithPlaces.validAccess(user);
         List<Place> places = scheduleWithPlaces.getPlaces();
         List<Long> placeIdList = places.stream().map(Place::getId).toList();
         Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
