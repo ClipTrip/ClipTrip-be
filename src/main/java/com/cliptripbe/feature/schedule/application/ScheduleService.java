@@ -1,12 +1,13 @@
 package com.cliptripbe.feature.schedule.application;
 
-import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
+import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createBookmarkResponseForForeign;
+import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createScheduleListResponse;
+import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createScheduleResponseForKorean;
 
+import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
-import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
 import com.cliptripbe.feature.schedule.domain.entity.SchedulePlace;
 import com.cliptripbe.feature.schedule.domain.impl.ScheduleFinder;
@@ -15,10 +16,13 @@ import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
+import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -34,6 +38,7 @@ public class ScheduleService {
 
     private final PlaceService placeService;
     private final ScheduleFinder scheduleFinder;
+    private final BookmarkFinder bookmarkFinder;
 
     public void create(User user) {
         scheduleRegister.createDefaultSchedule(user);
@@ -85,10 +90,7 @@ public class ScheduleService {
     @Transactional(readOnly = true)
     public List<ScheduleListResponse> getUserScheduleList(User user) {
         List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
-        return scheduleList
-            .stream()
-            .map(SchedulePlaceMapper::mapScheduleListResponseDto)
-            .toList();
+        return createScheduleListResponse(scheduleList);
     }
 
     public void deleteSchedule(User user, Long scheduleId) {
@@ -105,23 +107,23 @@ public class ScheduleService {
         User user,
         Long scheduleId
     ) {
-        if (user.getLanguage() == KOREAN) {
-            Schedule schedule = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
-            // [리팩토링] 지금 추상화 안하고 분기로 받지만 of 팩토리 메소드 안에서 분기 확인
-            return ScheduleResponse.of(schedule, user.getLanguage());
+        Schedule scheduleWithPlaces = scheduleFinder.getScheduleWithSchedulePlaces(scheduleId);
+        List<Place> places = scheduleWithPlaces.getPlaces();
+        List<Long> placeIdList = places.stream().map(Place::getId).toList();
+        Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
+            user.getId(), placeIdList);
+
+        if (user.getLanguage() == Language.KOREAN) {
+            return createScheduleResponseForKorean(
+                scheduleWithPlaces,
+                bookmarkIdsMap,
+                user
+            );
         }
-        Schedule schedule = scheduleFinder.getByIdWithSchedulePlacesAndTranslations(scheduleId);
+        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(places,
+            user.getLanguage());
 
-        List<PlaceListResponse> placeListResponses = schedule.getSchedulePlaceList().stream()
-            .map(sp -> {
-                Place place = sp.getPlace();
-                Integer placeOrder = sp.getPlaceOrder();
-                PlaceTranslation translation = place.getTranslationByLanguage(user.getLanguage());
-                return PlaceListResponse.ofTranslation(place, translation, placeOrder);
-            })
-            .toList();
-
-        return SchedulePlaceMapper.mapScheduleInfoResponseDto(schedule, placeListResponses);
+        return createBookmarkResponseForForeign(scheduleWithPlaces, translationsForPlaces, bookmarkIdsMap, user);
     }
 
 
