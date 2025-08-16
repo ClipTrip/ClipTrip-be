@@ -77,8 +77,6 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-          source: "./docker-compose.yml"
-          target: "/home/ec2-user/"
           script: |
             set -eux
 
@@ -91,6 +89,32 @@ jobs:
             # ECR 로그인
             aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
+            # docker-compose.yml 파일을 EC2에 직접 생성
+            cat <<EOF > docker-compose.yml
+            version: '3.8'
+            services:
+              redis:
+                image: redis:7.2.5
+                container_name: redis
+                restart: always
+                volumes:
+                  - redis_data:/data
+              
+              app:
+                image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
+                container_name: clip-trip-server
+                ports:
+                  - "8080:8080"
+                depends_on:
+                  - redis
+                environment:
+                  - SPRING_DATA_REDIS_HOST=redis
+                  - SPRING_DATA_REDIS_PORT=6379
+                restart: always
+            
+            volumes:
+              redis_data:
+            EOF
+
             # 도커 컴포즈로 배포
-            # 'up' 명령어가 docker-compose.yml 파일을 현재 디렉토리에서 찾음.
             docker-compose up -d --force-recreate
