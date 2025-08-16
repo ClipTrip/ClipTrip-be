@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.2.5
+    container_name: redis
+    restart: always
+    volumes:
+      - redis_data:/data
+
+  app:
+    build: .
+    image: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:latest
+    container_name: clip-trip-server
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+    restart: always
+
+volumes:
+  redis_data:
