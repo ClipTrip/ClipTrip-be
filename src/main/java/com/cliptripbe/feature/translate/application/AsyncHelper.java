@@ -1,12 +1,14 @@
 package com.cliptripbe.feature.translate.application;
 
-import static com.cliptripbe.global.util.prompt.type.PromptConstants.TRANSLATE_PLACE_INFO_BATCH_PROMPT;
 
 import com.cliptripbe.feature.translate.dto.request.PlacePromptInput;
 import com.cliptripbe.feature.translate.dto.request.TranslationInfoWithIndex;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
+import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import com.cliptripbe.global.util.JsonUtils;
+import com.cliptripbe.global.util.prompt.type.LanguagePromptType;
 import com.cliptripbe.infrastructure.adapter.out.openai.ChatGptAdapter;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -38,9 +40,11 @@ public class AsyncHelper {
         Language targetLanguage
     ) {
         String inputJson = jsonUtils.toJson(promptInputs);
-        String prompt = TRANSLATE_PLACE_INFO_BATCH_PROMPT.formatted(
-            targetLanguage.getName(), inputJson
-        );
+        LanguagePromptType promptType = LanguagePromptType.findByLanguage(targetLanguage);
+        if (promptType == null) {
+            throw new CustomException(ErrorType.INVALID_REQUEST);
+        }
+        String prompt = promptType.getBatchPrompt().formatted(inputJson);
         String responseJson = chatGptAdapter.ask(prompt);
         List<TranslationInfoWithIndex> translationInfoWithIndices = jsonUtils.parseToList(responseJson,
             TranslationInfoWithIndex.class);
