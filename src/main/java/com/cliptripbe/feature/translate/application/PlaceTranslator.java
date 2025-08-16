@@ -11,7 +11,7 @@ import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.global.util.JsonUtils;
-import com.cliptripbe.global.util.prompt.type.PromptConstants;
+import com.cliptripbe.global.util.prompt.type.LanguagePromptType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -43,11 +43,8 @@ public class PlaceTranslator {
             || place.getAddress().roadAddress() == null) {
             throw new CustomException(ErrorType.INTERNAL_SERVER_ERROR);
         }
-        String prompt = PromptConstants.TRANSLATE_PLACE_INFO.formatted(
-            language.getName(),
-            place.getName(),
-            place.getAddress().roadAddress()
-        );
+        String prompt = LanguagePromptType.findByLanguage(language).getSinglePlacePrompt()
+            .formatted(place.getName(), place.getAddress().roadAddress());
         try {
             CompletableFuture<TranslationInfoDto> futureTranslation = asyncHelper.asyncTranslateSinglePlace(prompt);
             return futureTranslation.get();
