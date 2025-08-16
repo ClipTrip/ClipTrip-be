@@ -1,6 +1,8 @@
 package com.cliptripbe.feature.place.application;
 
 
+import static com.cliptripbe.feature.place.application.PlaceListResponseAssembler.createPlaceListResponseForForeign;
+import static com.cliptripbe.feature.place.application.PlaceListResponseAssembler.createPlaceListResponseForKorean;
 import static com.cliptripbe.global.response.type.ErrorType.FAIL_CREATE_PLACE_ENTITY;
 import static com.cliptripbe.global.util.StreamUtils.distinctByKey;
 
@@ -10,7 +12,6 @@ import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.service.PlaceClassifier;
 import com.cliptripbe.feature.place.domain.service.PlaceFinder;
 import com.cliptripbe.feature.place.domain.service.PlaceRegister;
-import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.LuggageStorageRequest;
@@ -57,10 +58,8 @@ public class PlaceService {
     private final PlaceRegister placeRegister;
     private final PlaceFinder placeFinder;
     private final PlaceClassifier placeClassifier;
-    private final PlaceListResponseAssembler placeListResponseAssembler;
     private final PlaceRepository placeRepository;
     private final PlaceTranslationService placeTranslationService;
-    private final PlaceTranslationFinder placeTranslationFinder;
 
     private final PlaceSearchPort placeSearchPort;
     private final FileStoragePort fileStoragePort;
@@ -85,8 +84,7 @@ public class PlaceService {
             return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
 
-        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
-            place, user.getLanguage());
+        PlaceTranslation placeTranslation = placeTranslationService.getPlaceTranslation(place, user);
         return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation, presignedUrl);
     }
 
@@ -106,8 +104,7 @@ public class PlaceService {
         if (user.getLanguage() == Language.KOREAN) {
             return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
-        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
-            place, user.getLanguage());
+        PlaceTranslation placeTranslation = placeTranslationService.getPlaceTranslation(place, user);
         return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation, presignedUrl);
     }
 
@@ -183,8 +180,7 @@ public class PlaceService {
         Language userLanguage = user.getLanguage();
 
         if (userLanguage == Language.KOREAN) {
-            return placeListResponseAssembler.createPlaceListResponseForKorean(placeDtoList,
-                bookmarkIdsMap);
+            return createPlaceListResponseForKorean(placeDtoList, bookmarkIdsMap);
         }
 
         List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(
@@ -195,9 +191,7 @@ public class PlaceService {
                 dto -> dto.placeName() + dto.roadAddress(),
                 Function.identity()
             ));
-        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap,
-            translatedPlaces,
-            bookmarkIdsMap, userLanguage);
+        return createPlaceListResponseForForeign(placeDtoMap, translatedPlaces, bookmarkIdsMap, userLanguage);
     }
 
     public List<PlaceListResponse> getPlacesByKeyword(
@@ -217,8 +211,7 @@ public class PlaceService {
         Language userLanguage = user.getLanguage();
 
         if (userLanguage == Language.KOREAN) {
-            return placeListResponseAssembler.createPlaceListResponseForKorean(keywordPlaces,
-                bookmarkIdsMap);
+            return createPlaceListResponseForKorean(keywordPlaces, bookmarkIdsMap);
         }
 
         List<TranslatedPlaceAddress> translatedPlaces = placeTranslationService.getTranslatedPlaces(
@@ -229,9 +222,7 @@ public class PlaceService {
                 dto -> dto.placeName() + dto.roadAddress(),
                 Function.identity()
             ));
-        return placeListResponseAssembler.createPlaceListResponseForForeign(placeDtoMap,
-            translatedPlaces,
-            bookmarkIdsMap, userLanguage);
+        return createPlaceListResponseForForeign(placeDtoMap, translatedPlaces, bookmarkIdsMap, userLanguage);
     }
 
     @Transactional
@@ -317,7 +308,7 @@ public class PlaceService {
         return result;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PlaceListResponse> getLuggageStorage(
         LuggageStorageRequest luggageStorageRequest,
         User user
@@ -338,6 +329,16 @@ public class PlaceService {
             .map(PlaceDto::fromEntity)
             .toList();
 
+        if (user.getLanguage() == Language.KOREAN) {
+            Map<String, List<Long>> stringKeyBookmarkMap = bookmarkIdsMap.entrySet().stream()
+                .collect(Collectors.toMap(
+                    entry -> String.valueOf(entry.getKey()),
+                    Map.Entry::getValue
+                ));
+            return PlaceListResponseAssembler.createPlaceListResponseForKorean(placeDtoList, stringKeyBookmarkMap);
+        }
+
+        placeTranslationService.translateAndRegisterPlaces(placesInRange, user.getLanguage());
         Map<String, TranslatedPlaceAddress> translatedPlaceAddressMap = placeTranslationService.getTranslatedPlaces(
                 user.getLanguage(),
                 placeDtoList)
