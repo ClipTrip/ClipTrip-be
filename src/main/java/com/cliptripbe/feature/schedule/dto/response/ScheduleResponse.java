@@ -2,31 +2,28 @@ package com.cliptripbe.feature.schedule.dto.response;
 
 import com.cliptripbe.feature.place.dto.response.PlaceListResponse;
 import com.cliptripbe.feature.schedule.domain.entity.Schedule;
-import com.cliptripbe.feature.user.domain.type.Language;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record ScheduleResponse(
-    Long scheduleId,
-    String scheduleName,
+    Long id,
+    String name,
     String description,
     List<PlaceListResponse> placeList
 
 ) {
 
-    public static ScheduleResponse of(Schedule schedule, Language language) {
+    public static ScheduleResponse of(
+        Schedule schedule,
+        List<PlaceListResponse> placeListResponses
+    ) {
         return ScheduleResponse.builder()
-            .scheduleId(schedule.getId())
-            .scheduleName(schedule.getName())
+            .id(schedule.getId())
+            .name(schedule.getName())
             .description(schedule.getDescription())
             .placeList(
-                schedule.getSchedulePlaceList().stream()
-                    .map(schedulePlace -> PlaceListResponse.fromEntity(
-                        schedulePlace.getPlace(),
-                        schedulePlace.getPlaceOrder())
-                    )
-                    .toList()
+                placeListResponses
             )
             .build();
     }

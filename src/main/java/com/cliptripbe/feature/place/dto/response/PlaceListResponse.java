@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.place.dto.response;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
-import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
@@ -114,31 +113,6 @@ public record PlaceListResponse(
             .latitude(place.getAddress().latitude())
             .placeOrder(placeOrder)
             .kakaoPlaceId(kakaoPlaceId)
-            .build();
-    }
-
-    public static PlaceListResponse ofTranslation(
-        Place place,
-        PlaceTranslation placeTranslation,
-        Integer placeOrder
-    ) {
-        String placeName = placeTranslation != null && placeTranslation.getName() != null
-            ? placeTranslation.getName()
-            : place.getName();
-
-        String roadAddress = placeTranslation != null && placeTranslation.getRoadAddress() != null
-            ? placeTranslation.getRoadAddress()
-            : place.getAddress().roadAddress();
-
-        return PlaceListResponse.builder()
-            .placeId(place.getId())
-            .placeName(placeName)
-            .roadAddress(roadAddress)
-            .phone(place.getPhoneNumber())
-            .type(place.getPlaceType())
-            .longitude(place.getAddress().longitude())
-            .latitude(place.getAddress().latitude())
-            .placeOrder(placeOrder)
             .build();
     }
 

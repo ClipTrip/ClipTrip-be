@@ -1,6 +1,9 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
+import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.response.exception.CustomException;
+import com.cliptripbe.global.response.type.ErrorType;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,9 +13,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderBy;
-import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,8 +45,14 @@ public class Schedule {
     private User user;
 
     @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("placeOrder ASC")
-    private List<SchedulePlace> schedulePlaceList = new ArrayList<>();
+    private final Set<SchedulePlace> schedulePlaces = new LinkedHashSet<>();
+
+    public List<Place> getPlaces() {
+        return schedulePlaces.stream()
+            .sorted(Comparator.comparingInt(SchedulePlace::getPlaceOrder))
+            .map(SchedulePlace::getPlace)
+            .collect(Collectors.toList());
+    }
 
     @Builder
     public Schedule(String name, User user, String description) {
@@ -59,7 +70,7 @@ public class Schedule {
     }
 
     public void addSchedulePlace(SchedulePlace schedulePlace) {
-        this.schedulePlaceList.add(schedulePlace);
+        this.schedulePlaces.add(schedulePlace);
     }
 
     public void modifyName(String name) {
@@ -71,7 +82,13 @@ public class Schedule {
     }
 
     public void clearSchedulePlaceList() {
-        this.schedulePlaceList.clear();
+        this.schedulePlaces.clear();
+    }
+
+    public void validAccess(User user) {
+        if (!this.user.getId().equals(user.getId())) {
+            throw new CustomException(ErrorType.ACCESS_DENIED_EXCEPTION);
+        }
     }
 }
 

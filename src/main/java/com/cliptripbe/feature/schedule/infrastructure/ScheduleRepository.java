@@ -13,7 +13,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
 
     List<Schedule> findAllByUser(User user);
 
-    @Query("SELECT s FROM Schedule s LEFT JOIN FETCH s.schedulePlaceList sp WHERE s.id = :scheduleId")
+    @Query("SELECT s FROM Schedule s LEFT JOIN FETCH s.schedulePlaces sp WHERE s.id = :scheduleId")
     Optional<Schedule> findByIdWithSchedulePlaces(@Param("scheduleId") Long scheduleId);
 
     @EntityGraph(attributePaths = {

@@ -27,4 +27,10 @@ public record TranslatedPlaceAddress(
     public String getCacheKey() {
         return CacheUtils.createTranslatedPlaceKey(placeName, roadAddress, language);
     }
+
+    public String getTranslationKey() {
+        String nm = placeName == null ? "" : placeName.trim();
+        String road = roadAddress == null ? "" : roadAddress.trim();
+        return nm + "|" + road;
+    }
 }
