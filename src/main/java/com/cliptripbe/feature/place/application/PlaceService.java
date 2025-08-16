@@ -358,7 +358,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request) {
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request, Language language) {
         if (request == null || request.isEmpty()) {
             return Collections.emptyList();
         }
@@ -366,9 +366,14 @@ public class PlaceService {
         List<PlaceDto> placeDtoList = request.stream()
             .map(PlaceDto::fromDto)
             .toList();
-
         List<Place> allPlaces = createPlaceAll(placeDtoList);
 
+        if (language != Language.KOREAN) {
+            placeTranslationService.translateAndRegisterPlaces(
+                allPlaces,
+                language
+            );
+        }
         Map<String, Place> placeByKakaoId = allPlaces.stream()
             .filter(p -> p.getKakaoPlaceId() != null)
             .collect(Collectors.toMap(Place::getKakaoPlaceId, Function.identity()));

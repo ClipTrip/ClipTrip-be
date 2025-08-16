@@ -40,10 +40,14 @@ public class PlaceTranslationService {
     }
 
     @Transactional
-    public void translateAndRegisterPlaces(List<PlaceDto> places, List<Place> placeEntityList,
-        Language language) {
+    public void translateAndRegisterPlaces(List<Place> placeEntityList, Language language) {
+        List<PlaceDto> placeDtoList = placeEntityList.stream()
+            .map(
+                Place::getPlaceDto
+            )
+            .toList();
 
-        TranslationSplitResult result = placeCacheService.classifyPlaces(places, language);
+        TranslationSplitResult result = placeCacheService.classifyPlaces(placeDtoList, language);
 
         List<TranslatedPlaceAddress> newTranslations = placeTranslator.translateList(
             result.untranslatedPlaces(), language
