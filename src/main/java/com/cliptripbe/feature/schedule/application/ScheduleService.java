@@ -1,7 +1,6 @@
 package com.cliptripbe.feature.schedule.application;
 
 import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createBookmarkResponseForForeign;
-import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createScheduleListResponse;
 import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createScheduleResponseForKorean;
 
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
@@ -89,8 +88,10 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<ScheduleListResponse> getUserScheduleList(User user) {
-        List<Schedule> scheduleList = scheduleRepository.findAllByUser(user);
-        return createScheduleListResponse(scheduleList);
+        List<Schedule> scheduleList = scheduleRepository.findAllByUserWithSchedulePlaces(user);
+        return scheduleList.stream()
+            .map(ScheduleListResponse::from)
+            .toList();
     }
 
     public void deleteSchedule(User user, Long scheduleId) {
@@ -121,10 +122,12 @@ public class ScheduleService {
                 user
             );
         }
-        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(places,
+        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(
+            places,
             user.getLanguage());
 
-        return createBookmarkResponseForForeign(scheduleWithPlaces, translationsForPlaces, bookmarkIdsMap, user);
+        return createBookmarkResponseForForeign(scheduleWithPlaces, translationsForPlaces,
+            bookmarkIdsMap, user);
     }
 
 
@@ -148,8 +151,10 @@ public class ScheduleService {
                 user
             );
         }
-        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(placeList,
+        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(
+            placeList,
             user.getLanguage());
-        return createBookmarkResponseForForeign(schedule, translationsForPlaces, bookmarkIdsMap, user);
+        return createBookmarkResponseForForeign(schedule, translationsForPlaces, bookmarkIdsMap,
+            user);
     }
 }

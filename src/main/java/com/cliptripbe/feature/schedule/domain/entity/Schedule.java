@@ -79,7 +79,6 @@ public class Schedule {
             throw new CustomException(EXISTS_PLACE);
 
         }
-
         this.schedulePlaces.add(newSchedulePlace);
     }
 
