@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PlaceListResponseAssembler {
 
-    public List<PlaceListResponse> createPlaceListResponseForKorean(
+    public static List<PlaceListResponse> createPlaceListResponseForKorean(
         List<PlaceDto> placeDtoList,
         Map<String, List<Long>> bookmarkIdsMap
     ) {
@@ -23,7 +23,7 @@ public class PlaceListResponseAssembler {
             .toList();
     }
 
-    public List<PlaceListResponse> createPlaceListResponseForForeign(
+    public static List<PlaceListResponse> createPlaceListResponseForForeign(
         Map<String, PlaceDto> placeDtoMap,
         List<TranslatedPlaceAddress> translatedPlaces,
         Map<String, List<Long>> bookmarkIdsMap,
@@ -40,7 +40,7 @@ public class PlaceListResponseAssembler {
             .toList();
     }
 
-    private PlaceDto getMatchPlaceDto(TranslatedPlaceAddress tp, Map<String, PlaceDto> placeDtoMap) {
+    private static PlaceDto getMatchPlaceDto(TranslatedPlaceAddress tp, Map<String, PlaceDto> placeDtoMap) {
         String key = tp.placeName() + tp.roadAddress();
         return placeDtoMap.get(key);
     }
