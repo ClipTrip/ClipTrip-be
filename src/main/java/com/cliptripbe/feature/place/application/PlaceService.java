@@ -308,7 +308,7 @@ public class PlaceService {
         return result;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<PlaceListResponse> getLuggageStorage(
         LuggageStorageRequest luggageStorageRequest,
         User user
