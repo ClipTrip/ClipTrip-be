@@ -3,11 +3,13 @@ package com.cliptripbe.feature.translate.application;
 import com.cliptripbe.feature.place.application.PlaceCacheService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
+import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
 import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.translate.dto.response.TranslationSplitResult;
+import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
@@ -25,6 +27,7 @@ public class PlaceTranslationService {
     private final PlaceTranslationRepository placeTranslationRepository;
     private final PlaceCacheService placeCacheService;
     private final PlaceTranslator placeTranslator;
+    private final PlaceTranslationFinder placeTranslationFinder;
 
     @Transactional
     public void translateAndRegisterPlace(Place place, Language language) {
@@ -97,5 +100,17 @@ public class PlaceTranslationService {
 
     public List<PlaceTranslation> findByPlaceIdInAndLanguage(List<Long> placeIds, Language language) {
         return placeTranslationRepository.findByPlaceIdInAndLanguage(placeIds, language);
+    }
+
+    public PlaceTranslation getPlaceTranslation(Place place, User user) {
+        Language language = user.getLanguage();
+        return placeTranslationRepository.findByPlaceAndLanguage(place, language)
+            .orElseGet(() -> {
+                TranslationInfoDto translationInfoDto = placeCacheService.getTranslationInfo(place, language)
+                    .orElseGet(() -> placeTranslator.translatePlaceInfo(place, language));
+                PlaceTranslation translation = PlaceTranslation.of(place, translationInfoDto, language);
+                place.addTranslation(translation);
+                return placeTranslationRepository.saveAndFlush(translation);
+            });
     }
 }
