@@ -81,7 +81,6 @@ public class PlaceService {
         String presignedUrl = fileStoragePort.generatePresignedUrlForDownload(
             place.getImageKey(), Duration.ofMinutes(15));
 
-        // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
             return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
@@ -104,16 +103,17 @@ public class PlaceService {
         List<Long> bookmarkedIdList = bookmarkFinder.findBookmarkIdsByUserIdAndPlaceId(
             user.getId(), place.getId());
 
-        // TODO : 여기도 번역 적용해주세요.
         if (user.getLanguage() == Language.KOREAN) {
             return PlaceResponse.of(place, bookmarkedIdList, presignedUrl);
         }
-        return null;
+        PlaceTranslation placeTranslation = placeTranslationFinder.getByPlaceAndLanguage(
+            place, user.getLanguage());
+        return PlaceResponse.ofTranslation(place, bookmarkedIdList, placeTranslation, presignedUrl);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Place findOrCreatePlaceByPlaceInfo(PlaceInfoRequest request, Language language) {
-        // TODO : 이제 번역 장소 어떻게 저장할지 여기도 바꿔줘야함
+        // 외국인일 시 장소도 저장.
         String kakaoPlaceId = request.kakaoPlaceId();
         try {
             if (kakaoPlaceId != null && !kakaoPlaceId.trim().isEmpty()) {
@@ -331,14 +331,28 @@ public class PlaceService {
         Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
             user.getId(), placeIdList);
 
-        List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(
-            luggageStorageRequest, luggageStoragePlaces);
+        List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(luggageStorageRequest,
+            luggageStoragePlaces);
 
-        // TODO : 응답할 때 번역 부분 적용해야 함
+        List<PlaceDto> placeDtoList = placesInRange.stream()
+            .map(PlaceDto::fromEntity)
+            .toList();
+
+        Map<String, TranslatedPlaceAddress> translatedPlaceAddressMap = placeTranslationService.getTranslatedPlaces(
+                user.getLanguage(),
+                placeDtoList)
+            .stream()
+            .collect(Collectors.toMap(
+                TranslatedPlaceAddress::getTranslationKey,
+                pt -> pt
+            ));
+
         return placesInRange.stream()
             .map(place -> {
                 List<Long> bookmarkIds = bookmarkIdsMap.getOrDefault(place.getId(), List.of());
-                return PlaceListResponse.ofEntity(place, null, user.getLanguage(), bookmarkIds);
+                return PlaceListResponse.ofEntity(place,
+                    translatedPlaceAddressMap.get(place.getTranslationKey()).translationInfoDto(),
+                    user.getLanguage(), bookmarkIds);
             })
             .toList();
     }

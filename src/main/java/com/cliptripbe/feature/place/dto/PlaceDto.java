@@ -63,4 +63,17 @@ public record PlaceDto(
             .latitude(request.latitude())
             .build();
     }
+
+    public static PlaceDto fromEntity(Place place) {
+        return PlaceDto.builder()
+            .kakaoPlaceId(place.getKakaoPlaceId())
+            .placeName(place.getName())
+            .address(place.getAddress().roadAddress())
+            .roadAddress(place.getAddress().roadAddress())
+            .phone(place.getPhoneNumber())
+            .categoryCode(place.getPlaceType() != null ? place.getPlaceType().getCode() : null)
+            .longitude(place.getAddress().longitude())
+            .latitude(place.getAddress().latitude())
+            .build();
+    }
 }
