@@ -6,9 +6,10 @@ services:
     container_name: redis
     restart: always
     volumes:
-      - redis_data:/data # 데이터 영구 저장을 위한 볼륨
+      - redis_data:/data
 
   app:
+    build: .
     image: 118497224929.dkr.ecr.ap-northeast-2.amazonaws.com/clip-trip/server:latest
     container_name: clip-trip-server
     ports:
