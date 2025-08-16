@@ -60,7 +60,7 @@ public class VideoPlaceExtractFacade {
         List<Place> placeEntityList = placeService.createPlaceAll(placeDtoLst);
 
         if (user.getLanguage() != Language.KOREAN) {
-            placeTranslationService.translateAndRegisterPlaces(placeDtoLst, placeEntityList, user.getLanguage());
+            placeTranslationService.translateAndRegisterPlaces(placeEntityList, user.getLanguage());
         }
         ScheduleResponse scheduleResponse = scheduleService.createScheduleByVideo(user, placeEntityList);
 

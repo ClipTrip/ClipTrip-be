@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.domain.converter.AccessibilityFeatureConvert
 import com.cliptripbe.feature.place.domain.type.AccessibilityFeature;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.domain.vo.Address;
+import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.CascadeType;
@@ -117,5 +118,9 @@ public class Place extends BaseTimeEntity {
         String nm = name == null ? "" : name.trim();
         String road = (address == null) || (address.roadAddress() == null) ? "" : address.roadAddress().trim();
         return nm + "|" + road;
+    }
+
+    public PlaceDto getPlaceDto() {
+        return PlaceDto.fromEntity(this);
     }
 }
