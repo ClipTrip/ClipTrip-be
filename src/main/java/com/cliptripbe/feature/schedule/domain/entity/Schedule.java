@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
+import static com.cliptripbe.global.response.type.ErrorType.EXISTS_PLACE;
+
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
@@ -69,8 +71,16 @@ public class Schedule {
             .build();
     }
 
-    public void addSchedulePlace(SchedulePlace schedulePlace) {
-        this.schedulePlaces.add(schedulePlace);
+    public void addSchedulePlace(SchedulePlace newSchedulePlace) {
+        Long newPlaceId = newSchedulePlace.getPlace().getId();
+        boolean exists = schedulePlaces.stream()
+            .anyMatch(sp -> sp.getId().equals(newPlaceId));
+        if (exists) {
+            throw new CustomException(EXISTS_PLACE);
+
+        }
+
+        this.schedulePlaces.add(newSchedulePlace);
     }
 
     public void modifyName(String name) {

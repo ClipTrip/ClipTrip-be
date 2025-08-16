@@ -62,7 +62,8 @@ public class BookmarkService {
         if (request.placeInfoRequests() != null) {
             bookmark.cleanBookmarkPlace();
             for (PlaceInfoRequest placeInfoRequest : request.placeInfoRequests()) {
-                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest, user.getLanguage());
+                Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest,
+                    user.getLanguage());
                 BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
                     .bookmark(bookmark)
                     .place(place)
@@ -76,11 +77,9 @@ public class BookmarkService {
     public void addPlaceToBookmark(User user, Long bookmarkId, PlaceInfoRequest placeInfoRequest) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
         AccessUtils.checkBookmarkAccess(bookmark, user);
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ACCESS_DENIED_EXCEPTION);
-        }
 
-        Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest, user.getLanguage());
+        Place place = placeService.findOrCreatePlaceByPlaceInfo(placeInfoRequest,
+            user.getLanguage());
 
         BookmarkPlace bookmarkPlace = BookmarkPlace.builder()
             .bookmark(bookmark)
@@ -93,9 +92,6 @@ public class BookmarkService {
     public void deletePlaceFromBookmarkByPlaceId(User user, Long bookmarkId, Long placeId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
         AccessUtils.checkBookmarkAccess(bookmark, user);
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ACCESS_DENIED_EXCEPTION);
-        }
 
         BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
             .filter(bp -> bp.getPlace().getId().equals(placeId))
@@ -113,9 +109,6 @@ public class BookmarkService {
     ) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
         AccessUtils.checkBookmarkAccess(bookmark, user);
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ACCESS_DENIED_EXCEPTION);
-        }
 
         BookmarkPlace targetPlace = bookmark.getBookmarkPlaces().stream()
             .filter(bp -> {
@@ -139,7 +132,7 @@ public class BookmarkService {
             .map(BookmarkMapper::mapBookmarkListResponseDto)
             .toList();
     }
-    
+
     @Transactional(readOnly = true)
     public BookmarkInfoResponse getBookmarkInfo(Long bookmarkId, User user) {
         //TODO placeList를 먼저 조회하지 않도록 바꾸기.
@@ -159,7 +152,8 @@ public class BookmarkService {
             List<Place> places = bookmarkWithPlace.getBookmarkPlaces().stream()
                 .map(BookmarkPlace::getPlace)
                 .toList();
-            Map<Long, TranslationInfoDto> translationsMap = placeService.getTranslationsForPlaces(places,
+            Map<Long, TranslationInfoDto> translationsMap = placeService.getTranslationsForPlaces(
+                places,
                 user.getLanguage());
             return bookmarkResponseAssembler.createBookmarkResponseForForeign(
                 bookmarkWithPlace,
@@ -173,9 +167,7 @@ public class BookmarkService {
     @Transactional
     public void deleteBookmark(User user, Long bookmarkId) {
         Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-        if (!bookmark.getUser().getId().equals(user.getId())) {
-            throw new CustomException(ACCESS_DENIED_EXCEPTION);
-        }
+        AccessUtils.checkBookmarkAccess(bookmark, user);
         bookmarkRepository.delete(bookmark);
     }
 
