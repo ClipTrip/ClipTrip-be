@@ -100,6 +100,7 @@ public record DirectionsRequest(
             .alternatives(false)
             .roadDetails(true)
             .summary(false)
+            .roadevent(1)
             .build();
     }
 

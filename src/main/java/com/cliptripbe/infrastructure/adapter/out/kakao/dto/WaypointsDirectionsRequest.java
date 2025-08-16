@@ -13,7 +13,8 @@ public record WaypointsDirectionsRequest(
     boolean carHipass,
     boolean alternatives,
     boolean roadDetails,
-    boolean summary
+    boolean summary,
+    Integer roadevent
 ) {
 
     @Builder

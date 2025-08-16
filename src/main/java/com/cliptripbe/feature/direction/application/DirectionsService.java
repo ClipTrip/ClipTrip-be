@@ -17,6 +17,7 @@ public class DirectionsService {
     public DirectionsResponse getDirections(DirectionsRequest request) {
         WaypointsDirectionsRequest kakaoRequest = request.toWaypointsDirectionsRequest();
         WaypointsDirectionsResponse response = routeSearchPort.getDirections(kakaoRequest);
+//        System.out.println("디버깅");
         return DirectionsResponse.from(response);
     }
 }
