@@ -70,12 +70,11 @@ public class ScheduleService {
                 .map(PlaceWithOrderRequest::placeInfo)
                 .toList();
 
-            List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(placeInfoRequests);
+            List<Place> places = placeService.findOrCreatePlacesByPlaceInfos(placeInfoRequests, user.getLanguage());
 
             for (int i = 0; i < request.placeInfoRequests().size(); i++) {
                 PlaceWithOrderRequest placeWithOrder = request.placeInfoRequests().get(i);
                 Place place = places.get(i);
-
                 SchedulePlace newPlace = SchedulePlace.builder()
                     .place(place)
                     .schedule(schedule)
@@ -124,7 +123,8 @@ public class ScheduleService {
         }
         Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(
             places,
-            user.getLanguage());
+            user.getLanguage()
+        );
 
         return createBookmarkResponseForForeign(scheduleWithPlaces, translationsForPlaces,
             bookmarkIdsMap, user);
