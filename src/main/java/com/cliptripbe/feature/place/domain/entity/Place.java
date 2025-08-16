@@ -113,4 +113,9 @@ public class Place extends BaseTimeEntity {
         return imageKey != null && !imageKey.isBlank();
     }
 
+    public String getTranslationKey() {
+        String nm = name == null ? "" : name.trim();
+        String road = (address == null) || (address.roadAddress() == null) ? "" : address.roadAddress().trim();
+        return nm + "|" + road;
+    }
 }

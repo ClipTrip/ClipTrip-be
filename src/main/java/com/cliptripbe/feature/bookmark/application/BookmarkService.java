@@ -139,32 +139,10 @@ public class BookmarkService {
             .map(BookmarkMapper::mapBookmarkListResponseDto)
             .toList();
     }
-
-//    @Transactional(readOnly = true)
-//    public BookmarkInfoResponse getBookmarkInfo(Long bookmarkId, User user) {
-//
-//        if (user.getLanguage() == KOREAN) {
-//            Bookmark bookmark = bookmarkFinder.findById(bookmarkId);
-//            return BookmarkInfoResponse.from(bookmark);
-//        }
-//        Bookmark bookmark = bookmarkFinder.findByIdWithPlacesAndTranslations(bookmarkId);
-//
-//        Set<BookmarkPlace> bookmarkPlaces = bookmark.getBookmarkPlaces();
-//
-//        List<PlaceListResponse> placeListResponses = bookmarkPlaces.stream()
-//            .map(bp -> {
-//                Place place = bp.getPlace();
-//                PlaceTranslation placeTranslation = place.getTranslationByLanguage(
-//                    user.getLanguage());
-//                return PlaceListResponse.ofTranslation(place, placeTranslation, -1);
-//            })
-//            .collect(Collectors.toList());
-//
-//        return BookmarkInfoResponse.of(bookmark, placeListResponses);
-//    }
-
+    
     @Transactional(readOnly = true)
     public BookmarkInfoResponse getBookmarkInfo(Long bookmarkId, User user) {
+        //TODO placeList를 먼저 조회하지 않도록 바꾸기.
         List<Long> placeIdList = bookmarkRepository.findPlaceIdsByBookmarkId(bookmarkId);
         Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
             user.getId(), placeIdList);

@@ -4,7 +4,7 @@ import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.schedule.application.ScheduleService;
-import com.cliptripbe.feature.schedule.domain.entity.Schedule;
+import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.translate.application.PlaceTranslationService;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.type.Language;
@@ -48,23 +48,22 @@ public class VideoPlaceExtractFacade {
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
         String summaryTranslated = null;
-        if (user.getLanguage() == Language.ENGLISH) {
+        if (user.getLanguage() != Language.KOREAN) {
             String requestSummaryEnPrompt = PromptUtils.build(PromptType.SUMMARY_EN,
                 caption.captions());
-
             summaryTranslated = aiTextProcessorPort.ask(requestSummaryEnPrompt);
         }
 
-        List<PlaceDto> places = placeSearchPort.searchFirstPlacesInParallel(extractPlacesText);
-
-        List<Place> placeList = placeService.createPlaceAll(places);
-        if (user.getLanguage() == Language.ENGLISH) {
-            placeList.forEach(place -> placeTranslationService.translateAndRegisterPlace(place, user.getLanguage()));
-        }
-
         Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated));
-        Schedule schedule = scheduleService.createScheduleByVideo(user, placeList);
 
-        return VideoScheduleResponse.of(video, schedule, user.getLanguage());
+        List<PlaceDto> placeDtoLst = placeSearchPort.searchFirstPlacesInParallel(extractPlacesText);
+        List<Place> placeEntityList = placeService.createPlaceAll(placeDtoLst);
+
+        if (user.getLanguage() != Language.KOREAN) {
+            placeTranslationService.translateAndRegisterPlaces(placeDtoLst, placeEntityList, user.getLanguage());
+        }
+        ScheduleResponse scheduleResponse = scheduleService.createScheduleByVideo(user, placeEntityList);
+
+        return VideoScheduleResponse.of(video, scheduleResponse);
     }
 }
