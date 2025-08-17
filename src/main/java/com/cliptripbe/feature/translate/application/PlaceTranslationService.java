@@ -3,7 +3,6 @@ package com.cliptripbe.feature.translate.application;
 import com.cliptripbe.feature.place.application.PlaceCacheService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.entity.PlaceTranslation;
-import com.cliptripbe.feature.place.domain.service.PlaceTranslationFinder;
 import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.infrastructure.PlaceTranslationRepository;
 import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
@@ -27,7 +26,6 @@ public class PlaceTranslationService {
     private final PlaceTranslationRepository placeTranslationRepository;
     private final PlaceCacheService placeCacheService;
     private final PlaceTranslator placeTranslator;
-    private final PlaceTranslationFinder placeTranslationFinder;
 
     @Transactional
     public void translateAndRegisterPlace(Place place, Language language) {
@@ -78,9 +76,25 @@ public class PlaceTranslationService {
                     .roadAddress(translated.translationInfoDto().translatedRoadAddress())
                     .build();
             })
-            .collect(Collectors.toList());
+            .toList();
 
-        placeTranslationRepository.saveAll(placeTranslations);
+        List<Long> placeIdsToSave = placeTranslations.stream()
+            .map(placeTranslation -> placeTranslation.getPlace().getId())
+            .toList();
+
+        List<PlaceTranslation> existingTranslations = placeTranslationRepository.findByPlaceIdInAndLanguage(
+            placeIdsToSave, language);
+
+        // 기존 번역이 존재하는 Place ID 맵 생성
+        Map<Long, PlaceTranslation> existingTranslationsMap = existingTranslations.stream()
+            .collect(Collectors.toMap(pt -> pt.getPlace().getId(), pt -> pt));
+
+        // DB에 존재하지 않는 번역만 필터링
+        List<PlaceTranslation> newPlaceTranslations = placeTranslations.stream()
+            .filter(pt -> !existingTranslationsMap.containsKey(pt.getPlace().getId()))
+            .toList();
+
+        placeTranslationRepository.saveAll(newPlaceTranslations);
     }
 
     public List<TranslatedPlaceAddress> getTranslatedPlaces(
