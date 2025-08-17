@@ -115,6 +115,6 @@ jobs:
             volumes:
               redis_data:
             EOF
-
+            docker-compose pull app
             # 도커 컴포즈로 배포
             docker-compose up -d --force-recreate
