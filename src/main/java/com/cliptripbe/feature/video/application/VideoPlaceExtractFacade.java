@@ -46,6 +46,7 @@ public class VideoPlaceExtractFacade {
         String gptSummaryResponse = aiTextProcessorPort.ask(requestSummaryPrompt);
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
+
         String summaryTranslated = null;
         if (user.getLanguage() != Language.KOREAN) {
             String requestSummaryEnPrompt = PromptUtils.build(SummaryType.findByLanguage(user.getLanguage()),
