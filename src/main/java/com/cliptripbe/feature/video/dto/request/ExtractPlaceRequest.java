@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.video.dto.request;
 
+import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.global.util.YoutubeUtils;
 import jakarta.validation.constraints.NotBlank;
@@ -17,14 +18,14 @@ public record ExtractPlaceRequest(
     String youtubeUrl
 ) {
 
-    public Video toVideo(String summaryKo, String summaryTranslated) {
+    public Video toVideo(String summaryKo, String summaryTranslated, Language language) {
         if (summaryTranslated != null) {
             return Video.builder()
                 .url(youtubeUrl)
                 .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
                 .summaryKo(summaryKo)
                 .summaryTranslated(summaryTranslated)
-                .translatedLang("ENGLISH")
+                .translatedLang(language.getName())
                 .build();
         }
         return Video.builder()

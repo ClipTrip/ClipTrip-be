@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Builder
-@Table(name = "user")
+@Table(name = "user_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
 

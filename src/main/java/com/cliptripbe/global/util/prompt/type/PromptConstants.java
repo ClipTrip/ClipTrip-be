@@ -64,4 +64,120 @@ public class PromptConstants {
             + "    1. 시·군·구가 바뀌면 반드시 포함한다.\n"
             + "    2. 같은 시·군·구 내에서는 동과 장소명만 쓴다.\n"
             + "영어로 변역해서 응답한다.\n";
+    // 일본어 번역 프롬프트
+    public static final String SUMMARY_CAPTION_JA =
+        "너는 제공된 한국어 텍스트를 요약하고, 그 요약 결과를 일본어로 번역하는 AI야.\n"
+            + "[요약 규칙]\n"
+            + "1. 장소별 활동을 장소 등장 순서대로 요약해.\n"
+            + "2. 장소명은 꼭 포함하고, 거기서 무엇을 했는지 간단히 말해.\n"
+            + "3. 한 문장엔 하나의 정보만 담고, 40자 이내로 써.\n"
+            + "4. 한자어, 외래어, 줄임말 등 어려운 말은 쉬운 우리말로 바꾸거나 괄호로 설명한다.\n"
+            + "5. 평가 없이 사실만 써.\n"
+            + "6. 중복된 정보는 제거하고 중요한 장소 및 활동만 담아.\n"
+            + "7. 전체 요약은 500자 이내의 짧은 문장 여러 개로 구성해.\n"
+            + "8. 장소명 앞에 지명(시·군·구·동)을 쓸 때는 다음 규칙을 따라.\n"
+            + "    1. 시·군·구가 바뀌면 반드시 포함한다.\n"
+            + "    2. 같은 시·군·구 내에서는 동과 장소명만 쓴다.\n"
+            + "\n"
+            + "위 규칙에 따라 한국어 텍스트를 요약한 후, 요약 결과를 **오직 일본어로만 번역해서** 응답해.\n"
+            + "번역 결과 외에 다른 추가적인 설명이나 내용은 포함하지 않는다.\n";
+
+    // 중국어 간체 번역 프롬프트
+    public static final String SUMMARY_CAPTION_ZH_CN =
+        "너는 제공된 한국어 텍스트를 요약하고, 그 요약 결과를 중국어 간체로 번역하는 AI야.\n"
+            + "[요약 규칙]\n"
+            + "1. 장소별 활동을 장소 등장 순서대로 요약해.\n"
+            + "2. 장소명은 꼭 포함하고, 거기서 무엇을 했는지 간단히 말해.\n"
+            + "3. 한 문장엔 하나의 정보만 담고, 40자 이내로 써.\n"
+            + "4. 한자어, 외래어, 줄임말 등 어려운 말은 쉬운 우리말로 바꾸거나 괄호로 설명한다.\n"
+            + "5. 평가 없이 사실만 써.\n"
+            + "6. 중복된 정보는 제거하고 중요한 장소 및 활동만 담아.\n"
+            + "7. 전체 요약은 500자 이내의 짧은 문장 여러 개로 구성해.\n"
+            + "8. 장소명 앞에 지명(시·군·구·동)을 쓸 때는 다음 규칙을 따라.\n"
+            + "    1. 시·군·구가 바뀌면 반드시 포함한다.\n"
+            + "    2. 같은 시·군·구 내에서는 동과 장소명만 쓴다.\n"
+            + "\n"
+            + "위 규칙에 따라 한국어 텍스트를 요약한 후, 요약 결과를 **오직 중국어 간체로만 번역해서** 응답해.\n"
+            + "번역 결과 외에 다른 추가적인 설명이나 내용은 포함하지 않는다.\n";
+
+    public static final String SINGLE_PLACE_TRANSLATE_EN =
+        """
+            You are a translation assistant. Please translate the following place information from Korean to English.
+                    
+            Place Name: %s
+            Road Address: %s
+                    
+            Return ONLY in JSON format like:
+            {
+              "translatedName": "...",
+              "translatedRoadAddress": "..."
+            }
+            """;
+
+    public static final String BATCH_PLACE_TRANSLATE_EN =
+        """
+            You are a professional translator. Translate the provided list of places from Korean to English.\s
+            Your sole mission is to provide a perfectly translated JSON array that contains only English characters, numerals, and allowed symbols.
+            The input is a list of JSON objects, and the output must be a single JSON array containing objects with 'index', 'translatedName' and 'translatedRoadAddress' fields.\s
+            Ensure all string values are enclosed in double quotes.\s
+            **The final response must not contain any characters other than English, numerals, and allowed symbols.** Respond ONLY with the JSON array, with no additional text or explanations. For example:\s
+            [{"index": 1, "translatedName": "Name", "translatedRoadAddress": "Address"}].
+            """;
+
+    public static final String SINGLE_PLACE_TRANSLATE_JA =
+        """
+            You are a translation assistant. Please translate the following place information from Korean to Japanese.
+                    
+            Place Name: %s
+            Road Address: %s
+                    
+            Return ONLY in JSON format like:
+            {
+              "translatedName": "...",
+              "translatedRoadAddress": "..."
+            }
+            """;
+
+    public static final String BATCH_PLACE_TRANSLATE_JA =
+        """
+            You are a professional translator specializing in Korean to Japanese place names, road addresses, and trade names.
+            Your sole mission is to provide a perfectly translated JSON array that contains only Japanese characters (including Katakana and Kanji), numerals, and allowed symbols.
+                    
+            Translation Rules:
+            - For proper nouns or words without a standard Japanese translation, you must translate them using Katakana based on their Korean pronunciation.
+            - You must translate all Korean and English text into Japanese.
+            - You must preserve numbers, hyphens (-), slashes (/), commas (,), and spaces.
+                    
+            The input is a list of JSON objects, and the output must be a single JSON array containing objects with 'index', 'translatedName', and 'translatedRoadAddress' fields.
+            **The final response must not contain any characters other than Japanese, numerals, and allowed symbols.** Respond ONLY with the JSON array.
+            """;
+
+    public static final String SINGLE_PLACE_TRANSLATE_ZH_CN =
+        """
+            You are a translation assistant. Please translate the following place information from Korean to Simplified Chinese.
+                    
+            Place Name: %s
+            Road Address: %s
+                    
+            Return ONLY in JSON format like:
+            {
+              "translatedName": "...",
+              "translatedRoadAddress": "..."
+            }
+            """;
+
+    public static final String BATCH_PLACE_TRANSLATE_ZH_CN =
+        """
+            You are a professional translator specializing in Korean to Simplified Chinese place names, road addresses, and trade names.
+            Your sole mission is to provide a perfectly translated JSON array that contains only Simplified Chinese characters, numerals, and allowed symbols.
+                    
+            Translation Rules:
+            - For proper nouns or names without a standard Chinese translation, you must use a phonetic translation (transliteration).
+            - You must translate all Korean and English text into Chinese.
+            - You must preserve numbers, hyphens (-), slashes (/), commas (,), and spaces.
+            - For famous places, prioritize official Chinese names. For brand names, use widely accepted translations.
+                    
+            The input is a list of JSON objects, and the output must be a single JSON array containing objects with 'index', 'translatedName', and 'translatedRoadAddress' fields.
+            **The final response must not contain any characters other than Simplified Chinese, numerals, and allowed symbols.** Respond ONLY with the JSON array, with no additional text or explanations.
+            """;
 }

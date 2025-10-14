@@ -1,6 +1,5 @@
 package com.cliptripbe.feature.place.domain.entity;
 
-import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -41,15 +40,12 @@ public class PlaceTranslation {
 
     private String roadAddress;
 
-    public static PlaceTranslation of(Place place, TranslationInfoDto translationInfoDto, Language language) {
+    public static PlaceTranslation of(Place place, Language language) {
         Objects.requireNonNull(place, "place must not be null");
         Objects.requireNonNull(language, "language must not be null");
-        Objects.requireNonNull(translationInfoDto, "translationInfo must not be null");
 
         return PlaceTranslation.builder()
             .place(place)
-            .name(translationInfoDto.translatedName())
-            .roadAddress(translationInfoDto.translatedRoadAddress())
             .language(language)
             .build();
     }

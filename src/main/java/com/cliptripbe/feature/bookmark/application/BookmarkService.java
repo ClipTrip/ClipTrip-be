@@ -1,7 +1,5 @@
 package com.cliptripbe.feature.bookmark.application;
 
-import static com.cliptripbe.feature.user.domain.type.Language.KOREAN;
-import static com.cliptripbe.global.response.type.ErrorType.ACCESS_DENIED_EXCEPTION;
 import static com.cliptripbe.global.response.type.ErrorType.PLACE_NOT_FOUND;
 
 import com.cliptripbe.feature.bookmark.domain.entity.Bookmark;
@@ -16,7 +14,6 @@ import com.cliptripbe.feature.bookmark.infrastructure.BookmarkRepository;
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.request.PlaceInfoRequest;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.util.AccessUtils;
@@ -142,26 +139,11 @@ public class BookmarkService {
 
         Bookmark bookmarkWithPlace = bookmarkFinder.findById(bookmarkId);
 
-        if (user.getLanguage() == KOREAN) {
-            return bookmarkResponseAssembler.createBookmarkResponseForKorean(
-                bookmarkWithPlace,
-                bookmarkIdsMap,
-                user
-            );
-        } else {
-            List<Place> places = bookmarkWithPlace.getBookmarkPlaces().stream()
-                .map(BookmarkPlace::getPlace)
-                .toList();
-            Map<Long, TranslationInfoDto> translationsMap = placeService.getTranslationsForPlaces(
-                places,
-                user.getLanguage());
-            return bookmarkResponseAssembler.createBookmarkResponseForForeign(
-                bookmarkWithPlace,
-                translationsMap,
-                bookmarkIdsMap,
-                user
-            );
-        }
+        return bookmarkResponseAssembler.createBookmarkResponseForKorean(
+            bookmarkWithPlace,
+            bookmarkIdsMap,
+            user
+        );
     }
 
     @Transactional
