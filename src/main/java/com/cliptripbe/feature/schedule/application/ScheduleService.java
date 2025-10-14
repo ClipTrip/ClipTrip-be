@@ -1,6 +1,5 @@
 package com.cliptripbe.feature.schedule.application;
 
-import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createBookmarkResponseForForeign;
 import static com.cliptripbe.feature.schedule.application.ScheduleResponseAssembler.createScheduleResponseForKorean;
 
 import com.cliptripbe.feature.bookmark.domain.service.BookmarkFinder;
@@ -15,9 +14,7 @@ import com.cliptripbe.feature.schedule.dto.request.UpdateScheduleRequest;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleListResponse;
 import com.cliptripbe.feature.schedule.dto.response.ScheduleResponse;
 import com.cliptripbe.feature.schedule.infrastructure.ScheduleRepository;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.entity.User;
-import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import java.util.List;
@@ -114,20 +111,11 @@ public class ScheduleService {
         Map<Long, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByPlaceIds(
             user.getId(), placeIdList);
 
-        if (user.getLanguage() == Language.KOREAN) {
-            return createScheduleResponseForKorean(
-                scheduleWithPlaces,
-                bookmarkIdsMap,
-                user
-            );
-        }
-        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(
-            places,
-            user.getLanguage()
+        return createScheduleResponseForKorean(
+            scheduleWithPlaces,
+            bookmarkIdsMap,
+            user
         );
-
-        return createBookmarkResponseForForeign(scheduleWithPlaces, translationsForPlaces,
-            bookmarkIdsMap, user);
     }
 
 
@@ -144,17 +132,10 @@ public class ScheduleService {
                 .build()
             )
             .forEach(schedule::addSchedulePlace);
-        if (user.getLanguage() == Language.KOREAN) {
-            return createScheduleResponseForKorean(
-                schedule,
-                bookmarkIdsMap,
-                user
-            );
-        }
-        Map<Long, TranslationInfoDto> translationsForPlaces = placeService.getTranslationsForPlaces(
-            placeList,
-            user.getLanguage());
-        return createBookmarkResponseForForeign(schedule, translationsForPlaces, bookmarkIdsMap,
-            user);
+        return createScheduleResponseForKorean(
+            schedule,
+            bookmarkIdsMap,
+            user
+        );
     }
 }

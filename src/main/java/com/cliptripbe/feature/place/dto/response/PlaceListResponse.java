@@ -3,12 +3,9 @@ package com.cliptripbe.feature.place.dto.response;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.domain.type.PlaceType;
 import com.cliptripbe.feature.place.dto.PlaceDto;
-import com.cliptripbe.feature.translate.dto.response.TranslatedPlaceAddress;
-import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
-import java.util.Optional;
 import lombok.Builder;
 
 @Builder
@@ -22,8 +19,6 @@ public record PlaceListResponse(
     double longitude,
     double latitude,
     Integer placeOrder,
-    Optional<String> translatedPlaceName,
-    Optional<String> translatedRoadAddress,
     Language language,
     String kakaoPlaceId,
     List<Long> bookmarkedIdList
@@ -39,29 +34,25 @@ public record PlaceListResponse(
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())
-            .translatedPlaceName(Optional.empty())
-            .translatedRoadAddress(Optional.empty())
             .language(language)
             .bookmarkedIdList(bookmarkedIdList)
             .build();
     }
 
     public static PlaceListResponse ofDto(
-        PlaceDto placeDto, TranslatedPlaceAddress tp, List<Long> bookmarkIds, Language language
+        PlaceDto placeDto, List<Long> bookmarkIds, Language language
     ) {
         List<Long> safeBookmarkedIdList = bookmarkIds == null || bookmarkIds.isEmpty()
             ? List.of() : bookmarkIds;
 
         return PlaceListResponse.builder()
-            .placeName(tp.placeName())
-            .roadAddress(tp.roadAddress())
+            .placeName(placeDto.placeName())
+            .roadAddress(placeDto.roadAddress())
             .phone(placeDto.phone())
             .type(PlaceType.findByCode(placeDto.categoryCode()))
             .longitude(placeDto.longitude())
             .latitude(placeDto.latitude())
             .kakaoPlaceId(placeDto.kakaoPlaceId())
-            .translatedPlaceName(Optional.ofNullable(tp.translationInfoDto().translatedName()))
-            .translatedRoadAddress(Optional.ofNullable(tp.translationInfoDto().translatedRoadAddress()))
             .language(language)
             .bookmarkedIdList(safeBookmarkedIdList)
             .build();
@@ -69,16 +60,9 @@ public record PlaceListResponse(
 
     public static PlaceListResponse ofEntity(
         Place place,
-        TranslationInfoDto translatedInfo,
         Language language,
         List<Long> bookmarkedIdList
     ) {
-        Optional<String> translatedPlaceName = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedName() : null
-        );
-        Optional<String> translatedRoadAddress = Optional.ofNullable(
-            translatedInfo != null ? translatedInfo.translatedRoadAddress() : null
-        );
         if (bookmarkedIdList == null || bookmarkedIdList.isEmpty()) {
             bookmarkedIdList = List.of();
         }
@@ -91,8 +75,6 @@ public record PlaceListResponse(
             .longitude(place.getAddress().longitude())
             .latitude(place.getAddress().latitude())
             .kakaoPlaceId(place.getKakaoPlaceId())
-            .translatedPlaceName(translatedPlaceName)
-            .translatedRoadAddress(translatedRoadAddress)
             .language(language)
             .bookmarkedIdList(bookmarkedIdList)
             .build();
@@ -118,10 +100,5 @@ public record PlaceListResponse(
 
     public static PlaceListResponse ofKorean(PlaceDto placeDto, List<Long> bookmarkIds) {
         return ofDto(placeDto, Language.KOREAN, bookmarkIds);
-    }
-
-    public static PlaceListResponse ofForeign(PlaceDto placeDto, TranslatedPlaceAddress tp, List<Long> bookmarkIds,
-        Language userLanguage) {
-        return ofDto(placeDto, tp, bookmarkIds, userLanguage);
     }
 }

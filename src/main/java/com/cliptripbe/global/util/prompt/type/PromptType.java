@@ -6,9 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum PromptType {
-    PLACE(PromptConstants.EXTRACT_PLACE),
-    SUMMARY_KO(PromptConstants.SUMMARY_CAPTION),
-    SUMMARY_EN(PromptConstants.SUMMARY_CAPTION_EN);
+    PLACE(PromptConstants.EXTRACT_PLACE);
 
     private final String template;
 }

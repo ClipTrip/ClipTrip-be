@@ -1,6 +1,5 @@
 package com.cliptripbe.global.util;
 
-import com.cliptripbe.feature.translate.dto.response.TranslationInfoDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -21,15 +20,7 @@ public class JsonUtils {
             throw new RuntimeException("JSON 직렬화 실패", e);
         }
     }
-
-    public TranslationInfoDto readValue(String response, Class<TranslationInfoDto> translationInfoClass) {
-        try {
-            return objectMapper.readValue(response, translationInfoClass);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("번역 결과 파싱 실패", e);
-        }
-    }
-
+    
     public <T> List<T> parseToList(String responseJson, Class<T> clazz) {
         try {
             CollectionType listType = objectMapper.getTypeFactory()
