@@ -93,13 +93,6 @@ jobs:
             cat <<EOF > docker-compose.yml
             version: '3.8'
             services:
-              redis:
-                image: redis:7.2.5
-                container_name: redis
-                restart: always
-                volumes:
-                  - redis_data:/data
-              
               app:
                 image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
                 container_name: clip-trip-server
@@ -111,9 +104,6 @@ jobs:
                   - SPRING_DATA_REDIS_HOST=redis
                   - SPRING_DATA_REDIS_PORT=6379
                 restart: always
-            
-            volumes:
-              redis_data:
             EOF
             docker-compose pull app
             # 도커 컴포즈로 배포
