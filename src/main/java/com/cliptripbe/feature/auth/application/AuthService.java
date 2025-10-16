@@ -61,12 +61,6 @@ public class AuthService {
             refreshToken);
 
         String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
-
-//        Cookie newAccessTokenCookie = cookieProvider.createTokenCookie(ACCESS_TOKEN,
-//            newAccessToken);
-
-//        response.addCookie(newAccessTokenCookie);
-
         return AccessTokenResponse.of(newAccessToken);
     }
 
@@ -80,7 +74,7 @@ public class AuthService {
         String accessToken = jwtTokenProvider.extractTokenFromHeader(request);
 
         if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
-            return TokenVerifyResponse.of(false);
+            throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
         }
 
         return TokenVerifyResponse.of(true);
@@ -102,14 +96,9 @@ public class AuthService {
         } catch (Exception e) {
             throw new CustomException(ErrorType.FAIL_AUTHENTICATION);
         }
-
-//        Cookie accessTokenCookie = cookieProvider.createTokenCookie(
-//            ACCESS_TOKEN, jwtToken.getAccessToken());
         Cookie refreshTokenCookie = cookieProvider.createTokenCookie(
             REFRESH_TOKEN, jwtToken.getRefreshToken());
-//        response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
-
         return jwtToken.getAccessToken();
     }
 
