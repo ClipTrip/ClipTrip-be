@@ -3,6 +3,7 @@ package com.cliptripbe.feature.auth.api;
 import static com.cliptripbe.global.constant.Constant.API_VERSION;
 
 import com.cliptripbe.feature.auth.application.AuthService;
+import com.cliptripbe.feature.auth.dto.AccessTokenResponse;
 import com.cliptripbe.feature.auth.dto.TokenVerifyResponse;
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
 import com.cliptripbe.feature.auth.dto.UserLoginResponse;
@@ -43,12 +44,9 @@ public class AuthController implements AuthControllerDocs {
 
     @Override
     @PostMapping("/refresh")
-    public ApiResponse<?> renewTheToken(
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) {
-        authService.refreshAccessToken(request, response);
-        return ApiResponse.success(SuccessType.OK);
+    public ApiResponse<AccessTokenResponse> renewTheToken(HttpServletRequest request) {
+        AccessTokenResponse response = authService.refreshAccessToken(request);
+        return ApiResponse.success(SuccessType.OK, response);
     }
 
     @Override
