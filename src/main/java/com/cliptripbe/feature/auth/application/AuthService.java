@@ -77,7 +77,7 @@ public class AuthService {
 
 
     public TokenVerifyResponse verifyAccessToken(HttpServletRequest request) {
-        String accessToken = jwtTokenProvider.extractTokenFromCookies(request, ACCESS_TOKEN);
+        String accessToken = jwtTokenProvider.extractTokenFromHeader(request);
 
         if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
             return TokenVerifyResponse.of(false);
