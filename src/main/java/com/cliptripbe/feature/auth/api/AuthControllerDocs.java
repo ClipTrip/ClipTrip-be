@@ -1,5 +1,6 @@
 package com.cliptripbe.feature.auth.api;
 
+import com.cliptripbe.feature.auth.dto.AccessTokenResponse;
 import com.cliptripbe.feature.auth.dto.TokenVerifyResponse;
 import com.cliptripbe.feature.user.dto.request.UserSignInRequest;
 import com.cliptripbe.feature.auth.dto.UserLoginResponse;
@@ -22,8 +23,7 @@ public interface AuthControllerDocs {
     ApiResponse<?> logout(HttpServletResponse response);
 
     @Operation(summary = "리프레쉬 토큰을 통한 엑세스 토큰 재 발행")
-    ApiResponse<?> renewTheToken(HttpServletRequest httpServletRequest,
-        HttpServletResponse httpServletResponse);
+    ApiResponse<AccessTokenResponse> renewTheToken(HttpServletRequest httpServletRequest);
 
     @Operation(summary = "token 만료 확인")
     ApiResponse<TokenVerifyResponse> tokenVerify(HttpServletRequest request);
