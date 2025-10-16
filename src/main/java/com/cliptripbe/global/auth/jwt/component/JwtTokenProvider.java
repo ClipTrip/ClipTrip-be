@@ -39,6 +39,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtTokenProvider {
 
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer ";
+
     private final Key key;
     private final CustomerDetailsService customerDetailsService;
 
@@ -129,6 +132,18 @@ public class JwtTokenProvider {
                 }
             }
         }
+        return null;
+    }
+
+    public String extractTokenFromHeader(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION);
+
+        if (bearerToken != null && !bearerToken.trim().isEmpty()) {
+            if (bearerToken.startsWith(BEARER)) {
+                return bearerToken.substring(7).trim();
+            }
+        }
+
         return null;
     }
 
