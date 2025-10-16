@@ -24,8 +24,11 @@ public record PlaceListResponse(
     List<Long> bookmarkedIdList
 ) {
 
-    public static PlaceListResponse ofDto(PlaceDto placeDto, Language language,
-        List<Long> bookmarkedIdList) {
+    public static PlaceListResponse ofDto(
+        PlaceDto placeDto,
+        Language language,
+        List<Long> bookmarkedIdList
+    ) {
         return PlaceListResponse.builder()
             .placeName(placeDto.placeName())
             .roadAddress(placeDto.roadAddress())

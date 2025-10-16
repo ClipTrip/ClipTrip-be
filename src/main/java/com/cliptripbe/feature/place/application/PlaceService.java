@@ -151,8 +151,6 @@ public class PlaceService {
         Map<String, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByKakaoPlaceIds(
             user.getId(), kakaoPlaceIdList);
 
-        Language userLanguage = user.getLanguage();
-
         return createPlaceListResponseForKorean(placeDtoList, bookmarkIdsMap);
     }
 
@@ -169,8 +167,6 @@ public class PlaceService {
 
         Map<String, List<Long>> bookmarkIdsMap = bookmarkFinder.findBookmarkIdsByKakaoPlaceIds(
             user.getId(), kakaoPlaceIdList);
-
-        Language userLanguage = user.getLanguage();
 
         return createPlaceListResponseForKorean(keywordPlaces, bookmarkIdsMap);
     }
@@ -275,20 +271,22 @@ public class PlaceService {
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(luggageStorageRequest,
             luggageStoragePlaces);
 
-        List<PlaceDto> placeDtoList = placesInRange.stream()
-            .map(PlaceDto::fromEntity)
-            .toList();
+//        List<PlaceDto> placeDtoList = placesInRange.stream()
+//            .map(PlaceDto::fromEntity)
+//            .toList();
 
-        Map<String, List<Long>> stringKeyBookmarkMap = bookmarkIdsMap.entrySet().stream()
-            .collect(Collectors.toMap(
-                entry -> String.valueOf(entry.getKey()),
-                Map.Entry::getValue
-            ));
-        return PlaceListResponseAssembler.createPlaceListResponseForKorean(placeDtoList, stringKeyBookmarkMap);
+//        Map<String, List<Long>> stringKeyBookmarkMap = bookmarkIdsMap.entrySet().stream()
+//            .collect(Collectors.toMap(
+//                entry -> String.valueOf(entry.getKey()),
+//                Map.Entry::getValue
+//            ));
+        return PlaceListResponseAssembler.createPlaceListResponseForLuggage(placesInRange,
+            bookmarkIdsMap, user);
     }
 
     @Transactional
-    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request, Language language) {
+    public List<Place> findOrCreatePlacesByPlaceInfos(List<PlaceInfoRequest> request,
+        Language language) {
         if (request == null || request.isEmpty()) {
             return Collections.emptyList();
         }

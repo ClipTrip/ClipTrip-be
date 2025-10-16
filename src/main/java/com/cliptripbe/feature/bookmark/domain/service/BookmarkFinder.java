@@ -70,8 +70,7 @@ public class BookmarkFinder {
                 PlaceBookmarkMapping::getPlaceId,
                 Collectors.mapping(PlaceBookmarkMapping::getBookmarkId,
                     Collectors.collectingAndThen(
-                        Collectors.toSet(),
-                        ArrayList::new
+                        Collectors.toSet(), ArrayList::new
                     ))
             ));
     }

@@ -30,7 +30,6 @@ public class BookmarkService {
     private final BookmarkRepository bookmarkRepository;
     private final BookmarkFinder bookmarkFinder;
     private final PlaceService placeService;
-    private final BookmarkResponseAssembler bookmarkResponseAssembler;
 
     @Transactional
     public Long createBookmark(
@@ -139,7 +138,7 @@ public class BookmarkService {
 
         Bookmark bookmarkWithPlace = bookmarkFinder.findById(bookmarkId);
 
-        return bookmarkResponseAssembler.createBookmarkResponseForKorean(
+        return BookmarkResponseAssembler.createBookmarkResponseForKorean(
             bookmarkWithPlace,
             bookmarkIdsMap,
             user
