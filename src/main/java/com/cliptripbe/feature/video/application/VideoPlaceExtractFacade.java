@@ -1,5 +1,7 @@
 package com.cliptripbe.feature.video.application;
 
+import static com.cliptripbe.global.response.type.ErrorType.FAIL_ASYNC_WORK;
+
 import com.cliptripbe.feature.place.application.PlaceService;
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.place.dto.PlaceDto;
@@ -10,6 +12,7 @@ import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.video.domain.entity.Video;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
+import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.util.ChatGPTUtils;
 import com.cliptripbe.global.util.prompt.PromptUtils;
 import com.cliptripbe.global.util.prompt.type.PromptType;
@@ -19,20 +22,21 @@ import com.cliptripbe.infrastructure.port.caption.VideoContentExtractPort;
 import com.cliptripbe.infrastructure.port.kakao.PlaceSearchPort;
 import com.cliptripbe.infrastructure.port.openai.AiTextProcessorPort;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class VideoPlaceExtractFacade {
 
-    private final PlaceService placeService;
-    private final ScheduleService scheduleService;
-    private final VideoService videoService;
-
     private final VideoContentExtractPort videoContentExtractPort;
-    private final AiTextProcessorPort aiTextProcessorPort;
-    private final PlaceSearchPort placeSearchPort;
+
+    private final VideoAsyncProcessor videoAsyncProcessor;
+    private final VideoRegistrationService videoRegistrationService;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         CaptionResponse caption = videoContentExtractPort.getCaptions(request.youtubeUrl());
@@ -40,27 +44,34 @@ public class VideoPlaceExtractFacade {
         String requestPlacePrompt = PromptUtils.build(PromptType.PLACE, caption.captions());
         String requestSummaryPrompt = PromptUtils.build(SummaryType.KOREAN, caption.captions());
 
-        String gptPlaceResponse = aiTextProcessorPort.askPlaceExtraction(requestPlacePrompt);
-        List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
+        CompletableFuture<List<PlaceDto>> placeFuture =
+            videoAsyncProcessor.extractAndSearchPlaces(requestPlacePrompt);
 
-        String gptSummaryResponse = aiTextProcessorPort.ask(requestSummaryPrompt);
-        String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
+        CompletableFuture<String> summaryFuture =
+            videoAsyncProcessor.generateVideoSummary(requestSummaryPrompt);
 
+        try {
+            CompletableFuture.allOf(placeFuture, summaryFuture).join();
 
-        String summaryTranslated = null;
-        if (user.getLanguage() != Language.KOREAN) {
-            String requestSummaryEnPrompt = PromptUtils.build(SummaryType.findByLanguage(user.getLanguage()),
-                caption.captions());
-            summaryTranslated = aiTextProcessorPort.ask(requestSummaryEnPrompt);
+            String summaryKo = summaryFuture.join();
+            List<PlaceDto> placeDtoList = placeFuture.join();
+
+            Video videoToSave = request.toVideo(summaryKo);
+
+            return videoRegistrationService.saveVideoAndSchedule(user, videoToSave, placeDtoList);
+        } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+
+            while (cause instanceof CompletionException && cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+
+            if (cause instanceof CustomException ce) {
+                throw ce;
+            }
+
+            log.error("비동기 작업 실패", cause);
+            throw new CustomException(FAIL_ASYNC_WORK);
         }
-
-        Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated, user.getLanguage()));
-
-        List<PlaceDto> placeDtoLst = placeSearchPort.searchFirstPlacesInParallel(extractPlacesText);
-        List<Place> placeEntityList = placeService.createPlaceAll(placeDtoLst);
-        
-        ScheduleResponse scheduleResponse = scheduleService.createScheduleByVideo(user, placeEntityList);
-
-        return VideoScheduleResponse.of(video, scheduleResponse);
     }
 }

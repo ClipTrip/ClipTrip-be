@@ -134,18 +134,18 @@ public class KakaoMapAdapter implements PlaceSearchPort {
     }
 
     @Override
-    public List<PlaceDto> searchFirstPlacesInParallel(List<String> keywords) {
+    public CompletableFuture<List<PlaceDto>> searchFirstPlacesInParallelAsync(List<String> keywords) {
         log.debug("Searching first places async for keywords: {}", keywords);
 
         List<CompletableFuture<PlaceDto>> futures = keywords.stream()
             .map(asyncService::searchFirstPlaceAsync)
             .toList();
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-        return futures.stream()
-            .map(CompletableFuture::join)
-            .filter(Objects::nonNull)
-            .toList();
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+            .thenApply(v -> futures.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .toList()
+            );
     }
 }
