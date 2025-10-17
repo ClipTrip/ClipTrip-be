@@ -3,6 +3,7 @@ package com.cliptripbe.feature.auth.application;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.ACCESS_TOKEN;
 import static com.cliptripbe.global.auth.jwt.entity.TokenType.REFRESH_TOKEN;
 
+import com.cliptripbe.feature.auth.dto.AccessTokenResponse;
 import com.cliptripbe.feature.auth.dto.TokenVerifyResponse;
 import com.cliptripbe.feature.user.domain.entity.User;
 import com.cliptripbe.feature.user.domain.service.UserLoader;
@@ -39,18 +40,17 @@ public class AuthService {
         UserSignInRequest userSignInRequest,
         HttpServletResponse response
     ) {
-        createCookieAndAppend(
+        String accessToken = createCookieAndAppend(
             userSignInRequest.email(),
             userSignInRequest.password(),
             response
         );
 
         User user = userLoader.findByEmail(userSignInRequest.email());
-        return UserLoginResponse.of(user.getLanguage());
+        return UserLoginResponse.of(user.getLanguage(), accessToken);
     }
 
-
-    public void refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
+    public AccessTokenResponse refreshAccessToken(HttpServletRequest request) {
         String refreshToken = jwtTokenProvider.extractTokenFromCookies(request, REFRESH_TOKEN);
 
         if (refreshToken == null || !jwtTokenProvider.validateToken(refreshToken)) {
@@ -61,11 +61,7 @@ public class AuthService {
             refreshToken);
 
         String newAccessToken = jwtTokenProvider.generateToken(authentication).getAccessToken();
-
-        Cookie newAccessTokenCookie = cookieProvider.createTokenCookie(ACCESS_TOKEN,
-            newAccessToken);
-
-        response.addCookie(newAccessTokenCookie);
+        return AccessTokenResponse.of(newAccessToken);
     }
 
     public void logout(HttpServletResponse response) {
@@ -75,19 +71,23 @@ public class AuthService {
 
 
     public TokenVerifyResponse verifyAccessToken(HttpServletRequest request) {
-        String accessToken = jwtTokenProvider.extractTokenFromCookies(request, ACCESS_TOKEN);
+        String accessToken = jwtTokenProvider.extractTokenFromHeader(request);
 
         if (accessToken == null || !jwtTokenProvider.validateToken(accessToken)) {
-            return TokenVerifyResponse.of(false);
+            throw new CustomException(ErrorType.EXPIRED_REFRESH_TOKEN);
         }
 
         return TokenVerifyResponse.of(true);
     }
 
-    private void createCookieAndAppend(String userId, String password,
-        HttpServletResponse response) {
+    private String createCookieAndAppend(
+        String userId,
+        String password,
+        HttpServletResponse response
+    ) {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
             userId, password);
+
         JwtToken jwtToken;
         try {
             Authentication authentication = authenticationManagerBuilder.getObject()
@@ -96,13 +96,10 @@ public class AuthService {
         } catch (Exception e) {
             throw new CustomException(ErrorType.FAIL_AUTHENTICATION);
         }
-
-        Cookie accessTokenCookie = cookieProvider.createTokenCookie(
-            ACCESS_TOKEN, jwtToken.getAccessToken());
         Cookie refreshTokenCookie = cookieProvider.createTokenCookie(
             REFRESH_TOKEN, jwtToken.getRefreshToken());
-        response.addCookie(accessTokenCookie);
         response.addCookie(refreshTokenCookie);
+        return jwtToken.getAccessToken();
     }
 
 

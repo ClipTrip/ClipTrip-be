@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookmarkResponseAssembler {
 
-    public BookmarkInfoResponse createBookmarkResponseForKorean(
+    public static BookmarkInfoResponse createBookmarkResponseForKorean(
         Bookmark bookmarkWithPlace,
         Map<Long, List<Long>> bookmarkIdsMap,
         User user
