@@ -25,7 +25,7 @@ public class KakaoMapAsyncAdapter {
     @Qualifier("kakaoMapRestClient")
     private final RestClient kakaoMapRestClient;
     
-    @Async("threadPoolTaskExecutor")
+    @Async("placeSearchExecutor")
     public CompletableFuture<PlaceDto> searchFirstPlaceAsync(String keyword) {
         try {
             long start = System.currentTimeMillis();
