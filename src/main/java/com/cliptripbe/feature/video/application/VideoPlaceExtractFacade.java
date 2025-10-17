@@ -63,6 +63,12 @@ public class VideoPlaceExtractFacade {
 
             return videoRegistrationService.saveVideoAndSchedule(user, videoToSave, placeDtoList);
         } catch (CompletionException e) {
+            Throwable cause = e.getCause();
+
+            if (cause instanceof CustomException ce) {
+                throw ce;
+            }
+            log.error("비동기 작업 실패", e);
             throw new CustomException(FAIL_ASYNC_WORK);
         }
 

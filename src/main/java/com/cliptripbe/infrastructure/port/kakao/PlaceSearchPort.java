@@ -4,6 +4,7 @@ import com.cliptripbe.feature.place.dto.PlaceDto;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByCategoryRequest;
 import com.cliptripbe.feature.place.dto.request.PlaceSearchByKeywordRequest;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface PlaceSearchPort {
 
@@ -11,5 +12,5 @@ public interface PlaceSearchPort {
 
     List<PlaceDto> searchPlacesByKeyWord(PlaceSearchByKeywordRequest request);
 
-    List<PlaceDto> searchFirstPlacesInParallel(List<String> keywords);
+    CompletableFuture<List<PlaceDto>> searchFirstPlacesInParallelAsync(List<String> keywords);
 }
