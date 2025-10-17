@@ -34,6 +34,8 @@ public class VideoPlaceExtractFacade {
     private final AiTextProcessorPort aiTextProcessorPort;
     private final PlaceSearchPort placeSearchPort;
 
+    private final VideoRegistrationService videoRegistrationService;
+
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
         CaptionResponse caption = videoContentExtractPort.getCaptions(request.youtubeUrl());
 
@@ -46,21 +48,24 @@ public class VideoPlaceExtractFacade {
         String gptSummaryResponse = aiTextProcessorPort.ask(requestSummaryPrompt);
         String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
 
+//        String summaryTranslated = null;
+//        if (user.getLanguage() != Language.KOREAN) {
+//            String requestSummaryEnPrompt = PromptUtils.build(SummaryType.findByLanguage(user.getLanguage()),
+//                caption.captions());
+//            summaryTranslated = aiTextProcessorPort.ask(requestSummaryEnPrompt);
+//        }
 
-        String summaryTranslated = null;
-        if (user.getLanguage() != Language.KOREAN) {
-            String requestSummaryEnPrompt = PromptUtils.build(SummaryType.findByLanguage(user.getLanguage()),
-                caption.captions());
-            summaryTranslated = aiTextProcessorPort.ask(requestSummaryEnPrompt);
-        }
+        Video videoToSave = request.toVideo(summaryKo);
 
-        Video video = videoService.createVideo(request.toVideo(summaryKo, summaryTranslated, user.getLanguage()));
+//        Video video = videoService.createVideo(request.toVideo(summaryKo));
 
         List<PlaceDto> placeDtoLst = placeSearchPort.searchFirstPlacesInParallel(extractPlacesText);
-        List<Place> placeEntityList = placeService.createPlaceAll(placeDtoLst);
-        
-        ScheduleResponse scheduleResponse = scheduleService.createScheduleByVideo(user, placeEntityList);
+//        List<Place> placeEntityList = placeService.createPlaceAll(placeDtoLst);
 
-        return VideoScheduleResponse.of(video, scheduleResponse);
+//        ScheduleResponse scheduleResponse = scheduleService.createScheduleByVideo(user,
+//            placeEntityList);
+
+//        return VideoScheduleResponse.of(video, scheduleResponse);
+        return videoRegistrationService.saveVideoAndSchedule(user, videoToSave, placeDtoLst);
     }
 }

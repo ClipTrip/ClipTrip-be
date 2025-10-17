@@ -18,16 +18,7 @@ public record ExtractPlaceRequest(
     String youtubeUrl
 ) {
 
-    public Video toVideo(String summaryKo, String summaryTranslated, Language language) {
-        if (summaryTranslated != null) {
-            return Video.builder()
-                .url(youtubeUrl)
-                .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
-                .summaryKo(summaryKo)
-                .summaryTranslated(summaryTranslated)
-                .translatedLang(language.getName())
-                .build();
-        }
+    public Video toVideo(String summaryKo) {
         return Video.builder()
             .url(youtubeUrl)
             .youtubeVideoId(YoutubeUtils.extractVideoId(youtubeUrl))
