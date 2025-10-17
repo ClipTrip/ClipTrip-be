@@ -34,14 +34,11 @@ import org.springframework.stereotype.Service;
 public class VideoPlaceExtractFacade {
 
     private final VideoContentExtractPort videoContentExtractPort;
-    private final AiTextProcessorPort aiTextProcessorPort;
-    private final PlaceSearchPort placeSearchPort;
 
     private final VideoAsyncProcessor videoAsyncProcessor;
     private final VideoRegistrationService videoRegistrationService;
 
     public VideoScheduleResponse extractPlace(User user, ExtractPlaceRequest request) {
-        // 1
         CaptionResponse caption = videoContentExtractPort.getCaptions(request.youtubeUrl());
 
         String requestPlacePrompt = PromptUtils.build(PromptType.PLACE, caption.captions());
@@ -65,25 +62,16 @@ public class VideoPlaceExtractFacade {
         } catch (CompletionException e) {
             Throwable cause = e.getCause();
 
+            while (cause instanceof CompletionException && cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+
             if (cause instanceof CustomException ce) {
                 throw ce;
             }
-            log.error("비동기 작업 실패", e);
+
+            log.error("비동기 작업 실패", cause);
             throw new CustomException(FAIL_ASYNC_WORK);
         }
-
-//        // 2
-//        String gptPlaceResponse = aiTextProcessorPort.askPlaceExtraction(requestPlacePrompt);
-//        List<String> extractPlacesText = ChatGPTUtils.extractPlaces(gptPlaceResponse);
-//
-//        // 3
-//        String gptSummaryResponse = aiTextProcessorPort.ask(requestSummaryPrompt);
-//        String summaryKo = ChatGPTUtils.removeLiteralNewlines(gptSummaryResponse);
-//
-//        Video videoToSave = request.toVideo(summaryKo);
-//        // 2
-//        List<PlaceDto> placeDtoLst = placeSearchPort.searchFirstPlacesInParallel(extractPlacesText);
-//
-//        return videoRegistrationService.saveVideoAndSchedule(user, videoToSave, placeDtoLst);
     }
 }
