@@ -32,7 +32,7 @@ public class ChatGptAdapter implements AiTextProcessorPort {
             .build();
 
         ChatGptRequest request = ChatGptRequest.builder()
-            .model("gpt-4.1-mini")
+            .model("gpt-4.1-nano")
             .messages(List.of(message))
             .temperature(0.0)
             .max_tokens(350)
