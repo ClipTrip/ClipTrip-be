@@ -271,15 +271,6 @@ public class PlaceService {
         List<Place> placesInRange = placeClassifier.getLuggagePlacesByRange(luggageStorageRequest,
             luggageStoragePlaces);
 
-//        List<PlaceDto> placeDtoList = placesInRange.stream()
-//            .map(PlaceDto::fromEntity)
-//            .toList();
-
-//        Map<String, List<Long>> stringKeyBookmarkMap = bookmarkIdsMap.entrySet().stream()
-//            .collect(Collectors.toMap(
-//                entry -> String.valueOf(entry.getKey()),
-//                Map.Entry::getValue
-//            ));
         return PlaceListResponseAssembler.createPlaceListResponseForLuggage(placesInRange,
             bookmarkIdsMap, user);
     }
