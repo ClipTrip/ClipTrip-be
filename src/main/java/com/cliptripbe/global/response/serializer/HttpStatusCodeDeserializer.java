@@ -9,6 +9,23 @@ import org.springframework.http.HttpStatusCode;
 
 public class HttpStatusCodeDeserializer extends JsonDeserializer<HttpStatusCode> {
 
+//    @Override
+//    public HttpStatusCode deserialize(JsonParser p, DeserializationContext ctxt)
+//        throws IOException {
+//
+//        String text = p.getText();
+//
+//        if (text == null || text.isEmpty()) {
+//            return null;
+//        }
+//
+//        try {
+//            return HttpStatus.valueOf(text);
+//        } catch (IllegalArgumentException e) {
+//            return HttpStatus.OK;
+//        }
+//    }
+
     @Override
     public HttpStatusCode deserialize(JsonParser p, DeserializationContext ctxt)
         throws IOException {
@@ -22,7 +39,10 @@ public class HttpStatusCodeDeserializer extends JsonDeserializer<HttpStatusCode>
         try {
             return HttpStatus.valueOf(text);
         } catch (IllegalArgumentException e) {
-            return HttpStatus.OK;
+            throw new IOException(
+                "Invalid HTTP status code: '" + text + "'. " +
+                    "This indicates data corruption or version mismatch.", e
+            );
         }
     }
 }

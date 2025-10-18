@@ -38,8 +38,13 @@ public class IdempotencyAspect {
     @Around("@annotation(com.cliptripbe.global.aop.idempotency.annotation.Idempotent)")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Object handleIdempotency(ProceedingJoinPoint joinPoint) throws Throwable {
+        var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        if (attrs == null) {
+            log.warn("⚠️ request가 null임. 멱등성 검증 스킵");
+            return joinPoint.proceed();
+        }
+        HttpServletRequest request = attrs.getRequest();
 
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         final String idempotencyKey = request.getHeader(IDEMPOTENCY_KEY_HEADER);
 
         if (idempotencyKey == null || idempotencyKey.isEmpty()) {
@@ -68,7 +73,7 @@ public class IdempotencyAspect {
 
         try {
             // PROCESSING (신규 요청)
-            idempotencyKeyRepository.save(new IdempotencyKey(idempotencyKey));
+            idempotencyKeyRepository.saveAndFlush(new IdempotencyKey(idempotencyKey));
         } catch (DataIntegrityViolationException e) {
             log.warn("동시에 들어온 요청이 감지되었습니다(유니크 제약 조건 충돌). 키: {}", idempotencyKey);
             return ApiResponse.error(REQUEST_ALREADY_IN_PROGRESS);
