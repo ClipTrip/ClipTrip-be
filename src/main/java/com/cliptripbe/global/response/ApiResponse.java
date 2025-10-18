@@ -1,10 +1,12 @@
 package com.cliptripbe.global.response;
 
+import com.cliptripbe.global.response.serializer.HttpStatusCodeDeserializer;
 import com.cliptripbe.global.response.type.ErrorType;
 import com.cliptripbe.global.response.type.ResultType;
 import com.cliptripbe.global.response.type.SuccessType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import org.springframework.http.HttpStatusCode;
@@ -15,10 +17,14 @@ import org.springframework.http.HttpStatusCode;
 public record ApiResponse<T>(
     @Schema(description = "응답 타입", example = "SUCCESS")
     ResultType resultType,
+
     @Schema(description = "응답 코드", example = "200")
+    @JsonDeserialize(using = HttpStatusCodeDeserializer.class)
     HttpStatusCode httpStatusCode,
+
     @Schema(description = "응답 내용", example = "요청에 성공하였습니다.")
     String message,
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     T data
 ) {

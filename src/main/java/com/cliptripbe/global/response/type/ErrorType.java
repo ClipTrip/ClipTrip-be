@@ -57,6 +57,10 @@ public enum ErrorType {
 
     // s3
     FAIL_GENERATE_PRESIGNED_URL(HttpStatus.INTERNAL_SERVER_ERROR, "pre-signed url 생성에 실패했습니다."),
+
+    // idempotent
+    REQUEST_ALREADY_IN_PROGRESS(HttpStatus.CONFLICT, "이미 처리 중인 요청입니다."),
+
     ;
 
 
