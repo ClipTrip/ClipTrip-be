@@ -5,7 +5,6 @@ import static com.cliptripbe.global.constant.Constant.API_VERSION;
 import com.cliptripbe.feature.video.application.VideoPlaceExtractFacade;
 import com.cliptripbe.feature.video.dto.request.ExtractPlaceRequest;
 import com.cliptripbe.feature.video.dto.response.VideoScheduleResponse;
-import com.cliptripbe.feature.video.application.VideoService;
 import com.cliptripbe.global.aop.idempotency.annotation.Idempotent;
 import com.cliptripbe.global.auth.security.CustomerDetails;
 import com.cliptripbe.global.response.ApiResponse;

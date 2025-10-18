@@ -1,8 +1,11 @@
 package com.cliptripbe.global.aop.idempotency.aspect;
 
+import static com.cliptripbe.global.response.type.ErrorType.REQUEST_ALREADY_IN_PROGRESS;
+
 import com.cliptripbe.global.aop.idempotency.entity.IdempotencyKey;
 import com.cliptripbe.global.aop.idempotency.entity.RequestStatus;
 import com.cliptripbe.global.aop.idempotency.repository.IdempotencyKeyRepository;
+import com.cliptripbe.global.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +16,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
@@ -48,53 +50,46 @@ public class IdempotencyAspect {
         if (existingKey.isPresent()) {
             IdempotencyKey storedKey = existingKey.get();
             if (storedKey.getStatus() == RequestStatus.COMPLETED) {
-                log.info("Returning stored response for key: {}", idempotencyKey);
+                // COMPLETED
+                log.info("저장된 응답을 반환합니다. 키: {}", idempotencyKey);
                 String storedResponseBody = storedKey.getResponseBody();
 
-                // 2. 저장된 JSON을 실제 반환 타입의 객체로 역직렬화
                 MethodSignature signature = (MethodSignature) joinPoint.getSignature();
                 Class<?> returnType = signature.getReturnType();
                 Object storedResponse = objectMapper.readValue(storedResponseBody, returnType);
 
-                // 컨트롤러가 ResponseEntity를 직접 반환하는 경우를 위해 상태 코드도 사용
-                // 여기서는 ApiResponse를 반환하므로 Spring이 자동으로 200 OK로 처리해줍니다.
                 return storedResponse;
-            } else { // PROCESSING
-                log.warn("Request already in progress for key: {}", idempotencyKey);
-                return new ResponseEntity<>("Request is already in progress.", HttpStatus.CONFLICT);
+            } else {
+                // PROCESSING
+                log.info("이미 처리 중인 요청입니다. 키: {}", idempotencyKey);
+                return ApiResponse.error(REQUEST_ALREADY_IN_PROGRESS);
             }
         }
 
         try {
+            // PROCESSING (신규 요청)
             idempotencyKeyRepository.save(new IdempotencyKey(idempotencyKey));
         } catch (DataIntegrityViolationException e) {
-            log.warn("Concurrent request detected by unique constraint for key: {}",
-                idempotencyKey);
-            return new ResponseEntity<>("Request is already in progress.", HttpStatus.CONFLICT);
+            log.warn("동시에 들어온 요청이 감지되었습니다(유니크 제약 조건 충돌). 키: {}", idempotencyKey);
+            return ApiResponse.error(REQUEST_ALREADY_IN_PROGRESS);
         }
 
         try {
-            // 3. 반환 타입을 Object로 변경하여 모든 타입의 응답을 받음
+            // 비지니스 로직 후 응답
             Object response = joinPoint.proceed();
-
-            // 4. 응답 객체를 JSON 문자열로 직렬화
             String responseBodyJson = objectMapper.writeValueAsString(response);
 
+            // 데이터 정합성 or 외부에서 중간에 키 값을 지웠을 때
             IdempotencyKey keyToComplete = idempotencyKeyRepository.findById(idempotencyKey)
                 .orElseThrow(() -> new IllegalStateException(
-                    "Idempotency key not found after processing: " + idempotencyKey));
-
-            // 응답이 ResponseEntity인 경우 실제 상태 코드를, 아닌 경우 200 OK를 사용
-//            HttpStatusCode statusCode = (response instanceof ResponseEntity)
-//                ? ((ResponseEntity<?>) response).getStatusCode()
-//                : HttpStatus.OK;
+                    "요청 처리 후에도 Idempotency 키를 찾을 수 없습니다. 키: " + idempotencyKey));
 
             keyToComplete.complete(responseBodyJson);
             idempotencyKeyRepository.save(keyToComplete);
 
             return response;
         } catch (Exception e) {
-            log.error("Error during processing for key: {}. Removing key.", idempotencyKey, e);
+            log.error("요청 처리 중 오류 발생. 키: {} → 키를 삭제합니다.", idempotencyKey, e);
             idempotencyKeyRepository.deleteById(idempotencyKey);
             throw e;
         }

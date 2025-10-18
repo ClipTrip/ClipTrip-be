@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatusCode;
 
 @Entity
 @Getter
@@ -28,21 +27,27 @@ public class IdempotencyKey extends BaseTimeEntity {
     @Column(nullable = false)
     private RequestStatus status;
 
-
     @Lob
     @Column(name = "response_body", columnDefinition = "LONGTEXT")
     private String responseBody;
+
+    @Column(name = "expires_at", nullable = false)
+    private LocalDateTime expiresAt;
 
 
     public IdempotencyKey(String key) {
         this.key = key;
         this.status = RequestStatus.PROCESSING;
-
+        this.expiresAt = LocalDateTime.now().plusHours(24);
     }
 
     public void complete(String body) {
         this.status = RequestStatus.COMPLETED;
         this.responseBody = body;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(expiresAt);
     }
 }
 
