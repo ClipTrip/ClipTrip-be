@@ -25,6 +25,7 @@ public class VideoController implements VideoControllerDocs {
 
     private final VideoPlaceExtractFacade videoPlaceExtractFacade;
 
+
     @Idempotent
     @PostMapping()
     public ApiResponse<VideoScheduleResponse> extractPlacesFromYoutube(
