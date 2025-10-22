@@ -17,7 +17,7 @@ public class IdempotencyCleanService {
     @Transactional
     public int deleteExpiredKeys() {
         LocalDateTime threshold = LocalDateTime.now().minusMinutes(30);
-        int  deletedCount = idempotencyKeyRepository.deleteByCreatedAtBefore(threshold);
+        int  deletedCount = idempotencyKeyRepository.deleteByExpiresAtBefore(threshold);
         log.info("만료된 멱등키 삭제 완료 - 삭제된 개수: {}, 기준 시간: {}", deletedCount, threshold);
         return deletedCount;
     }

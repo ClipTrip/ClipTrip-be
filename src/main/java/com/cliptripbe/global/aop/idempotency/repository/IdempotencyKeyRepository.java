@@ -13,5 +13,5 @@ public interface IdempotencyKeyRepository extends JpaRepository<IdempotencyKey, 
 
     @Modifying
     @Query("DELETE FROM IdempotencyKey i WHERE i.expiresAt <= :threshold")
-    int deleteByCreatedAtBefore(@Param("threshold") LocalDateTime threshold);
+    int deleteByExpiresAtBefore(@Param("threshold") LocalDateTime threshold);
 }
