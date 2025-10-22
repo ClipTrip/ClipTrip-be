@@ -2,6 +2,7 @@ package com.cliptripbe.feature.schedule.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.entity.BaseTimeEntity;
 import com.cliptripbe.global.response.exception.CustomException;
 import com.cliptripbe.global.response.type.ErrorType;
 import jakarta.persistence.CascadeType;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Schedule {
+public class Schedule extends BaseTimeEntity {
 
     private static final String DESCRIPTION = "Trip's description";
     private static final String NAME = "Trip";
