@@ -38,7 +38,7 @@ public class IdempotencyKey extends BaseTimeEntity {
     public IdempotencyKey(String key) {
         this.key = key;
         this.status = RequestStatus.PROCESSING;
-        this.expiresAt = LocalDateTime.now().plusHours(24);
+        this.expiresAt = LocalDateTime.now().plusMinutes(30);
     }
 
     public void complete(String body) {

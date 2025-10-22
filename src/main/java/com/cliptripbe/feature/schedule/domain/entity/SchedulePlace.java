@@ -1,6 +1,7 @@
 package com.cliptripbe.feature.schedule.domain.entity;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
+import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SchedulePlace {
+public class SchedulePlace extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

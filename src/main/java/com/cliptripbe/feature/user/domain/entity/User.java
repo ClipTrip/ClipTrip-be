@@ -5,6 +5,7 @@ import com.cliptripbe.feature.user.domain.type.CountryCode;
 import com.cliptripbe.feature.user.domain.type.Gender;
 import com.cliptripbe.feature.user.domain.type.Language;
 import com.cliptripbe.feature.user.domain.type.Role;
+import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "user_table")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

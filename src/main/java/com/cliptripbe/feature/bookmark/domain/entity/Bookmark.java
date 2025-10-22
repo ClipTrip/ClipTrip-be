@@ -4,7 +4,9 @@ import static com.cliptripbe.global.response.type.ErrorType.EXISTS_PLACE;
 
 import com.cliptripbe.feature.place.domain.entity.Place;
 import com.cliptripbe.feature.user.domain.entity.User;
+import com.cliptripbe.global.entity.BaseTimeEntity;
 import com.cliptripbe.global.response.exception.CustomException;
+import com.fasterxml.jackson.databind.ser.Serializers.Base;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Bookmark {
+public class Bookmark extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
