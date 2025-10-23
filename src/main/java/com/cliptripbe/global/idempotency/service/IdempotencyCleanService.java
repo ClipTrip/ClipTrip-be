@@ -1,6 +1,6 @@
-package com.cliptripbe.global.scheduler.service;
+package com.cliptripbe.global.idempotency.service;
 
-import com.cliptripbe.global.aop.idempotency.repository.IdempotencyKeyRepository;
+import com.cliptripbe.global.idempotency.repository.IdempotencyKeyRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

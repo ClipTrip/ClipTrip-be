@@ -1,10 +1,10 @@
-package com.cliptripbe.global.aop.idempotency.aspect;
+package com.cliptripbe.global.idempotency.aop.aspect;
 
 import static com.cliptripbe.global.response.type.ErrorType.REQUEST_ALREADY_IN_PROGRESS;
 
-import com.cliptripbe.global.aop.idempotency.entity.IdempotencyKey;
-import com.cliptripbe.global.aop.idempotency.entity.RequestStatus;
-import com.cliptripbe.global.aop.idempotency.repository.IdempotencyKeyRepository;
+import com.cliptripbe.global.idempotency.entity.IdempotencyKey;
+import com.cliptripbe.global.idempotency.entity.RequestStatus;
+import com.cliptripbe.global.idempotency.repository.IdempotencyKeyRepository;
 import com.cliptripbe.global.response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,8 +15,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,7 +33,7 @@ public class IdempotencyAspect {
     private final ObjectMapper objectMapper;
 
 
-    @Around("@annotation(com.cliptripbe.global.aop.idempotency.annotation.Idempotent)")
+    @Around("@annotation(com.cliptripbe.global.idempotency.aop.annotation.Idempotent)")
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Object handleIdempotency(ProceedingJoinPoint joinPoint) throws Throwable {
         var attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();

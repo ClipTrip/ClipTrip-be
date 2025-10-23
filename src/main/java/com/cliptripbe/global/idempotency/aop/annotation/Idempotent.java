@@ -1,4 +1,4 @@
-package com.cliptripbe.global.aop.idempotency.annotation;
+package com.cliptripbe.global.idempotency.aop.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,6 @@
-package com.cliptripbe.global.aop.idempotency.repository;
+package com.cliptripbe.global.idempotency.repository;
 
-import com.cliptripbe.global.aop.idempotency.entity.IdempotencyKey;
+import com.cliptripbe.global.idempotency.entity.IdempotencyKey;
 import java.time.LocalDateTime;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -1,4 +1,4 @@
-package com.cliptripbe.global.aop.idempotency.entity;
+package com.cliptripbe.global.idempotency.entity;
 
 import com.cliptripbe.global.entity.BaseTimeEntity;
 import jakarta.persistence.Column;

@@ -1,6 +1,6 @@
-package com.cliptripbe.global.scheduler.job;
+package com.cliptripbe.global.idempotency.job;
 
-import com.cliptripbe.global.scheduler.service.IdempotencyCleanService;
+import com.cliptripbe.global.idempotency.service.IdempotencyCleanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
