@@ -13,7 +13,7 @@ public class IdempotencyCleanJob {
 
     private final IdempotencyCleanService idempotencyCleanService;
 
-    @Scheduled(cron = "0 14 1 * * *")
+    @Scheduled(cron = "0 0 2 * * *")
     public void cleanIdempotencyKeys() {
         log.info("멱등키 정리 작업 시작");
         int deletedCount = idempotencyCleanService.deleteExpiredKeys();
